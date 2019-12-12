@@ -4,8 +4,7 @@
 \alias{initImportTab}
 \title{import tab}
 \usage{
-initImportTab(mainWindow, console, graphicFrame, RclusTool.env,
-  reset = F)
+initImportTab(mainWindow, console, graphicFrame, RclusTool.env, reset = F)
 }
 \arguments{
 \item{mainWindow}{: window in which the 'importTab' is created.}
@@ -17,6 +16,9 @@ initImportTab(mainWindow, console, graphicFrame, RclusTool.env,
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 
 \item{reset}{: if TRUE the whole tab is reset, with default options}
+}
+\value{
+None
 }
 \description{
 This function generates the import tab of the \code{\link{RclusToolGUI}}, in which the user can import files.

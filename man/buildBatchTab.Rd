@@ -15,6 +15,9 @@ buildBatchTab(mainWindow, console, graphicFrame, RclusTool.env)
 
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
+\value{
+None
+}
 \description{
 Generate the batch process tab of the \code{\link{RclusToolGUI}}, in which the user can choose and configure the classification method to apply on several datasets.
 }

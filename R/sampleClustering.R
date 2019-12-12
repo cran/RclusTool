@@ -850,6 +850,7 @@ nameClusters <- function(data.sample, method, RclusTool.env=initParameters()) {
 #' @param filename.txt character vector specifying the path and the name of the txt file.
 #' @param txt character vector describing the different steps of the analyses.
 #' @param dir character vector specifying the directory where to save the txt file.
+#' @return log txt file.
 #' @importFrom utils alarm
 #' 
 #' @examples 

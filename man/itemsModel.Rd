@@ -11,10 +11,7 @@ itemsModel(dat, countFile, method = "mda")
 
 \item{countFile}{character vector specifying the path and the name of the file containing manual countings.}
 
-\item{method}{character vector specifying the name of method tu use for the building of predictive models. Must be 'lm', 'lda' or 'mda' (default).
-importFrom stats as.formula lm
-importFrom MASS lda
-importFrom mda mda gen.ridge}
+\item{method}{character vector specifying the name of method tu use for the building of predictive models. Must be 'lm', 'lda' or 'mda' (default).}
 }
 \value{
 RDS file containing the predictive model.

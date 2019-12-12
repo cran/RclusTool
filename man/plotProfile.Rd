@@ -4,9 +4,16 @@
 \alias{plotProfile}
 \title{Profile and image plotting}
 \usage{
-plotProfile(profiles, profiles.colors = NULL, image = NULL,
-  curve.names = NULL, title = "Some observation", sub = "",
-  sub.color = NULL, image.dir = NULL)
+plotProfile(
+  profiles,
+  profiles.colors = NULL,
+  image = NULL,
+  curve.names = NULL,
+  title = "Some observation",
+  sub = "",
+  sub.color = NULL,
+  image.dir = NULL
+)
 }
 \arguments{
 \item{profiles}{matrix of profile data (signals in columns).}
@@ -24,6 +31,9 @@ plotProfile(profiles, profiles.colors = NULL, image = NULL,
 \item{sub.color}{character vector specifying the color of the subtitle.}
 
 \item{image.dir}{images directory.}
+}
+\value{
+None
 }
 \description{
 Plot the profile and the image (if available) of a particle.

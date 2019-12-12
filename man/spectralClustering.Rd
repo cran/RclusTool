@@ -4,9 +4,17 @@
 \alias{spectralClustering}
 \title{Spectral clustering}
 \usage{
-spectralClustering(sim, K, nruns = 1, test.dim = FALSE,
-  projection = "Ng", post.norm = "sphere", clustering = "kmeans",
-  max.dim = 30, add.1 = FALSE)
+spectralClustering(
+  sim,
+  K,
+  nruns = 1,
+  test.dim = FALSE,
+  projection = "Ng",
+  post.norm = "sphere",
+  clustering = "kmeans",
+  max.dim = 30,
+  add.1 = FALSE
+)
 }
 \arguments{
 \item{sim}{similarity matrix.}

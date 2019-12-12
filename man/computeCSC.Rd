@@ -4,8 +4,14 @@
 \alias{computeCSC}
 \title{Constrained Spectral Clustering}
 \usage{
-computeCSC(x, K = 0, K.max = 20, mustLink = list(),
-  cantLink = list(), alphas = seq(from = 0, to = 1, length = 100))
+computeCSC(
+  x,
+  K = 0,
+  K.max = 20,
+  mustLink = list(),
+  cantLink = list(),
+  alphas = seq(from = 0, to = 1, length = 100)
+)
 }
 \arguments{
 \item{x}{matrix of raw data (point by line).}

@@ -4,8 +4,11 @@
 \alias{featSpaceNameConvert}
 \title{Feature Space Name Conversion}
 \usage{
-featSpaceNameConvert(name2convert, short2long = TRUE,
-  RclusTool.env = initParameters())
+featSpaceNameConvert(
+  name2convert,
+  short2long = TRUE,
+  RclusTool.env = initParameters()
+)
 }
 \arguments{
 \item{name2convert}{character vector for name to convert.}

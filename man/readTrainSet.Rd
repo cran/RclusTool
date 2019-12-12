@@ -4,8 +4,12 @@
 \alias{readTrainSet}
 \title{Training set reading}
 \usage{
-readTrainSet(traindir, keep_ = FALSE, operations = NULL,
-  RclusTool.env = initParameters())
+readTrainSet(
+  traindir,
+  keep_ = FALSE,
+  operations = NULL,
+  RclusTool.env = initParameters()
+)
 }
 \arguments{
 \item{traindir}{character vector specifying the path of the training set.}

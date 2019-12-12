@@ -13,6 +13,9 @@ tk2draw.notetab(nb, tab.name, fun)
 
 \item{fun}{: a function.}
 }
+\value{
+None
+}
 \description{
 Draw in a Notetab with a function.
 }

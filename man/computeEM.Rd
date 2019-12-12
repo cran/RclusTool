@@ -4,8 +4,14 @@
 \alias{computeEM}
 \title{Expectation-Maximization clustering}
 \usage{
-computeEM(x, K = 0, K.max = 20, kmeans.variance.min = 0.95,
-  graph = F, Mclust.options = list())
+computeEM(
+  x,
+  K = 0,
+  K.max = 20,
+  kmeans.variance.min = 0.95,
+  graph = F,
+  Mclust.options = list()
+)
 }
 \arguments{
 \item{x}{matrix of raw data (point by line).}

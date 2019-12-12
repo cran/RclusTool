@@ -4,8 +4,7 @@
 \alias{addClustering}
 \title{Clustering addition}
 \usage{
-addClustering(clustering, new.clustering.name, new.cluster.summary,
-  new.label)
+addClustering(clustering, new.clustering.name, new.cluster.summary, new.label)
 }
 \arguments{
 \item{clustering}{list containing a set of clustering results.}

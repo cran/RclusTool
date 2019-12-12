@@ -9,6 +9,9 @@ MainWindow(RclusTool.env)
 \arguments{
 \item{RclusTool.env}{environment in which data and results will be stored. If NULL, a local environment will be created.}
 }
+\value{
+None
+}
 \description{
 Generate an user-friendly interface to classify data in a unsupervised, semi-supervised or supervised way.
 }

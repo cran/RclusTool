@@ -4,11 +4,25 @@
 \alias{importSample}
 \title{Sample importation}
 \usage{
-importSample(file.features = "", file.meta = "", file.profiles = "",
-  file.RDS = "", file.config = "", dir.images = "", dir.save = ".",
-  sepFeat = ",", decFeat = ".", naFeat = c("", "NA"), sepSig = ",",
-  decSig = ".", naSig = c("", "NA"), headerCSV = TRUE,
-  RclusTool.env = new.env(), save.to.disk = TRUE, ...)
+importSample(
+  file.features = "",
+  file.meta = "",
+  file.profiles = "",
+  file.RDS = "",
+  file.config = "",
+  dir.images = "",
+  dir.save = ".",
+  sepFeat = ",",
+  decFeat = ".",
+  naFeat = c("", "NA"),
+  sepSig = ",",
+  decSig = ".",
+  naSig = c("", "NA"),
+  headerCSV = TRUE,
+  RclusTool.env = new.env(),
+  save.to.disk = TRUE,
+  ...
+)
 }
 \arguments{
 \item{file.features}{character vector specifying the csv file containing features data.}

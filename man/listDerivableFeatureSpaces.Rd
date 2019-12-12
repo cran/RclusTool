@@ -4,8 +4,12 @@
 \alias{listDerivableFeatureSpaces}
 \title{Builds list of derivable feature spaces}
 \usage{
-listDerivableFeatureSpaces(scaling = F, pca = F, spectral = F,
-  RclusTool.env = initParameters())
+listDerivableFeatureSpaces(
+  scaling = F,
+  pca = F,
+  spectral = F,
+  RclusTool.env = initParameters()
+)
 }
 \arguments{
 \item{scaling}{boolean TRUE if scaling required.}

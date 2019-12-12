@@ -4,9 +4,13 @@
 \alias{applyPreprocessing}
 \title{Preprocessing application}
 \usage{
-applyPreprocessing(data.sample, operations = NULL,
-  RclusTool.env = initParameters(), reset = TRUE,
-  preprocessed.only = FALSE)
+applyPreprocessing(
+  data.sample,
+  operations = NULL,
+  RclusTool.env = initParameters(),
+  reset = TRUE,
+  preprocessed.only = FALSE
+)
 }
 \arguments{
 \item{data.sample}{sample object.}

@@ -15,6 +15,9 @@ buildImportTab(mainWindow, console, graphicFrame, RclusTool.env)
 
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
+\value{
+None
+}
 \description{
 Generate the files importation tab of the \code{\link{RclusToolGUI}}, in which the user can select original files (features, metadata, signals or images).
 }

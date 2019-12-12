@@ -9,10 +9,16 @@ cor.mtest(mat)
 \arguments{
 \item{mat}{correlation matrix}
 }
+\value{
+matrix with p-values.
+}
 \description{
 Display the abundances barplot of a clustering.
 }
 \details{
 cor.mtest Correlation test on correlation matrix.
+}
+\references{
+\url{http://www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
 }
 \keyword{internal}

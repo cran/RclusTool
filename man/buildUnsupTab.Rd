@@ -15,6 +15,9 @@ buildUnsupTab(mainWindow, console, graphicFrame, RclusTool.env)
 
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 }
+\value{
+None
+}
 \description{
 This function generates the unsupervised classification tab of the \code{\link{RclusToolGUI}}, in which the user can choose and configure the clustering method to apply.
 }

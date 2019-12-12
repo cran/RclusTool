@@ -4,8 +4,7 @@
 \alias{computeKmeans}
 \title{K-means clustering}
 \usage{
-computeKmeans(x, K = 0, K.max = 20, kmeans.variance.min = 0.95,
-  graph = F)
+computeKmeans(x, K = 0, K.max = 20, kmeans.variance.min = 0.95, graph = F)
 }
 \arguments{
 \item{x}{matrix of raw data (point by line).}

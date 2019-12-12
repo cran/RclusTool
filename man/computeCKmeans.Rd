@@ -4,8 +4,15 @@
 \alias{computeCKmeans}
 \title{Constrained K-means clustering}
 \usage{
-computeCKmeans(x, K = 0, K.max = 20, mustLink = NULL,
-  cantLink = NULL, maxIter = 2, kmeans.variance.min = 0.95)
+computeCKmeans(
+  x,
+  K = 0,
+  K.max = 20,
+  mustLink = NULL,
+  cantLink = NULL,
+  maxIter = 2,
+  kmeans.variance.min = 0.95
+)
 }
 \arguments{
 \item{x}{matrix of raw data (point by line).}

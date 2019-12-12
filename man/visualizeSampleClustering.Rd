@@ -4,12 +4,20 @@
 \alias{visualizeSampleClustering}
 \title{Interactive figure with 2D scatter-plot}
 \usage{
-visualizeSampleClustering(data.sample, label = NULL,
-  clustering.name = "proposed clustering", cluster.summary = NULL,
-  RclusTool.env = initParameters(), prototypes = NULL,
-  profile.mode = "none", selection.mode = "none",
-  compare.mode = "off", pairs = NULL, features.mode = "initial",
-  wait.close = FALSE)
+visualizeSampleClustering(
+  data.sample,
+  label = NULL,
+  clustering.name = "proposed clustering",
+  cluster.summary = NULL,
+  RclusTool.env = initParameters(),
+  prototypes = NULL,
+  profile.mode = "none",
+  selection.mode = "none",
+  compare.mode = "off",
+  pairs = NULL,
+  features.mode = "initial",
+  wait.close = FALSE
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

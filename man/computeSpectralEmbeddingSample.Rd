@@ -4,9 +4,15 @@
 \alias{computeSpectralEmbeddingSample}
 \title{Spectral embedding}
 \usage{
-computeSpectralEmbeddingSample(data.sample, use.sampling = FALSE,
-  sampling.size.max = 0, scale = FALSE, selected.var = NULL,
-  echo = F, RclusTool.env = initParameters())
+computeSpectralEmbeddingSample(
+  data.sample,
+  use.sampling = FALSE,
+  sampling.size.max = 0,
+  scale = FALSE,
+  selected.var = NULL,
+  echo = F,
+  RclusTool.env = initParameters()
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

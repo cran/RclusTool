@@ -9,6 +9,9 @@
 \arguments{
 \item{window}{window in which the logo frame is positioned.}
 }
+\value{
+None
+}
 \description{
 Create and position the logo frame and images in the graphical user interface.
 }

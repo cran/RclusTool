@@ -4,20 +4,26 @@
 \alias{plotSampleFeatures}
 \title{2D-features scatter-plot}
 \usage{
-plotSampleFeatures(data, label, parH = NULL, parV = NULL,
-  figure.title = "Scatter plot", logscale = "", cex = 0.8,
-  point.param = expand.grid(col = c("grey", "black", "red", "blue",
-  "green", "cyan", "yellow", "orange", "rosybrown", "palevioletred",
-  "darkblue", "deeppink", "blueviolet", "darkgoldenrod1", "chartreuse",
-  "darkorchid1", "deeppink", "coral", "darkolivegreen1", "#66C2A5",
-  "#9DAE8C", "#D49A73", "#F08F6D", "#C79693", "#9E9DBA", "#9F9BC9",
-  "#C193C6", "#E28BC3", "#D2A29F", "#BABF77", "#AAD852", "#CBD844",
-  "#ECD836", "#FAD53E", "#F1CD64", "#E7C689", "#D7BF9C", "#C5B9A7",
-  "#B3B3B3", "#D53E4F", "#E04F4A", "#EB6046", "#F47346",      "#F88B51",
-  "#FBA35C", "#FDB869", "#FDCA79", "#FDDD88", "#F6E68F", "#EDEE93",
-  "#E2F398", "#CDEA9D", "#B7E2A1", "#A0D8A4", "#86CEA4", "#6DC4A4",
-  "#58B2AB", "#459DB4", "#3288BD"), pch = c(20, 0:18), stringsAsFactors =
-  FALSE), env.plot = NULL)
+plotSampleFeatures(
+  data,
+  label,
+  parH = NULL,
+  parV = NULL,
+  figure.title = "Scatter plot",
+  logscale = "",
+  cex = 0.8,
+  point.param = expand.grid(col = c("grey", "black", "red", "blue", "green", "cyan",
+    "yellow", "orange", "rosybrown", "palevioletred", "darkblue", "deeppink",
+    "blueviolet", "darkgoldenrod1", "chartreuse", "darkorchid1", "deeppink", "coral",
+    "darkolivegreen1", "#66C2A5", "#9DAE8C", "#D49A73", "#F08F6D", "#C79693", "#9E9DBA",
+    "#9F9BC9", "#C193C6", "#E28BC3", "#D2A29F", "#BABF77", "#AAD852", "#CBD844",
+    "#ECD836", "#FAD53E", "#F1CD64", "#E7C689", "#D7BF9C", "#C5B9A7", "#B3B3B3",
+    "#D53E4F", "#E04F4A", "#EB6046", "#F47346",      "#F88B51", "#FBA35C", "#FDB869",
+    "#FDCA79", "#FDDD88", "#F6E68F", "#EDEE93", "#E2F398", "#CDEA9D", "#B7E2A1",
+    "#A0D8A4", "#86CEA4", "#6DC4A4", "#58B2AB", "#459DB4", "#3288BD"), pch = c(20, 0:18),
+    stringsAsFactors = FALSE),
+  env.plot = NULL
+)
 }
 \arguments{
 \item{data}{matrix or data.frame of raw data (points by line).}
@@ -37,6 +43,9 @@ plotSampleFeatures(data, label, parH = NULL, parV = NULL,
 \item{point.param}{data.frame specifying the colors and the symbols to use for clusters display.}
 
 \item{env.plot}{environment where to store graphical parameters used by function PlotScatter to select points.}
+}
+\value{
+None
 }
 \description{
 Plot 2D-features scatter-plot of all particles. Grey color (label=0) is for data to cleaned or to remove in classification process.

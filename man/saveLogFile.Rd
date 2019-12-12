@@ -13,6 +13,9 @@ saveLogFile(filename.txt, txt, dir)
 
 \item{dir}{character vector specifying the directory where to save the txt file.}
 }
+\value{
+log txt file.
+}
 \description{
 Save a log txt file at the end of the session, describing the different steps of the analyses.
 }

@@ -17,6 +17,9 @@ initBatchTab(mainWindow, console, graphicFrame, RclusTool.env, reset = F)
 
 \item{reset}{: if TRUE the whole tab is reset, with default options}
 }
+\value{
+None
+}
 \description{
 This function generates the batch tab  of the \code{\link{RclusToolGUI}}, in which the user can batch files.
 }

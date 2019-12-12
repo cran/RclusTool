@@ -13,6 +13,9 @@ tk2add.notetab(nb, tab.label, tab.name = NULL)
 
 \item{tab.name}{string the name of the tab in a notebook.}
 }
+\value{
+None
+}
 \description{
 Add a notetab.
 }

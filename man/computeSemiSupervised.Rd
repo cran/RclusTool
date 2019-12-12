@@ -4,11 +4,23 @@
 \alias{computeSemiSupervised}
 \title{Semi-supervised clustering}
 \usage{
-computeSemiSupervised(data.sample, ML, CNL, K = 0, kmax = 20,
-  method.name = "Constrained_KM", maxIter = 2, pca = F,
-  pca.nb.dims = 0, spec = F, use.sampling = FALSE,
-  sampling.size.max = 0, scaling = F,
-  RclusTool.env = initParameters(), echo = T)
+computeSemiSupervised(
+  data.sample,
+  ML,
+  CNL,
+  K = 0,
+  kmax = 20,
+  method.name = "Constrained_KM",
+  maxIter = 2,
+  pca = F,
+  pca.nb.dims = 0,
+  spec = F,
+  use.sampling = FALSE,
+  sampling.size.max = 0,
+  scaling = F,
+  RclusTool.env = initParameters(),
+  echo = T
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

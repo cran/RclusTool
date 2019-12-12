@@ -4,8 +4,13 @@
 \alias{computeSupervised}
 \title{Supervised classification}
 \usage{
-computeSupervised(data.sample, prototypes, method.name = "K-NN",
-  model = NULL, RclusTool.env = initParameters())
+computeSupervised(
+  data.sample,
+  prototypes,
+  method.name = "K-NN",
+  model = NULL,
+  RclusTool.env = initParameters()
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

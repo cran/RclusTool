@@ -4,8 +4,7 @@
 \alias{loadSample}
 \title{Sample loading}
 \usage{
-loadSample(file.RDS, RclusTool.env = initParameters(),
-  file.config = "")
+loadSample(file.RDS, RclusTool.env = initParameters(), file.config = "")
 }
 \arguments{
 \item{file.RDS}{character vector for the name of the .RDS file where built data.sample object is saved.}

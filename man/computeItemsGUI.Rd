@@ -4,8 +4,7 @@
 \alias{computeItemsGUI}
 \title{GUI to estimate the number of cells in colonies for each cluster}
 \usage{
-computeItemsGUI(method.select = "K-means",
-  RclusTool.env = RclusTool.env)
+computeItemsGUI(method.select = "K-means", RclusTool.env = RclusTool.env)
 }
 \arguments{
 \item{method.select}{character vector specifying the name of the clustering result to use ('K-means' by default).}

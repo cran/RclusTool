@@ -13,6 +13,9 @@ tk2notetab.RclusTool(nb, tab.label, tab.name = NULL)
 
 \item{tab.name}{string the name of the tab in a notebook.}
 }
+\value{
+None
+}
 \description{
 RclusTool adaptation of tk2notetab; builds and returns a R tk2notetab matching a notetab already declared in tk notebook.
 }

@@ -23,6 +23,7 @@
 #' @param console : frame of the RclusTool interface in which messages should be displayed. 
 #' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
+#' @return None
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
@@ -441,6 +442,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 #' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
 #' @param reset : if TRUE the whole tab is reset, with default options
+#' @return None
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 

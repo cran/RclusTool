@@ -13,6 +13,9 @@ ElbowPlot(nb, method.space.name, RclusTool.env)
 
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 }
+\value{
+None
+}
 \description{
 Display the Elbow Plot after a clustering step.
 }

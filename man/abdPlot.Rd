@@ -4,17 +4,19 @@
 \alias{abdPlot}
 \title{Abundances barplot}
 \usage{
-abdPlot(label, title, point.param = c("grey", "black", "red", "blue",
-  "green", "cyan", "yellow", "orange", "rosybrown", "palevioletred",
-  "darkblue", "deeppink", "blueviolet", "darkgoldenrod1", "chartreuse",
-  "darkorchid1", "deeppink", "coral", "darkolivegreen1", "#66C2A5",
-  "#9DAE8C", "#D49A73", "#F08F6D", "#C79693", "#9E9DBA", "#9F9BC9",
-  "#C193C6", "#E28BC3", "#D2A29F", "#BABF77", "#AAD852", "#CBD844",
-  "#ECD836", "#FAD53E", "#F1CD64", "#E7C689", "#D7BF9C", "#C5B9A7",
-  "#B3B3B3", "#D53E4F", "#E04F4A", "#EB6046", "#F47346", "#F88B51",     
-  "#FBA35C", "#FDB869", "#FDCA79", "#FDDD88", "#F6E68F", "#EDEE93",
-  "#E2F398", "#CDEA9D", "#B7E2A1", "#A0D8A4", "#86CEA4", "#6DC4A4",
-  "#58B2AB", "#459DB4", "#3288BD"))
+abdPlot(
+  label,
+  title,
+  point.param = c("grey", "black", "red", "blue", "green", "cyan", "yellow", "orange",
+    "rosybrown", "palevioletred", "darkblue", "deeppink", "blueviolet", "darkgoldenrod1",
+    "chartreuse", "darkorchid1", "deeppink", "coral", "darkolivegreen1", "#66C2A5",
+    "#9DAE8C", "#D49A73", "#F08F6D", "#C79693", "#9E9DBA", "#9F9BC9", "#C193C6",
+    "#E28BC3", "#D2A29F", "#BABF77", "#AAD852", "#CBD844", "#ECD836", "#FAD53E",
+    "#F1CD64", "#E7C689", "#D7BF9C", "#C5B9A7", "#B3B3B3", "#D53E4F", "#E04F4A",
+    "#EB6046", "#F47346", "#F88B51",      "#FBA35C", "#FDB869", "#FDCA79", "#FDDD88",
+    "#F6E68F", "#EDEE93", "#E2F398", "#CDEA9D", "#B7E2A1", "#A0D8A4", "#86CEA4",
+    "#6DC4A4", "#58B2AB", "#459DB4", "#3288BD")
+)
 }
 \arguments{
 \item{label}{factor describing the clustering.}
@@ -22,6 +24,9 @@ abdPlot(label, title, point.param = c("grey", "black", "red", "blue",
 \item{title}{naming the graph.}
 
 \item{point.param}{specifying the colors and the symbols to use for clusters display.}
+}
+\value{
+None
 }
 \description{
 Display the abundances barplot of a clustering.

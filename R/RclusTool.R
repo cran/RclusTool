@@ -38,7 +38,7 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
 
     grDevices::graphics.off()
 
-    if (RclusTool.env$gui$operating.system=="windows") {
+    if (!is.null(RclusTool.env$gui$operating.system)&&(RclusTool.env$gui$operating.system=="windows")) {
         RclusTool.env$param$visu$scale.graphics <- 1.4
         #memory.limit(size=4000)
     }
@@ -111,6 +111,7 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
 #' @title Main window
 #' @description Generate an user-friendly interface to classify data in a unsupervised, semi-supervised or supervised way.
 #' @param RclusTool.env environment in which data and results will be stored. If NULL, a local environment will be created.
+#' @return None
 #' @import tcltk tcltk2 
 #' @importFrom tkrplot tkrplot
 #' @importFrom graphics plot par
@@ -229,8 +230,8 @@ MainWindow <- function(RclusTool.env) {
 #' function to create and position the logo frame in the main window
 #' @title Logo frame in the graphical user interface
 #' @description Create and position the logo frame and images in the graphical user interface.
-#' @keywords internal 
 #' @param window window in which the logo frame is positioned.
+#' @return None
 #' @keywords internal 
 #' 
 .logoFrame <- function (window) {

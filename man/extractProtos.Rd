@@ -4,8 +4,13 @@
 \alias{extractProtos}
 \title{Prototypes extraction}
 \usage{
-extractProtos(data.sample, method, K.max = 20,
-  kmeans.variance.min = 0.95, user.name = "")
+extractProtos(
+  data.sample,
+  method,
+  K.max = 20,
+  kmeans.variance.min = 0.95,
+  user.name = ""
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

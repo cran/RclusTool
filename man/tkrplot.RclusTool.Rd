@@ -15,6 +15,9 @@ tkrplot.RclusTool(graphicFrame, fun, hscale = 1, vscale = 1)
 
 \item{vscale}{: int vertical scale}
 }
+\value{
+None
+}
 \description{
 RclusTool adaptation of tkrplot.
 }

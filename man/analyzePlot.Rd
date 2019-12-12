@@ -4,8 +4,14 @@
 \alias{analyzePlot}
 \title{Plot for data exploration/analysis}
 \usage{
-analyzePlot(nb, data.sample, selectedVar, type = "boxplot",
-  hscale = 1.2, K.max = 20)
+analyzePlot(
+  nb,
+  data.sample,
+  selectedVar,
+  type = "boxplot",
+  hscale = 1.2,
+  K.max = 20
+)
 }
 \arguments{
 \item{nb}{notebook in which the analyze plot will be added.}
@@ -19,6 +25,9 @@ analyzePlot(nb, data.sample, selectedVar, type = "boxplot",
 \item{hscale}{numeric value corresponding to the horizontal scale of graphic.}
 
 \item{K.max}{maximal number of clusters (K.Max=20 by default).}
+}
+\value{
+None
 }
 \description{
 Create some specific plots for data exploration/analysis.

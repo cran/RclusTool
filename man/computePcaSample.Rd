@@ -4,9 +4,14 @@
 \alias{computePcaSample}
 \title{Principal Components Analysis}
 \usage{
-computePcaSample(data.sample, pca.nb.dims = 0, selected.var = NULL,
-  echo = F, prcomp.options = list(center = T, scale = T),
-  pca.variance.cum.min = 0.95)
+computePcaSample(
+  data.sample,
+  pca.nb.dims = 0,
+  selected.var = NULL,
+  echo = F,
+  prcomp.options = list(center = T, scale = T),
+  pca.variance.cum.min = 0.95
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

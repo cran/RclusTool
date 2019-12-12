@@ -17,6 +17,9 @@ initUnsupTab(mainWindow, console, graphicFrame, RclusTool.env, reset = F)
 
 \item{reset}{: if TRUE the whole tab is reset, with default options}
 }
+\value{
+None
+}
 \description{
 This function generates the unsupervised classification tab of the \code{\link{RclusToolGUI}}, in which the user can choose and configure the clustering method to apply.
 }

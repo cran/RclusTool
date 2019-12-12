@@ -4,8 +4,14 @@
 \alias{makeFeatureSpaceOperations}
 \title{Make operation config object to build feature spaces}
 \usage{
-makeFeatureSpaceOperations(pca = F, pca.nb.dims = 0, spectral = F,
-  sampling = F, sampling.size.max = 0, scaling = F)
+makeFeatureSpaceOperations(
+  pca = F,
+  pca.nb.dims = 0,
+  spectral = F,
+  sampling = F,
+  sampling.size.max = 0,
+  scaling = F
+)
 }
 \arguments{
 \item{pca}{boolean: if TRUE, Principal Components Analysis is applied to reduce the data space.}
@@ -19,6 +25,9 @@ makeFeatureSpaceOperations(pca = F, pca.nb.dims = 0, spectral = F,
 \item{sampling.size.max}{: maximum size of the sampled dataframe.}
 
 \item{scaling}{boolean: if TRUE, scaling is applied.}
+}
+\value{
+configuration object created from parameters.
 }
 \description{
 makeFeatureSpaceOperations create config object for datasample

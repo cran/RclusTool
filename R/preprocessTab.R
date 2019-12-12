@@ -23,6 +23,7 @@
 #' @param console frame of the RclusTool interface in which messages should be displayed. 
 #' @param graphicFrame frame of the RclusTool interface in which graphics should be dispayed.
 #' @param RclusTool.env environment in which data and intermediate results are stored.
+#' @return None
 #' @importFrom utils write.csv
 #' @import tcltk tcltk2
 #' @keywords internal
@@ -989,6 +990,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
 #' @param RclusTool.env environment in which data and intermediate results are stored.
 #' @param reset boolean to reset the whole interface
 #' @param readConfig boolean to reset the whole interface according the config parameters of the data.sample
+#' @return None
 #' @keywords internal
 #' 
 initPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env, reset=F, readConfig=F)

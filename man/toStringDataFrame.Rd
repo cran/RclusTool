@@ -11,6 +11,9 @@ toStringDataFrame(object, digits = NULL)
 
 \item{digits}{digits in dataframe}
 }
+\value{
+string to print.
+}
 \description{
 Convert dataframe to string to print it in console.
 }

@@ -27,6 +27,7 @@
 #' @param sub character vector specifying the subtitle of the plot.
 #' @param sub.color character vector specifying the color of the subtitle.
 #' @param image.dir images directory. 
+#' @return None
 #' @importFrom graphics layout plot rasterImage matplot legend
 #' @importFrom jpeg readJPEG
 #' @importFrom png readPNG
@@ -112,6 +113,7 @@ plotProfile <- function(profiles, profiles.colors=NULL, image=NULL, curve.names=
 #' @param sub character vector specifying the subtitle of the plot.
 #' @param sub.color character vector specifying the color of the subtitle.
 #' @param image.dir images directory. 
+#' @return None
 #' @importFrom graphics layout plot rasterImage matplot legend
 #' @importFrom jpeg readJPEG
 #' @importFrom png readPNG
@@ -199,6 +201,7 @@ plotProfileExtract <- function(profiles, profiles.colors=NULL, image=NULL, curve
 #' @param cex numeric value specifying the size of the graphical labels. 
 #' @param point.param data.frame specifying the colors and the symbols to use for clusters display.
 #' @param env.plot environment where to store graphical parameters used by function PlotScatter to select points.
+#' @return None
 #' @importFrom grDevices colors
 #' @importFrom graphics title plot abline legend par
 #' @seealso \code{\link{plotProfile}}, \code{\link{visualizeSampleClustering}}
@@ -277,6 +280,7 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
 #' @param parH character vector specifying the name of the feature to use as x-axis.
 #' @param clustering.name character vector specifying the name of the clustering.
 #' @param col vector of colors
+#' @return None
 #' @import ggplot2
 #' 
 #' @examples 
@@ -1788,6 +1792,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 #' @param type character vector specifying the analysis type. Must be 'boxplot', 'gapSE', 'histo', 'pcaCorr' or 'pcaVar'.
 #' @param hscale numeric value corresponding to the horizontal scale of graphic.
 #' @param K.max maximal number of clusters (K.Max=20 by default).
+#' @return None
 #' @importFrom graphics barplot par layout boxplot title hist plot arrows text axis abline mtext box
 #' @importFrom grDevices colorRampPalette
 #' @importFrom corrplot corrplot
@@ -1951,8 +1956,9 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
 #' @title Correlation test.
 #' @description Display the abundances barplot of a clustering.
 #' @param mat correlation matrix
+#' @return matrix with p-values.
 #' @importFrom stats cor.test
-#' @references \url{http://rstudio.com}www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
+#' @references \url{http://www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
 #' @keywords internal
 
 cor.mtest <- function(mat) {
@@ -1976,6 +1982,7 @@ cor.mtest <- function(mat) {
 #' @param clusterings clustering list.
 #' @param nb a notebook.
 #' @param RclusTool.env environment in which all global parameters, raw data and results are stored.
+#' @return None
 #'
 #' @examples 
 #' dat <- rbind(matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
@@ -2023,6 +2030,7 @@ abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters())
 #' @param label factor describing the clustering.
 #' @param title naming the graph.
 #' @param point.param specifying the colors and the symbols to use for clusters display.
+#' @return None
 #' @importFrom grDevices colors
 #' @importFrom graphics par barplot
 #' @import ggplot2
@@ -2071,6 +2079,7 @@ abdPlot <- function(label, title, point.param=c("grey","black","red","blue","gre
 #' @param nb tk-notebook in which the Elbow plot will be made.
 #' @param method.space.name complete name of space.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
+#' @return None
 #' @import ggplot2
 #' @keywords internal
 
@@ -2110,6 +2119,7 @@ ElbowPlot <- function(nb, method.space.name, RclusTool.env) {
 #' @description Delete notetab inside a tk-notebook.
 #' @param nb : a notebook.
 #' @param tab.names : either NULL to delete all the notetabs, or a vector of notetab names.
+#' @return None
 #' @keywords internal
 
 tk2delete.notetab <- function(nb, tab.names=NULL)
@@ -2134,6 +2144,7 @@ tk2delete.notetab <- function(nb, tab.names=NULL)
 #' @param nb a notebook.
 #' @param tab.label string the label of a tab on the interface.
 #' @param tab.name string the name of the tab in a notebook.
+#' @return None
 #' @keywords internal
 
 tk2add.notetab <- function(nb, tab.label, tab.name=NULL)
@@ -2152,6 +2163,7 @@ tk2add.notetab <- function(nb, tab.label, tab.name=NULL)
 #' @param nb a notebook.
 #' @param tab.name string : name of the tk2notetab variable.
 #' @param fun : a function.
+#' @return None
 #' @keywords internal
 
 tk2draw.notetab <- function(nb, tab.name, fun){
@@ -2165,6 +2177,7 @@ tk2draw.notetab <- function(nb, tab.name, fun){
 #' @param nb a tk2notebook or ttk2notebook widget.
 #' @param tab.label string the label of a tab on the interface.
 #' @param tab.name string the name of the tab in a notebook.
+#' @return None
 #' @keywords internal
 
 tk2notetab.RclusTool <- function (nb, tab.label, tab.name=NULL) 
@@ -2204,6 +2217,7 @@ tk2notetab.RclusTool <- function (nb, tab.label, tab.name=NULL)
 #' @param fun : a function
 #' @param hscale : int horizontal scale
 #' @param vscale : int vertical scale 
+#' @return None
 #' @importFrom grDevices png
 #' @keywords internal
 
@@ -2232,6 +2246,7 @@ tkrplot.RclusTool <- function(graphicFrame, fun, hscale=1.0, vscale=1.0)
 #' @description RclusTool adaptation of tkrreplot.
 #' @param env.graphic : graphic environment generated by tkrplot.RclusTool 
 #' @seealso \code{\link{tkrreplot.RclusTool}}
+#' @return None
 #' @importFrom grDevices png
 #' @keywords internal
 

@@ -145,7 +145,7 @@ computeEM <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=F, Mclus
 #' @description Guess file encoding.
 #' @param file.name a character vector, describing one file.
 #' @importFrom stringi stri_enc_detect
-#' @return its character encoding.
+#' @return file character encoding.
 #' 
 #' @examples 
 #' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
@@ -799,9 +799,9 @@ computeItemsGUI <- function(method.select = "K-means", RclusTool.env=RclusTool.e
 #' @param dat matrix or data.frame of raw data (points by line).
 #' @param countFile character vector specifying the path and the name of the file containing manual countings.
 #' @param method character vector specifying the name of method tu use for the building of predictive models. Must be 'lm', 'lda' or 'mda' (default).
-#' importFrom stats as.formula lm
-#' importFrom MASS lda
-#' importFrom mda mda gen.ridge
+#' @importFrom stats as.formula lm
+#' @import MASS
+#' @import mda
 #' @return RDS file containing the predictive model.
 #' @seealso \code{\link{computeItems}}, \code{\link{countItems}} 
 #' 
@@ -1046,6 +1046,7 @@ countItemsGUI <- function (RclusTool.env=initParameters()) {
 #' @description Convert dataframe to string to print it in console.
 #' @param object dataframe to convert to string
 #' @param digits digits in dataframe
+#' @return string to print.
 #' @import stringr  
 #' @references \url{https://stackoverflow.com/a/45541857}
 #' @keywords internal

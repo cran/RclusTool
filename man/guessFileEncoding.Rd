@@ -10,7 +10,7 @@ guessFileEncoding(file.name)
 \item{file.name}{a character vector, describing one file.}
 }
 \value{
-its character encoding.
+file character encoding.
 }
 \description{
 Guess file encoding.

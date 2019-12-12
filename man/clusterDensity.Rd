@@ -4,8 +4,12 @@
 \alias{clusterDensity}
 \title{Clusters density computation}
 \usage{
-clusterDensity(data.sample, label, space,
-  features.to.keep = colnames(data.sample$features[[space]]$x))
+clusterDensity(
+  data.sample,
+  label,
+  space,
+  features.to.keep = colnames(data.sample$features[[space]]$x)
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

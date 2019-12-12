@@ -4,10 +4,19 @@
 \alias{computeUnSupervised}
 \title{Unsupervised clustering}
 \usage{
-computeUnSupervised(data.sample, K = 0, method.name = "K-means",
-  pca = F, pca.nb.dims = 0, spec = F, use.sampling = FALSE,
-  sampling.size.max = 0, scaling = F,
-  RclusTool.env = initParameters(), echo = FALSE)
+computeUnSupervised(
+  data.sample,
+  K = 0,
+  method.name = "K-means",
+  pca = F,
+  pca.nb.dims = 0,
+  spec = F,
+  use.sampling = FALSE,
+  sampling.size.max = 0,
+  scaling = F,
+  RclusTool.env = initParameters(),
+  echo = FALSE
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

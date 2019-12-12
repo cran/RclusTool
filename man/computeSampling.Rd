@@ -4,8 +4,15 @@
 \alias{computeSampling}
 \title{Sampling raw data matrix}
 \usage{
-computeSampling(x, label = NULL, K = 0, toKeep = NULL,
-  sampling.size.max = 3000, K.max = 20, kmeans.variance.min = 0.95)
+computeSampling(
+  x,
+  label = NULL,
+  K = 0,
+  toKeep = NULL,
+  sampling.size.max = 3000,
+  K.max = 20,
+  kmeans.variance.min = 0.95
+)
 }
 \arguments{
 \item{x}{matrix of raw data (point by line).}

@@ -15,6 +15,9 @@ buildPreprocessTab(mainWindow, console, graphicFrame, RclusTool.env)
 
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
+\value{
+None
+}
 \description{
 Generate the data preprocessing tab of the \code{\link{RclusToolGUI}}, in which the user can select, transform, filter or create variables.
 }

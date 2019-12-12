@@ -4,8 +4,13 @@
 \alias{formatLabelSample}
 \title{Labels formatting}
 \usage{
-formatLabelSample(label, data.sample, new.labels = TRUE,
-  use.sampling = FALSE, noise.cluster = "Noise")
+formatLabelSample(
+  label,
+  data.sample,
+  new.labels = TRUE,
+  use.sampling = FALSE,
+  noise.cluster = "Noise"
+)
 }
 \arguments{
 \item{label}{vector of labels.}

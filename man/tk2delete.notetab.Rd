@@ -11,6 +11,9 @@ tk2delete.notetab(nb, tab.names = NULL)
 
 \item{tab.names}{: either NULL to delete all the notetabs, or a vector of notetab names.}
 }
+\value{
+None
+}
 \description{
 Delete notetab inside a tk-notebook.
 }

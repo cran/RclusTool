@@ -4,8 +4,12 @@
 \alias{purgeSample}
 \title{Sample purging}
 \usage{
-purgeSample(data.sample, purge.preprocessing = TRUE,
-  purge.clustering = TRUE, user.expert = FALSE)
+purgeSample(
+  data.sample,
+  purge.preprocessing = TRUE,
+  purge.clustering = TRUE,
+  user.expert = FALSE
+)
 }
 \arguments{
 \item{data.sample}{sample object}

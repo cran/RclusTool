@@ -826,6 +826,7 @@ addOperation <- function(parameterList, featureOperations){
 #' @param sampling boolean: if TRUE, data sampling is used.
 #' @param sampling.size.max : maximum size of the sampled dataframe.
 #' @param scaling boolean: if TRUE, scaling is applied.
+#' @return configuration object created from parameters.
 #' @examples
 #'
 #' operations <- makeFeatureSpaceOperations(pca=TRUE)

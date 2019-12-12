@@ -13,6 +13,9 @@ abdPlotTabs(clusterings, nb, RclusTool.env = initParameters())
 
 \item{RclusTool.env}{environment in which all global parameters, raw data and results are stored.}
 }
+\value{
+None
+}
 \description{
 Display the abundances barplot of a clustering.
 }

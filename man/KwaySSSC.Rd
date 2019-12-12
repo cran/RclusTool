@@ -4,8 +4,14 @@
 \alias{KwaySSSC}
 \title{Semi-supervised spectral clustering}
 \usage{
-KwaySSSC(sim, K = 0, list.ML = list(), list.CNL = list(),
-  alphas = seq(from = 0, to = 1, length = 100), K.max = 20)
+KwaySSSC(
+  sim,
+  K = 0,
+  list.ML = list(),
+  list.CNL = list(),
+  alphas = seq(from = 0, to = 1, length = 100),
+  K.max = 20
+)
 }
 \arguments{
 \item{sim}{similarity matrix.}

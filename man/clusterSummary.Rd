@@ -4,10 +4,13 @@
 \alias{clusterSummary}
 \title{Clusters summaries computation}
 \usage{
-clusterSummary(data.sample, label,
+clusterSummary(
+  data.sample,
+  label,
   features.to.keep = colnames(data.sample$features[["preprocessed"]]$x),
-  summary.functions = c(Min = "min", Max = "max", Sum = "sum", Average =
-  "mean", SD = "sd"))
+  summary.functions = c(Min = "min", Max = "max", Sum = "sum", Average = "mean", SD =
+    "sd")
+)
 }
 \arguments{
 \item{data.sample}{list containing features, profiles and clustering results.}

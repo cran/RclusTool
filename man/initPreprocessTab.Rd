@@ -4,8 +4,14 @@
 \alias{initPreprocessTab}
 \title{build Preprocess tab}
 \usage{
-initPreprocessTab(mainWindow, console, graphicFrame, RclusTool.env,
-  reset = F, readConfig = F)
+initPreprocessTab(
+  mainWindow,
+  console,
+  graphicFrame,
+  RclusTool.env,
+  reset = F,
+  readConfig = F
+)
 }
 \arguments{
 \item{mainWindow}{window in which the 'preprocessTab' is created.}
@@ -19,6 +25,9 @@ initPreprocessTab(mainWindow, console, graphicFrame, RclusTool.env,
 \item{reset}{boolean to reset the whole interface}
 
 \item{readConfig}{boolean to reset the whole interface according the config parameters of the data.sample}
+}
+\value{
+None
 }
 \description{
 Generate the data preprocessing tab of the \code{\link{RclusToolGUI}}, in which the user can select, transform, filter or create variables.
