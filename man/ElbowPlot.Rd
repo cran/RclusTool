@@ -4,7 +4,7 @@
 \alias{ElbowPlot}
 \title{Elbow Plot.}
 \usage{
-ElbowPlot(nb, method.space.name, RclusTool.env)
+ElbowPlot(nb, method.space.name, RclusTool.env, hscale = 1.2, charsize = 11)
 }
 \arguments{
 \item{nb}{tk-notebook in which the Elbow plot will be made.}
@@ -12,6 +12,10 @@ ElbowPlot(nb, method.space.name, RclusTool.env)
 \item{method.space.name}{complete name of space.}
 
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
+
+\item{hscale}{numeric value corresponding to the horizontal scale of graphic}
+
+\item{charsize}{character size}
 }
 \value{
 None

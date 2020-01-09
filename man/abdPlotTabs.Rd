@@ -4,7 +4,7 @@
 \alias{abdPlotTabs}
 \title{Abundances barplots inside Tk tabs.}
 \usage{
-abdPlotTabs(clusterings, nb, RclusTool.env = initParameters())
+abdPlotTabs(clusterings, nb, RclusTool.env = initParameters(), hscale = 1.2)
 }
 \arguments{
 \item{clusterings}{clustering list.}
@@ -12,6 +12,8 @@ abdPlotTabs(clusterings, nb, RclusTool.env = initParameters())
 \item{nb}{a notebook.}
 
 \item{RclusTool.env}{environment in which all global parameters, raw data and results are stored.}
+
+\item{hscale}{numeric value corresponding to the horizontal scale of graphic.}
 }
 \value{
 None

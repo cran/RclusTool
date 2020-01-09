@@ -4,7 +4,7 @@
 \alias{tk2draw.notetab}
 \title{Draw in a Notetab.}
 \usage{
-tk2draw.notetab(nb, tab.name, fun)
+tk2draw.notetab(nb, tab.name, fun, hscale = 1.2)
 }
 \arguments{
 \item{nb}{a notebook.}
@@ -12,6 +12,8 @@ tk2draw.notetab(nb, tab.name, fun)
 \item{tab.name}{string : name of the tk2notetab variable.}
 
 \item{fun}{: a function.}
+
+\item{hscale}{numeric value corresponding to the horizontal scale of graphic}
 }
 \value{
 None

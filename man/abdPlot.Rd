@@ -7,6 +7,7 @@
 abdPlot(
   label,
   title,
+  charsize = 11,
   point.param = c("grey", "black", "red", "blue", "green", "cyan", "yellow", "orange",
     "rosybrown", "palevioletred", "darkblue", "deeppink", "blueviolet", "darkgoldenrod1",
     "chartreuse", "darkorchid1", "deeppink", "coral", "darkolivegreen1", "#66C2A5",
@@ -22,6 +23,8 @@ abdPlot(
 \item{label}{factor describing the clustering.}
 
 \item{title}{naming the graph.}
+
+\item{charsize}{character size}
 
 \item{point.param}{specifying the colors and the symbols to use for clusters display.}
 }

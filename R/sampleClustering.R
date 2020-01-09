@@ -679,6 +679,7 @@ extractProtos <- function(data.sample, method, K.max=20, kmeans.variance.min=0.9
 #' @export 
 #' 
 readTrainSet <- function(traindir, keep_ = FALSE, operations=NULL, RclusTool.env=initParameters()) {
+    Id <- NULL
     ## 'traindir' must be the base directory of the prototypes classification
 
     ## Make sure we have .csv files in this traindir (otherwise it is, perhaps not a training set root dir!)
@@ -739,8 +740,10 @@ readTrainSet <- function(traindir, keep_ = FALSE, operations=NULL, RclusTool.env
     prototypes$Class <- proto.class
 
     # Check if some images moved
+    if (!is.null(Id)){
     for (l in 1:length(Id))
         prototypes$Class[which(prototypes$Id == Id[l])] <- Class[l]
+    }
     rownames(prototypes) <- 1:nrow(prototypes)
     # Remove variables with NA
     if(any(is.na(prototypes$Class)))

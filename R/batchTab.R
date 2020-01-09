@@ -34,8 +34,8 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 	#Reset working directory on exit 
     batch.env <- RclusTool.env$gui$tabs.env$batch
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = 11)
-
+    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
+	
     batch.env$tcl.supMethod.select <- tclVar("RF")
     batch.env$tcl.unsupMethod.select <- tclVar("K-means")
     batch.env$tcl.sampling.check <- tclVar("0")
@@ -75,16 +75,18 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     win1.nb <- RclusTool.env$gui$win1$env$nb
 
     ## Supervised classification
-    SupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = "SUPERVISED", font = fontFrame, pady=20, padx=120, relief = "groove")
+    SupFrametext <- StringToTitle("SUPERVISED", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    SupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = SupFrametext, font = fontFrame, pady=20, relief = "flat")
     ## Unsupervised classification
-    UnsupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = "UNSUPERVISED", font = fontFrame, pady=20, padx=198, relief = "groove")
+    UnsupFrametext <- StringToTitle("UNSUPERVISED", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    UnsupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = UnsupFrametext, font = fontFrame, pady=20, relief = "flat")
 
-    SupFrameExpert <- tkwidget(SupFrame, "labelframe", font = fontFrame)
-    SupFrameStandard <- tkwidget(SupFrame, "labelframe", font = fontFrame)
+    SupFrameExpert <- tkwidget(SupFrame, "labelframe", font = fontFrame, relief = "flat")
+    SupFrameStandard <- tkwidget(SupFrame, "labelframe", font = fontFrame, relief = "flat")
 
-    UnsupFrameExpert1 <- tkwidget(UnsupFrame, "labelframe", font = fontFrame)
-    UnsupFrameExpert2 <- tkwidget(UnsupFrame, "labelframe", font = fontFrame)
-    UnsupFrameStandard <- tkwidget(UnsupFrame, "labelframe", font = fontFrame)
+    UnsupFrameExpert1 <- tkwidget(UnsupFrame, "labelframe", font = fontFrame, relief = "flat")
+    UnsupFrameExpert2 <- tkwidget(UnsupFrame, "labelframe", font = fontFrame, relief = "flat")
+    UnsupFrameStandard <- tkwidget(UnsupFrame, "labelframe", font = fontFrame, relief = "flat")
 
     # method selection buttons supervised
     rb_sup.methods <- sapply(names(sup.method.title), function(name) {
@@ -329,7 +331,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     tk.folder.but <- tk2button(SupFrame,text="Training set", image = "folder", compound = "left", width = 20, command=OnLoadDir)
 
-    TrainingSetName <- tktext(SupFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    TrainingSetName <- tktext(SupFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     batch.env$refreshTrainingSetName <- function()
     {
@@ -341,7 +343,8 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     ## Build the 'Required files' frame
     tkgrid(tklabel(win1.nb$env$batch, text="      "), row = 1, column = 1)
-    RequiredDirFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = "REQUIRED INPUT DATA FOLDER", pady= 10, font = fontFrame, relief = "groove")
+    RequiredDirFrametext <- StringToTitle("REQUIRED INPUT DATA FOLDER", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    RequiredDirFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = RequiredDirFrametext, pady= 10, font = fontFrame, relief = "flat")
     tkgrid(RequiredDirFrame, columnspan = 3, row = 2, sticky = "w")
 
     # Select separator and decimal separator for csv (for features file)
@@ -358,16 +361,11 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     # Positioning
     tkgrid(UnsupFrame, row = 4, sticky = "w")
     tkgrid(SupFrame, row = 5, sticky = "w")
-    tkgrid(tk.folder.but, row = 2, column = 0, padx = 20)
+    tkgrid(tk.folder.but, row = 2, column = 0, padx = RclusTool.env$param$visu$sizecm)
     tkgrid(TrainingSetName, row = 2, column = 1)
     tkgrid(tk2label(SupFrame, text=""), row = 3, column = 1)
     
-    ## Build the 'Classification' frame
-    tkgrid(tklabel(win1.nb$env$batch, text="      "), row = 4, column = 1)
-    ClassFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = "BATCH CLASSIFICATION/CLUSTERING", font = fontFrame, relief = "groove")
-    tkgrid(ClassFrame, columnspan = 3, row = 5, sticky = "w")
-
-    DirFrameName <- tktext(RequiredDirFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    DirFrameName <- tktext(RequiredDirFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     batch.env$refreshDirFrameName <- function()
     {
@@ -378,7 +376,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     }
 
     ## Select the directory containing files (.csv)
-    dirButton <- tk2button(RequiredDirFrame, text = "DATASETS DIR", image = "folder", compound = "left", width = 28, command = function() {
+    dirButton <- tk2button(RequiredDirFrame, text = "DATASETS DIR", image = "folder", compound = "left", width = 20, command = function() {
                                dirFiles <- tk_choose.dir(default = batch.env$dirFilesDefault, caption = "Select folder for batch process.")
                                if (is.na(dirFiles)||!nchar(dirFiles))
                                {
@@ -405,7 +403,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                }
                                    })
 
-    PreprocessingName <- tktext(RequiredDirFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    PreprocessingName <- tktext(RequiredDirFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     batch.env$refreshPreprocessingName <- function()
     {
@@ -415,14 +413,15 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         tkconfigure(PreprocessingName, state="disabled") 
     }
 
-    butImport <- tk2button(RequiredDirFrame, text = "Import preprocessing", image = "csvFile", compound = "left", width = 30, command = onImport)
+    butImport <- tk2button(RequiredDirFrame, text = "Import preprocessing", image = "csvFile", compound = "left", width = 20, command = onImport)
 
  	## Build the 'Working Directory' frame
-    WdFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = "WORKING DIRECTORY", font = fontFrame, padx = 30, pady = 10, relief = "flat")
+ 	WdFrametext <- StringToTitle("WORKING DIRECTORY", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    WdFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = WdFrametext, font = fontFrame, pady = 10, relief = "flat")
     tkgrid(WdFrame, columnspan = 3, row = 3, sticky = "w")
      
     # Select the working directory
-    WDir <- tktext(WdFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    WDir <- tktext(WdFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     batch.env$refreshWDirectoryName <- function()
     {
@@ -442,10 +441,12 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                      batch.env$WDirDefault <- batch.env$WDir
                                  }
                             })
-                                                  
-    tkgrid(dirButton, row = 1, column = 0, padx = 20)
+    tkconfigure(opt1,font = fontFrame)
+    tkconfigure(opt2,font = fontFrame)
+    tkconfigure(opt3,font = fontFrame)                                                  
+    tkgrid(dirButton, row = 1, column = 0, padx = RclusTool.env$param$visu$sizecm)
     tkgrid(DirFrameName, row = 1, column= 1)
-    tkgrid(WDirButton, row = 2, column = 1, padx = 45, sticky = "w")
+    tkgrid(WDirButton, row = 2, column = 1, padx = RclusTool.env$param$visu$sizecm, sticky = "w")
     tkgrid(WDir, row = 2, column = 2)
     tkgrid(opt1, row = 1, column = 3, sticky = "e")
     tkgrid(combo.Sep, row = 1, column = 4, sticky = "w")
@@ -453,7 +454,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkgrid(combo.Dec, row = 1, column = 6, sticky = "w")
     tkgrid(opt3, row = 1, column = 7, sticky = "e")
     tkgrid(combo.Mis, row = 1, column = 8, sticky = "w")
-    tkgrid(butImport, row = 2, column = 0, padx = 20)
+    tkgrid(butImport, row = 2, column = 0, padx = RclusTool.env$param$visu$sizecm)
     tkgrid(PreprocessingName, row = 2, column = 1)
     
     ## Unsupervised classification
@@ -471,10 +472,10 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     # Standard method layout
     tkgrid(tk2label(UnsupFrameStandard, text= "Standard parameters:\n     - PCA\n     - K estimation: method Elbow\n     - K-means"), column = 0)
 
-    spaceFrame <- tkwidget(UnsupFrameExpert2, "labelframe", text = "FEATURE SPACE SELECTION", font = fontFrame, relief = "groove")
+    spaceFrame <- tkwidget(UnsupFrameExpert2, "labelframe", text = "FEATURE SPACE SELECTION", font = fontFrame, relief = "flat")
 
     spaceList <- tk2listbox(spaceFrame, selectmode = "single", activestyle = "dotbox",
-                            height = 3, width = 27, autoscroll = "none", background = "white")
+                            height = 3, width = 0, autoscroll = "none", background = "white")
 
     spaces <- c("Initial Features", "Principal Components Analysis", "Spectral Embedding")
     
@@ -485,7 +486,6 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     
     ## Supervised classification
     # expert method frame layout
-    tkgrid(tk2label(SupFrameExpert, text="Scaling particles set"), row=1, column=0, sticky="w")
     sapply(1:length(rb_sup.methods), function(i) tkgrid(rb_sup.methods[[i]], row=i+1, column=0, columnspan=2, sticky="w"))
   
     # Standard method layout
@@ -498,12 +498,12 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         tkgrid(spaceFrame, row = 11, column = 0)                                          
         tkgrid(spaceList, row = 11, column = 0)           
         # secondary frames
-        tkgrid(UnsupFrameExpert1, row = 1, column=1, padx=30, sticky = "w")
-        tkgrid(UnsupFrameExpert2, row = 1, column=2, sticky = "w")
-        tkgrid(SupFrameExpert, row = 3, column=1, sticky = "w")
+        tkgrid(UnsupFrameExpert1, row = 1, column=0, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
+        tkgrid(UnsupFrameExpert2, row = 1, column=1, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
+        tkgrid(SupFrameExpert, row = 3, column=0, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
     } else {
-        tkgrid(UnsupFrameStandard, row = 1, sticky = "w")
-        tkgrid(SupFrameStandard, row = 3, column=1, sticky = "w")
+        tkgrid(UnsupFrameStandard, row = 1, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
+        tkgrid(SupFrameStandard, row = 3, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
     }
     tkgrid(tk.supCompute.but, column = 0)
     tkgrid(tk.unsupCompute.but, column = 0)
@@ -514,7 +514,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                      graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
     }
     butReset <- tk2button(win1.nb$env$batch, text = "Reset", image = "reset", compound = "left", width = -6, command = onReset)
-    tkgrid(butReset, row = 8, column = 2)
+    tkgrid(butReset, row = 8, column = 0)
 }
 
 #' function to initialize (and to create) the 'batchTab'

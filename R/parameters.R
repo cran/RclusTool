@@ -49,6 +49,8 @@ initParameters <- function(RclusTool.env=new.env()) {
         RclusTool.env$gui$operating.system <- "windows"
     if (length(grep("w32", version$platform)))
         RclusTool.env$gui$operating.system <- "windows"
+    if (length(grep("apple", version$platform)))
+        RclusTool.env$gui$operating.system <- "apple"
     RclusTool.env$param$visu$scale.graphics <- 1 #figures scale
     # Default username and usertype
     RclusTool.env$gui$user.name <- "username"
@@ -82,6 +84,11 @@ initParameters <- function(RclusTool.env=new.env()) {
     # Parameter pch and size and colors
     pch <- 20 
     RclusTool.env$param$visu$cex <- 0.5
+    RclusTool.env$param$visu$size <- 11
+    RclusTool.env$param$visu$sizecm <- 32
+    RclusTool.env$param$visu$style$size <- 11
+    RclusTool.env$param$visu$hscale <- 1.2
+    RclusTool.env$param$visu$console <- 70
     RclusTool.env$param$visu$palette.colors <- c("grey","black","red","blue","green","cyan", "yellow","orange",
                                      "rosybrown","palevioletred","darkblue","deeppink","blueviolet", 'darkgoldenrod1', 'chartreuse',
                                      "darkorchid1", "deeppink", "coral", "darkolivegreen1","#66C2A5","#9DAE8C","#D49A73","#F08F6D",
@@ -96,6 +103,6 @@ initParameters <- function(RclusTool.env=new.env()) {
 
     # Tabs environments
     RclusTool.env$gui$tabs.env <- list()
-
+	
     RclusTool.env
 }

@@ -31,8 +31,8 @@
 buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 	sup.env <- RclusTool.env$gui$tabs.env$sup
 	
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = 11)
-    
+    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
+
 	sup.env$tcl.export.clustering <-tclVar("1")
     sup.env$tcl.classif.imgsig <- tclVar("0")
     sup.env$tcl.export.calcul <- tclVar("0")
@@ -52,19 +52,20 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                             "K-NN"="Method: non-parametric\nTechnique: item is classified by a majority vote\n\tof its neighbors, with the object being assigned\n\tto the class most common among its k nearest\n\tneighbors mean (randomly initialized)\nResults: partition of N items into K clusters\nAdvantage: among the simplest of supervised methods",
                             "MLP"="Method:  feedforward artificial neural network\nTechnique: at least 3 layers of nodes for which each\n\tnode is a neuron that uses a nonlinear\n\tactivation function\nResults: partition of N items into K clusters\nAdvantage: processing of non-linearly separable data\n",
                             "SVM"="Method: Construction of a multitude of decision trees\nTechnique: majority vote on predictions from all\n\tclassification trees\nResults: partition of N items into K clusters\nAdvantage: reduction in overfitting\n\n")
-
-    MethodFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = "CLASSIFICATION", font = fontFrame, padx = 100, pady = 8, relief = "groove")
-    AdviceFrame <- tkwidget(MethodFrame, "labelframe", text = "method name", padx = 60, pady = 8, relief = "groove")
-    tkgrid(AdviceFrame, columnspan = 3, rowspan = 5, column = 10, row = 2, padx = 20)
+	
+	MethodFrametext <- StringToTitle("CLASSIFICATION", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    MethodFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = MethodFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
+    AdviceFrame <- tkwidget(MethodFrame, "labelframe", text = "method name", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "groove")
+    tkgrid(AdviceFrame, columnspan = 3, rowspan = 5, column = 10, row = 2, padx = RclusTool.env$param$visu$sizecm)
     AdviceFrameText <- tk2label(AdviceFrame, text = "method description", width=50)
     tkgrid(AdviceFrameText, sticky = "w")
-    MethodFrameExpert <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = 80)
-    MethodFrameStandard <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = 80)
+    MethodFrameExpert <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, relief = "flat")
+    MethodFrameStandard <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, relief = "flat")
     
     sup.env$onMethodDescription <- function()
     {
-        tkconfigure(AdviceFrame, text=method.title[tclvalue(sup.env$tcl.method.select)])
-        tkconfigure(AdviceFrameText, text=method.description[tclvalue(sup.env$tcl.method.select)])
+        tkconfigure(AdviceFrame, text=method.title[tclvalue(sup.env$tcl.method.select)], font=fontFrame)
+        tkconfigure(AdviceFrameText, text=method.description[tclvalue(sup.env$tcl.method.select)], font=fontFrame)
     } 
     
     # method selection buttons
@@ -98,7 +99,7 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         summarytt <- tktoplevel()
         tktitle(summarytt) <- "Summaries"
         # Summaries frame
-        summaryFrame <- tkwidget(summarytt, "labelframe", text = "SUMMARIES", padx = 50, pady = 8, relief = "groove")
+        summaryFrame <- tkwidget(summarytt, "labelframe", font = fontFrame, text = "SUMMARIES", padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
 
         summaries <- c("Min", "Max", "Sum", "Average", "SD")
 
@@ -196,7 +197,7 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
         # Plot abundances from different methods
         tk2delete.notetab(win2.nb)
-        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env)
+        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
         #Keep only levels who are in clustering 
         sup.env$label=droplevels(sup.env$label)
         
@@ -204,7 +205,7 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         new.protos <- visualizeSampleClustering(RclusTool.env$data.sample, label=sup.env$label, clustering.name=method.select,
                                                 selection.mode = "prototypes", cluster.summary=sup.env$cluster.summary,
                                                 profile.mode="whole sample", wait.close=TRUE, 
-                                                RclusTool.env=RclusTool.env)   
+                                                RclusTool.env=RclusTool.env, fontsize=RclusTool.env$param$visu$size)   
                                                 
         new.protos$label <- new.protos$label[[method.select]]$label
         sup.env$cluster.summary <- clusterSummary(RclusTool.env$data.sample, new.protos$label, 
@@ -243,15 +244,15 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         RclusTool.env$data.sample <- updateClustersNames(RclusTool.env$data.sample, new.protos$prototypes)
         # Update clusters names in plots (if necessary)
         tk2delete.notetab(win2.nb)
-        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env)
+        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
         # Save prototypes (csv + image files in 'prototypes' directory)
         saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
     }
-
-    ProtoFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = "TRAINING SET", font = fontFrame, padx = 150, pady = 8, relief = "groove")
+    ProtoFrametext <- StringToTitle("TRAINING SET", RclusTool.env$param$visu$sizecm,fontsize=RclusTool.env$param$visu$size)
+    ProtoFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = ProtoFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
     tk.folder.but <- tk2button(ProtoFrame,text="Training set", image = "folder", compound = "left", width = 20, command=OnLoadDir)
     
-    TrainingSetName <- tktext(ProtoFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    TrainingSetName <- tktext(ProtoFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     sup.env$refreshTrainingSetName <- function()
     {
@@ -271,7 +272,8 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkgrid(TrainingSetName, row = 3, column = 1)
     
     # Output frames
-    OutputsFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = "OUTPUTS SELECTION", font = fontFrame, padx = 80, pady = 8, relief = "groove")
+    OutputsFrametext <- StringToTitle("OUTPUTS SELECTION", RclusTool.env$param$visu$sizecm,fontsize=RclusTool.env$param$visu$size)
+    OutputsFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = OutputsFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
     
     tk.export.clustering <- tkcheckbutton(OutputsFrame, text="", variable=sup.env$tcl.export.clustering)
     tk.classif.imgsig <- tkcheckbutton(OutputsFrame, text="", variable=sup.env$tcl.classif.imgsig)
@@ -283,7 +285,7 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     
     # expert method frame layout
     #positioning radiobutton methods
-    sapply(1:length(rb_methods), function(i) tkgrid(rb_methods[[i]], row=i+1, column=0, padx=20, sticky="w"))
+    sapply(1:length(rb_methods), function(i) tkgrid(rb_methods[[i]], row=i+1, column=0, padx=RclusTool.env$param$visu$sizecm, sticky="w"))
     tkgrid(tk2label(MethodFrameExpert, text="     "))
 		
     # layout OutputsFrame

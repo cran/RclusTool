@@ -16,7 +16,8 @@ visualizeSampleClustering(
   compare.mode = "off",
   pairs = NULL,
   features.mode = "initial",
-  wait.close = FALSE
+  wait.close = FALSE,
+  fontsize = 9
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ visualizeSampleClustering(
 \item{features.mode}{character vector specifying the plot mode of features (projection in a specific space). Must be 'initial' (default), 'preprocessed', 'pca', 'pca_full' or 'spectral', or prefixed versions ('sampled', 'scaled') of those space names.}
 
 \item{wait.close}{boolean: if FALSE (default), the following steps of the analysis calculations are computed even if the window is not closed.}
+
+\item{fontsize}{size of font (default is 9)}
 }
 \value{
 prototypes in \code{selection.mode} = "prototypes" mode, pairs in \code{selection.mode} = "pairs" mode.

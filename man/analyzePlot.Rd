@@ -10,7 +10,8 @@ analyzePlot(
   selectedVar,
   type = "boxplot",
   hscale = 1.2,
-  K.max = 20
+  K.max = 20,
+  fontsize = 11
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ analyzePlot(
 \item{hscale}{numeric value corresponding to the horizontal scale of graphic.}
 
 \item{K.max}{maximal number of clusters (K.Max=20 by default).}
+
+\item{fontsize}{size of font (fontsize=11 by default).}
 }
 \value{
 None

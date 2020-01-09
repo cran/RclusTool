@@ -12,7 +12,8 @@ plotProfile(
   title = "Some observation",
   sub = "",
   sub.color = NULL,
-  image.dir = NULL
+  image.dir = NULL,
+  charsize = 11
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plotProfile(
 \item{sub.color}{character vector specifying the color of the subtitle.}
 
 \item{image.dir}{images directory.}
+
+\item{charsize}{character size}
 }
 \value{
 None

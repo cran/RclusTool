@@ -8,6 +8,7 @@ plotDensity2D(
   data,
   parH = NULL,
   clustering.name,
+  charsize = 11,
   col = c("grey", "black", "red", "blue", "green", "cyan", "yellow", "orange",
     "rosybrown", "palevioletred", "darkblue", "deeppink", "blueviolet", "darkgoldenrod1",
     "chartreuse", "darkorchid1", "deeppink", "coral", "darkolivegreen1", "#66C2A5",
@@ -25,6 +26,8 @@ plotDensity2D(
 \item{parH}{character vector specifying the name of the feature to use as x-axis.}
 
 \item{clustering.name}{character vector specifying the name of the clustering.}
+
+\item{charsize}{character size}
 
 \item{col}{vector of colors}
 }

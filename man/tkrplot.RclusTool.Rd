@@ -11,9 +11,9 @@ tkrplot.RclusTool(graphicFrame, fun, hscale = 1, vscale = 1)
 
 \item{fun}{: a function}
 
-\item{hscale}{: int horizontal scale}
+\item{hscale}{numeric value corresponding to the horizontal scale of graphic}
 
-\item{vscale}{: int vertical scale}
+\item{vscale}{: vertical scale}
 }
 \value{
 None

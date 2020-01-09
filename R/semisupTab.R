@@ -30,7 +30,7 @@
 buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     semi.env <- RclusTool.env$gui$tabs.env$semisup
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = 11)
+    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
 
     semi.env$tcl.method.select <- tclVar("Constrained_KM")
     semi.env$tcl.K <- tclVar("0")
@@ -55,19 +55,19 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     method.description <- c("Constrained_KM"="Method: vector quantization\nTechnique: item belongs to cluster with the nearest\n\tmean (randomly initialized)\nResults: partition of N items into K clusters\nDisadvantage: computationally difficult (NP-hard)\n",
                             "Constrained_SC"="Method: spectrum of data similarity matrix\nTechnique: evaluate the relative similarity of each pair\nResults: partition of N items into K clusters\nDisadvantage: slow for large datasets\nAdvantage: processing of non convex data\n")
-
-    MethodFrame <- tkwidget(win1.nb$env$semisup, "labelframe", text = "CLUSTERING", font = fontFrame, padx = 80, pady = 8, relief = "groove")
-    AdviceFrame <- tkwidget(MethodFrame, "labelframe", text = "method name", padx = 60, pady = 8, relief = "groove")
-    tkgrid(AdviceFrame, columnspan = 3, rowspan = 5, column = 2, row = 2, padx = 20)
+	MethodFrametext <- StringToTitle("CLUSTERING", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    MethodFrame <- tkwidget(win1.nb$env$semisup, "labelframe", text = MethodFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
+    AdviceFrame <- tkwidget(MethodFrame, "labelframe", text = "method name", padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "groove")
+    tkgrid(AdviceFrame, columnspan = 3, rowspan = 5, column = 2, row = 2, padx = RclusTool.env$param$visu$sizecm)
     AdviceFrameText <- tk2label(AdviceFrame, text = "method description", width=50)
     tkgrid(AdviceFrameText, sticky = "w")
-    MethodFrameExpert <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = 80)
-    MethodFrameStandard <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = 80)
+    MethodFrameExpert <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, relief = "flat")
+    MethodFrameStandard <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, relief = "flat")
 
     semi.env$onMethodDescription <- function()
     {
-        tkconfigure(AdviceFrame, text=method.title[tclvalue(semi.env$tcl.method.select)])
-        tkconfigure(AdviceFrameText, text=method.description[tclvalue(semi.env$tcl.method.select)])
+        tkconfigure(AdviceFrame, text=method.title[tclvalue(semi.env$tcl.method.select)], font=fontFrame)
+        tkconfigure(AdviceFrameText, text=method.description[tclvalue(semi.env$tcl.method.select)], font=fontFrame)
     } 
                             
     # method selection buttons
@@ -79,7 +79,8 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     
     # Space selection frame for expert mode
     # First listbox with all spaces
-    SpaceFrame <- tkwidget(win1.nb$env$semisup, "labelframe", text = "FEATURE SPACE SELECTION", font = fontFrame, padx = 80, pady = 8, relief = "groove")
+    SpaceFrametext <- StringToTitle("FEATURE SPACE SELECTION", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    SpaceFrame <- tkwidget(win1.nb$env$semisup, "labelframe", text = SpaceFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
     semi.env$spaceList <- tk2listbox(SpaceFrame, selectmode = "single", activestyle = "dotbox",
                             height = 5, width = 45, autoscroll = "none", background = "white")
 
@@ -146,7 +147,7 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         summarytt <- tktoplevel()
         tktitle(summarytt) <- "Summaries"
         # Summaries frame
-        summaryFrame <- tkwidget(summarytt, "labelframe", text = "SUMMARIES", padx = 50, pady = 8, relief = "groove")
+        summaryFrame <- tkwidget(summarytt, "labelframe", text = "SUMMARIES", padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
 
         summaries <- c("Min", "Max", "Sum", "Average", "SD")
 
@@ -268,7 +269,7 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         semi.env$pairs.abs <- visualizeSampleClustering(RclusTool.env$data.sample, label=semi.env$label, 
                                                         clustering.name= method.space.name, profile.mode=profile.mode,
                                                         selection.mode = "pairs", pairs=semi.env$pairs.abs, wait.close=TRUE,
-                                                        RclusTool.env=RclusTool.env, features.mode=features.mode)
+                                                        RclusTool.env=RclusTool.env, features.mode=features.mode, fontsize=RclusTool.env$param$visu$size)
 
         RclusTool.env$data.sample$clustering[[method.space.name]] <- computeSemiSupervised(data.sample=RclusTool.env$data.sample, ML=semi.env$pairs.abs$ML, CNL=semi.env$pairs.abs$CNL,
                                                                                            K=K, method.name=method.select, use.sampling=use.sampling, sampling.size.max=sampling.size.max, 
@@ -306,15 +307,15 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
         # Plot abundances from different methods
         tk2delete.notetab(win2.nb)
-        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env)
+        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
         # Elbow Plot
         if (K==0 && !grepl("Constrained_SC_",method.space.name)){
-        	ElbowPlot(win2.nb, method.space.name, RclusTool.env) 
+        	ElbowPlot(win2.nb, method.space.name, RclusTool.env, hscale = RclusTool.env$param$visu$hscale, charsize=RclusTool.env$param$visu$size) 
         }
         new.protos <- visualizeSampleClustering(RclusTool.env$data.sample, label=semi.env$label, clustering.name=method.space.name,
                                                 selection.mode = "prototypes", cluster.summary=cluster.summary, 
                                                 profile.mode="whole sample", wait.close=TRUE, features.mode=features.mode,
-                                                RclusTool.env=RclusTool.env)
+                                                RclusTool.env=RclusTool.env, fontsize=RclusTool.env$param$visu$size)
                                                 
         new.protos$label <- new.protos$label[[method.space.name]]$label 
         
@@ -332,11 +333,11 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         RclusTool.env$data.sample <- updateClustersNames(RclusTool.env$data.sample, new.protos$prototypes)
         # Update clusters names in plots (if necessary)
         tk2delete.notetab(win2.nb)
-        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env)
+        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
 
         # Elbow Plot
         if (K==0 && !grepl("Constrained_SC_",method.space.name)){
-        	ElbowPlot(win2.nb, method.space.name, RclusTool.env) 
+        	ElbowPlot(win2.nb, method.space.name, RclusTool.env, hscale = RclusTool.env$param$visu$hscale, charsize=RclusTool.env$param$visu$size) 
         }
         
                 # Save clustering and summary (csv files)
@@ -367,9 +368,11 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     }
 
     tk.K <- tkentry(MethodFrameExpert, textvariable=semi.env$tcl.K, width=2, background = "white")
+    tkconfigure(tk.K,font = fontFrame)
 
     # Output frames
-    OutputsFrame <- tkwidget(win1.nb$env$semisup, "labelframe", text = "OUTPUTS SELECTION", font = fontFrame, padx = 80, pady = 8, relief = "groove")
+    OutputsFrametext <- StringToTitle("OUTPUTS SELECTION", RclusTool.env$param$visu$sizecm,fontsize=RclusTool.env$param$visu$size)
+    OutputsFrame <- tkwidget(win1.nb$env$semisup, "labelframe", text = OutputsFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
 
     tk.export.clustering <- tkcheckbutton(OutputsFrame, text="", variable=semi.env$tcl.export.clustering)
     tk.classif.imgsig <- tkcheckbutton(OutputsFrame, text="", variable=semi.env$tcl.classif.imgsig)
@@ -382,7 +385,7 @@ buildSemisupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     # expert method frame layout
     #positioning radiobutton methods
-    sapply(1:length(rb_methods), function(i) tkgrid(rb_methods[[i]], row=i-1, column=0, columnspan=2, padx=20, sticky="w"))
+    sapply(1:length(rb_methods), function(i) tkgrid(rb_methods[[i]], row=i-1, column=0, columnspan=2, padx=RclusTool.env$param$visu$sizecm, sticky="w"))
     tkgrid(tk2label(MethodFrameExpert, text="     "))
 
     #positioning number of clusters wanted

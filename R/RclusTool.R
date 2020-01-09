@@ -40,7 +40,8 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
 
     if (!is.null(RclusTool.env$gui$operating.system)&&(RclusTool.env$gui$operating.system=="windows")) {
         RclusTool.env$param$visu$scale.graphics <- 1.4
-        #memory.limit(size=4000)
+    } else if (!is.null(RclusTool.env$gui$operating.system)&&(RclusTool.env$gui$operating.system=="apple")) {
+        RclusTool.env$param$visu$scale.graphics <- 0.8
     }
 
     # User selection window
@@ -59,13 +60,37 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
     Sys.sleep(0.1)
     tkgrid(tklabel(userBlock, text = "RclusTool-GUI", font = fontTitle), columnspan = 2, pady = c(5,5))
     Sys.sleep(0.1)
-
     name <- tclVar("username")
     Sys.sleep(0.1)
     entName <- tk2entry(userBlock, width = "25", textvariable = name)
     Sys.sleep(0.1)
     tkgrid(entName, pady = c(10,10))
     Sys.sleep(0.1)
+
+	dimensions<-as.character(tkwm.maxsize(userWindow))
+	RclusTool.env$param$visu$screenlength <- as.integer(dimensions[1])
+	RclusTool.env$param$visu$screenheight <- as.integer(dimensions[2])
+	RclusTool.env$param$visu$style <- tk2font.get("TkDefaultFont")
+	
+	if (RclusTool.env$param$visu$screenlength<1400){
+	    RclusTool.env$param$visu$size=7
+		RclusTool.env$param$visu$sizecm=32
+		RclusTool.env$param$visu$style$size=7
+		RclusTool.env$param$visu$hscale=0.7
+		RclusTool.env$param$visu$console=45
+	} else if (RclusTool.env$param$visu$screenlength<1900){
+	    RclusTool.env$param$visu$size=9
+	    RclusTool.env$param$visu$sizecm=32
+	    RclusTool.env$param$visu$style$size=9
+	    RclusTool.env$param$visu$hscale=0.9
+	    RclusTool.env$param$visu$console=55
+	} else {
+		RclusTool.env$param$visu$size=11
+		RclusTool.env$param$visu$sizecm=32
+		RclusTool.env$param$visu$style$size=11
+		RclusTool.env$param$visu$hscale=1.2
+		RclusTool.env$param$visu$console=70
+	}
 
     standardGUIgo <- function()
     {
@@ -101,6 +126,65 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
 })
     tkgrid(expertButton, pady = c(0,10))
 
+	
+
+
+
+	ScreenFrame <- tkwidget(userBlock,"labelframe", text = "Screen Resolution")
+	tkgrid(ScreenFrame)
+
+    # Button for Small screen
+    SSButton <- tkbutton(ScreenFrame, text = "S", width = 2, command = function() {
+                                 RclusTool.env$param$visu$size=7
+                                 RclusTool.env$param$visu$sizecm=32
+                                 RclusTool.env$param$visu$style$size=7
+                                 RclusTool.env$param$visu$hscale=0.7
+                                 RclusTool.env$param$visu$console=65
+                                 tkconfigure(SSButton, borderwidth= 2, state="disabled")
+                                 tkconfigure(MSButton, borderwidth= 2, state="normal")
+                                 tkconfigure(LSButton, borderwidth= 2, state="normal")
+})
+
+	tkgrid(SSButton, row=5, column=0)
+
+    # Button for Medium screen
+    MSButton <- tkbutton(ScreenFrame, text = "M", width = 2, command = function() {
+                                 RclusTool.env$param$visu$size=9
+                                 RclusTool.env$param$visu$sizecm=32
+                                 RclusTool.env$param$visu$style$size=9
+                                 RclusTool.env$param$visu$hscale=0.9
+                                 RclusTool.env$param$visu$console=60
+                                 tkconfigure(SSButton, borderwidth= 2, state="normal")
+                                 tkconfigure(MSButton, borderwidth= 2, state="disabled")
+                                 tkconfigure(LSButton, borderwidth= 2, state="normal")
+})
+
+	tkgrid(MSButton, row=5, column=1)
+	
+    # Button for Large screen
+    LSButton <- tkbutton(ScreenFrame, text = "L", width = 2, command = function() {
+                                 RclusTool.env$param$visu$size=11
+                                 RclusTool.env$param$visu$sizecm=32
+                                 RclusTool.env$param$visu$style$size=11
+                                 RclusTool.env$param$visu$hscale=1.2
+                                 RclusTool.env$param$visu$console=70
+                                 tkconfigure(SSButton, borderwidth= 2, state="normal")
+                                 tkconfigure(MSButton, borderwidth= 2, state="normal")
+                                 tkconfigure(LSButton, borderwidth= 2, state="disabled")
+})
+
+	tkgrid(LSButton, row=5, column=2)
+	
+	
+	if (RclusTool.env$param$visu$size==7){
+		tkconfigure(SSButton, borderwidth= 2, state = "disabled")
+	} else if (RclusTool.env$param$visu$size==9){
+		tkconfigure(MSButton, borderwidth= 2, state = "disabled")
+	} else if (RclusTool.env$param$visu$size==11){
+		tkconfigure(LSButton, borderwidth= 2, state = "disabled")
+	}
+	
+	
     ############### test only #############
     if (RclusTool.env$gui$debug.mode == T)
         expertGUIgo()
@@ -123,8 +207,8 @@ MainWindow <- function(RclusTool.env) {
 
     # Main window building
     mainWindow <- tktoplevel()
-    tktitle(mainWindow) <- "R-GUI classification"  
-
+    tktitle(mainWindow) <- "R-GUI classification" 
+    tk2font.set("TkDefaultFont",RclusTool.env$param$visu$style)	 
     # messageBox for confirmation of interface closing
     tkwm.protocol(mainWindow, "WM_DELETE_WINDOW", function() {
                       response <- tkmessageBox(title = "Confirm close", icon = "question", 
@@ -150,10 +234,11 @@ MainWindow <- function(RclusTool.env) {
     tkgrid(msgFrame, column = 2, row = 1)
     tkgrid(titleMsgFrameFrame, sticky = "w")
     tkgrid(tklabel(titleMsgFrameFrame, text = "Messages :"))
-
+	fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
+	
     scrx <- tk2scrollbar(msgFrame, orientation = "horizontal", command = function(...) tkxview(console, ...))
     scry <- tk2scrollbar(msgFrame, orientation = "vertical", command = function(...) tkyview(console, ...))
-    console <- tk2text(msgFrame, width = 70, height = 12, wrap = "none", 
+    console <- tk2text(msgFrame, width = RclusTool.env$param$visu$console , height = 12, font = fontFrame, wrap = "none", 
                        xscrollcommand = function(...) tkset(scrx, ...), 
                        yscrollcommand = function(...) tkset(scry, ...))
     tkgrid(console, scry, sticky = "nsew", pady = c(0,0))
@@ -169,7 +254,7 @@ MainWindow <- function(RclusTool.env) {
     # Graphic Frame
     graphicFrame <- tkwidget(mainWindow, "labelframe", borderwidth = 0)
     tkgrid(graphicFrame, column = 2, row = 2, rowspan = 2, sticky = "w")
-    plotIni <- tkrplot(graphicFrame, hscale = 1.2, function() {
+    plotIni <- tkrplot(graphicFrame, hscale = RclusTool.env$param$visu$hscale , function() {
     			           opar <- graphics::par(no.readonly=TRUE)
 			   	   		   on.exit(graphics::par(opar))
                            graphics::par(bg = "#D9D9D9")
@@ -218,7 +303,7 @@ MainWindow <- function(RclusTool.env) {
     tkbind(nb1$env$unsup, "<Enter>", classif_authorization)
     tkbind(nb1$env$semisup, "<Enter>", classif_authorization)
     tkbind(nb1$env$sup, "<Enter>", classif_authorization)
-    	
+
     initImportTab(mainWindow = mainWindow, console = console, 
              	  graphicFrame = graphicFrame, RclusTool.env = RclusTool.env)
     initBatchTab(mainWindow = mainWindow, console = console, 
@@ -243,6 +328,7 @@ MainWindow <- function(RclusTool.env) {
     tcl("image", "create", "photo", "data", file = system.file("images", "data.gif", package="RclusTool"))
     tcl("image", "create", "photo", "check", file = system.file("images", "check.png", package="RclusTool"))
     tcl("image", "create", "photo", "reset", file = system.file("images", "reset.png", package="RclusTool"))
+    tcl("image", "create", "photo", "visualize", file = system.file("images", "visualize.png", package="RclusTool"))
 
     # Images for logo frame
     tcl("image", "create", "photo", "ulcoLogo", file = system.file("images", "ulcoLogo.gif", package="RclusTool"))

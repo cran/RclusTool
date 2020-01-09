@@ -27,6 +27,7 @@
 #' @param sub character vector specifying the subtitle of the plot.
 #' @param sub.color character vector specifying the color of the subtitle.
 #' @param image.dir images directory. 
+#' @param charsize character size
 #' @return None
 #' @importFrom graphics layout plot rasterImage matplot legend
 #' @importFrom jpeg readJPEG
@@ -55,10 +56,13 @@
 #' @keywords internal 
 #' 
 
-plotProfile <- function(profiles, profiles.colors=NULL, image=NULL, curve.names=NULL, title="Some observation", sub="", sub.color=NULL, image.dir=NULL){
+plotProfile <- function(profiles, profiles.colors=NULL, image=NULL, curve.names=NULL, title="Some observation", sub="", sub.color=NULL, image.dir=NULL, charsize=11){
  
   p <- ggplot() + ggplot2::ggtitle(paste(title,sub)) 
   p <- p + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) 
+  p <- p + ggplot2::theme(axis.text.x = element_text(size = charsize))
+  p <- p + ggplot2::theme(axis.text.y = element_text(size = charsize))
+  p <- p + ggplot2::theme(plot.title = element_text(size = charsize))
    
   nc <- ncol(profiles)
   if (!is.null(nc)) {
@@ -253,20 +257,25 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
 
     #construction des donnees
     x <- data[, c(parH, parV), drop=F]
-	graphics::par(mar=c(4.1, 4.1, 4.1, 10.1), xpd=TRUE)
+    if (cex==0.8){
+	graphics::par(mar=c(3.9, 3.9, 1.5, 10.5), xpd=TRUE)
+	} else if (cex==0.7) {
+	graphics::par(mar=c(3.9, 3.9, 1.5, 8.1), xpd=TRUE)
+	} else if (cex==0.6) {
+	graphics::par(mar=c(3.9, 3.9, 1.5, 7.1), xpd=TRUE)
+	}
     #plot
     graphics::plot(x, type="p", col=point.param$col[unclass(label)], pch=point.param$pch[unclass(label)],
-         cex=cex, log=logscale, ann=FALSE) #pch=1, cex=.8, yaxt = "n",xaxt = "n");
+         cex=cex, cex.lab=cex, cex.sub=cex, cex.axis=cex, log=logscale, ann=FALSE) #pch=1, cex=.8, yaxt = "n",xaxt = "n");
 
     graphics::abline( h = 0, lty = 3, col = grDevices::colors()[ 440 ] )
     graphics::abline( v = 0, lty = 3, col = grDevices::colors()[ 440 ] )
 
     #titles+legendes
-    graphics::title(figure.title, xlab=parH, ylab=parV)
+    graphics::title(figure.title, xlab=parH, ylab=parV, cex.main=cex)
     coord <- graphics::par("usr")
     graphics::legend("topright", legend=vlabel, col=point.param$col[1:length(vlabel)],
            pch=point.param$pch[1:length(vlabel)], cex=cex, pt.cex=cex, inset=c(-0.25,0), box.lty=0)
-
     if (!is.null(env.plot))
     {
         env.plot$parPlotSampleFeatures <- par(no.readonly=T)
@@ -279,6 +288,7 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
 #' @param data density data.frame with x,y and Cluster indication.
 #' @param parH character vector specifying the name of the feature to use as x-axis.
 #' @param clustering.name character vector specifying the name of the clustering.
+#' @param charsize character size
 #' @param col vector of colors
 #' @return None
 #' @import ggplot2
@@ -303,7 +313,7 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
 #' @keywords internal
 #' 
 
-plotDensity2D <- function(data, parH=NULL, clustering.name,
+plotDensity2D <- function(data, parH=NULL, clustering.name, charsize = 11,
                                   col=c("grey","black","red","blue","green","cyan", "yellow","orange",
                                      "rosybrown","palevioletred","darkblue","deeppink","blueviolet", 'darkgoldenrod1', 'chartreuse',
                                      "darkorchid1", "deeppink", "coral", "darkolivegreen1","#66C2A5","#9DAE8C","#D49A73","#F08F6D",
@@ -318,6 +328,9 @@ plotDensity2D <- function(data, parH=NULL, clustering.name,
 			p <- p + ggplot2::xlab(parH) + ggplot2::ylab("Density")
 			p <- p + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) 
 			p <- p + ggplot2::ggtitle(paste('Variables density plot by', clustering.name, sep=" "))
+			p <- p + ggplot2::theme(axis.text.x = element_text(size = charsize))
+			p <- p + ggplot2::theme(axis.text.y = element_text(size = charsize))
+			p <- p + ggplot2::theme(plot.title = element_text(size=charsize))
 			print(p)
         },
         error = function(e){
@@ -345,6 +358,7 @@ plotDensity2D <- function(data, parH=NULL, clustering.name,
 #' @param pairs list of constrained pairs (must-link and cannot-link).
 #' @param features.mode character vector specifying the plot mode of features (projection in a specific space). Must be 'initial' (default), 'preprocessed', 'pca', 'pca_full' or 'spectral', or prefixed versions ('sampled', 'scaled') of those space names.
 #' @param wait.close boolean: if FALSE (default), the following steps of the analysis calculations are computed even if the window is not closed.
+#' @param fontsize size of font (default is 9)
 #' @return prototypes in \code{selection.mode} = "prototypes" mode, pairs in \code{selection.mode} = "pairs" mode.
 #' @seealso \code{\link{plotProfile}}, \code{\link{plotSampleFeatures}}
 #' @importFrom graphics barplot boxplot axis points filled.contour par
@@ -380,7 +394,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
                                      prototypes=NULL, profile.mode="none",
                                      selection.mode="none", compare.mode="off",
                                      pairs=NULL, features.mode="initial",
-                                     wait.close=FALSE){
+                                     wait.close=FALSE, fontsize=9){
 
 
     #----------------------------------------------------------------------------------------
@@ -418,6 +432,14 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     visu.env$summary.feature <- NULL # = couple feat + fun
     visu.env$onScatterPlotMove <- function(x,y){}
     visu.env$ProfileModeNumber <- 1
+    visu.env$tk.font <- tkfont.create(size = fontsize, family = "Arial", weight = "bold")
+    if (fontsize>=11){
+    	visu.env$cex=0.8
+    } else if (fontsize>=9) {
+    	visu.env$cex=0.7
+    } else {
+    	visu.env$cex=0.6
+    }
 
     if (!is.null(visu.env$label))
     {
@@ -582,7 +604,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         logscale <- visu.env$features$logscale.2D
         title <- paste(visu.env$plot.mode, "clustered by", clustering.name)
         plotSampleFeatures(x, label, parH=visu.env$parH, parV=visu.env$parV, figure.title=title,
-        	               logscale=logscale, cex=RclusTool.env$param$visu$cex*2, point.param=RclusTool.env$param$visu$point.style, env.plot=visu.env)        
+        	               logscale=logscale, cex=visu.env$cex, point.param=RclusTool.env$param$visu$point.style, env.plot=visu.env)        
 
         if (is.null(visu.env$parPlotSampleFeatures))
             return()
@@ -694,7 +716,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         #      points(x)
         graphics::title(xlab=colnames(visu.env$features$x.2D)[1]) #paste(visu.env$parH[1], visu.env$parH[2], sep=" - "))
         graphics::title(ylab=colnames(visu.env$features$x.2D)[2]) #paste(visu.env$parV[1], visu.env$parV[2], sep=" - "))
-        graphics::title(paste(visu.env$plot.mode, "(log)"))   
+        graphics::title(paste(visu.env$plot.mode, "(log)"), cex.main=visu.env$cex) 
     }
 
     plotSummary <- function(compare=FALSE){
@@ -723,6 +745,9 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 			p <- p + ggplot2::theme(axis.text.x = element_text(angle = 90, size=11))
 			p <- p + ggplot2::scale_fill_manual(values=col, drop=F)
 			p <- p + ggplot2::theme(legend.position='none')
+			p <- p + ggplot2::theme(axis.text.x = element_text(size = RclusTool.env$param$visu$size))
+	        p <- p + ggplot2::theme(axis.text.y = element_text(size = RclusTool.env$param$visu$size))
+	        p <- p + ggplot2::theme(plot.title = element_text(size = RclusTool.env$param$visu$size))
             print(p)
         } else {
             graphics::boxplot(visu.env$data.sample$features[[visu.env$features.mode]]$x[visu.env$data.sample$id.clean,feature.name.summary]~
@@ -817,15 +842,15 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         if (visu.env$ProfileModeNumber == 1){
         	plotProfile(visu.env$data.sample$profiles[[id]], profiles.colors=signalColor,
                     	NULL, title=paste("Observation", id), 
-                    	sub=paste("in", cluster), sub.color=title.color, image.dir=NULL)             
+                    	sub=paste("in", cluster), sub.color=title.color, image.dir=NULL ,charsize=fontsize)             
         } else if (visu.env$ProfileModeNumber == 2){
         	plotProfile(NULL, profiles.colors=signalColor,
                     	visu.env$data.sample$images[id], title=paste("Observation", id), 
-                    	sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images)             
+                    	sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images, charsize=fontsize)             
 		} else {
         	plotProfile(visu.env$data.sample$profiles[[id]], profiles.colors=signalColor,
                     	visu.env$data.sample$images[id], title=paste("Observation", id), 
-                    	sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images) 
+                    	sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images, charsize=fontsize) 
         }
         tkpack(tk.profile.fig, fill="x")
 
@@ -858,15 +883,15 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             if (visu.env$ProfileModeNumber == 1){
         		plotProfile(visu.env$data.sample$profiles[[id]], profiles.colors=signalColor,
                     		NULL, title=paste("Observation", id), 
-                    		sub=paste("in", cluster), sub.color=title.color, image.dir=NULL)             
+                    		sub=paste("in", cluster), sub.color=title.color, image.dir=NULL , charsize=fontsize)             
         	} else if (visu.env$ProfileModeNumber == 2){
         		plotProfile(NULL, profiles.colors=signalColor,
                     		visu.env$data.sample$images[id], title=paste("Observation", id), 
-                    		sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images)             
+                    		sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images ,charsize=fontsize)             
 			} else {
         		plotProfile(visu.env$data.sample$profiles[[id]], profiles.colors=signalColor,
                     		visu.env$data.sample$images[id], title=paste("Observation", id), 
-                    		sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images) 
+                    		sub=paste("in", cluster), sub.color=title.color, image.dir=visu.env$data.sample$files$images, charsize=fontsize) 
         }
         tkpack(tk.profile.mem, fill="x")
 
@@ -1599,7 +1624,9 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     
     tk.topmenu <- tkmenu(tt, tearoff=F)
     tkconfigure(tt, menu=tk.topmenu)
+    tkconfigure(tk.topmenu, font=visu.env$tk.font) 
     tk.plot.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tkconfigure(tk.plot.mode.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Plot type", menu=tk.plot.mode.menu)
     tkadd(tk.plot.mode.menu, "radio", label="scatter-plot", variable=tcl.plot.mode,
           value="scatter-plot", command=OnModifPlotMode)
@@ -1610,26 +1637,32 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     tkadd(tk.plot.mode.menu, "radio", label="variables density by cluster", variable=tcl.plot.mode,
           value="variables density by cluster", command=OnModifPlotMode)
     tk.features.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tkconfigure(tk.features.mode.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Features space", menu=tk.features.mode.menu)
     for (name in sortCharAsNum(names(visu.env$data.sample$features)))
         tkadd(tk.features.mode.menu, "radio", label=featSpaceNameConvert(name, short2long=T, RclusTool.env), variable=tcl.features.mode,
               value=name, command=OnModifFeaturesMode)
     tk.axis.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tkconfigure(tk.axis.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Scatter Plot-axis", menu=tk.axis.menu)
 
     if (!is.null(visu.env$cluster.summary)) {
         tk.summary.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+        tkconfigure(tk.summary.mode.menu, font=visu.env$tk.font) 
         tkadd(tk.topmenu, "cascade", label="Clusters summaries", menu=tk.summary.mode.menu)
         buildMenuSummary()
     }
 
     tk.profile.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tkconfigure(tk.profile.mode.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Signals/Images view", menu=tk.profile.mode.menu)
 
     tk.clustering.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tkconfigure(tk.clustering.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Clustering", menu=tk.clustering.menu)
 
     tk.compare.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tkconfigure(tk.compare.menu, font=visu.env$tk.font)
     tkadd(tk.topmenu, "cascade", label="Comparison", menu=tk.compare.menu)
     tkadd(tk.compare.menu, "radio", label="off", variable=tcl.compare.mode,
           value="off", command=OnModifCompareMode)
@@ -1646,23 +1679,19 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     #------------------
     #frames and figures
     #------------------
-    tk.font.big <- tkfont.create(family = "Times", size = 11)
-    tk.font.normal <- tkfont.create(family = "Arial", size = 9)
-    tk.font.small <- tkfont.create(family = "Arial", size = 6)
-    tk.font.big.bold <- tkfont.create(family = "Arial", weight = "bold", size = 11)
     tk.plot.frame <- tkframe(tt, bg="white")
     tk.profile.frame <- tkframe(tt, bg="white")
     visu.env$plotSampleFunction <- function(...){plot(1)}
-    tk.plot.fig <- tkrplot.RclusTool(tk.plot.frame, fun=plotSample, hscale=1.5, vscale=1.2)
+    tk.plot.fig <- tkrplot.RclusTool(tk.plot.frame, fun=plotSample, hscale=RclusTool.env$param$visu$hscale+0.4, vscale=RclusTool.env$param$visu$hscale+0.2)
     tkbind(tk.plot.fig, "<Motion>", OnMovePlotFun)
     tkbind(tk.plot.fig, "<Button-1>", OnMouseClick)
     tkbind(tk.plot.fig, "<Leave>", OnLeavePlot)
 
     tk.plot.compare.frame <- tkframe(tt, bg="white")
-    tk.plot.compare.fig <- tkrplot.RclusTool(tk.plot.compare.frame, fun=plotSampleCompare, hscale=1.3, vscale=1.3)
+    tk.plot.compare.fig <- tkrplot.RclusTool(tk.plot.compare.frame, fun=plotSampleCompare, hscale=RclusTool.env$param$visu$hscale+0.4, vscale=RclusTool.env$param$visu$hscale+0.2)
 
-    tk.profile.fig <- tkrplot(tk.profile.frame, fun=OnPlotProfile, hscale=1.3*RclusTool.env$param$visu$scale.graphics, vscale=0.7*RclusTool.env$param$visu$scale.graphics)
-    tk.profile.mem <- tkrplot(tk.profile.frame, fun=OnPlotProfile2, hscale=1.3*RclusTool.env$param$visu$scale.graphics, vscale=0.7*RclusTool.env$param$visu$scale.graphics)
+    tk.profile.fig <- tkrplot(tk.profile.frame, fun=OnPlotProfile, hscale=(RclusTool.env$param$visu$hscale)*RclusTool.env$param$visu$scale.graphics, vscale=0.6*RclusTool.env$param$visu$hscale*RclusTool.env$param$visu$scale.graphics)
+    tk.profile.mem <- tkrplot(tk.profile.frame, fun=OnPlotProfile2, hscale=(RclusTool.env$param$visu$hscale)*RclusTool.env$param$visu$scale.graphics, vscale=0.6*RclusTool.env$param$visu$hscale*RclusTool.env$param$visu$scale.graphics)
     tk.slider.frame <- tkframe(tk.profile.frame, bg="white")
     tk.slider.left.frame <- tkframe(tk.slider.frame, bg="white")
     tk.slider.center.frame <- tkframe(tk.slider.frame, bg="white")
@@ -1673,32 +1702,32 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     tk.slider.tune <- tkscale(tk.slider.center.frame, length=450, bg="white",
                               command=OnSliderMove,
                               showvalue=TRUE, variable=tcl.slider.tune, orient="horizontal")
-    tk.slider.tune.label <- tklabel(tk.slider.right.frame, text="fine tuning", fg="black", bg="white", font=tk.font.normal)
-    tk.slider.big.label <- tklabel(tk.slider.right.frame, text="big tuning", fg="black", bg="white", font=tk.font.normal)
+    tk.slider.tune.label <- tklabel(tk.slider.right.frame, text="fine tuning", fg="black", bg="white", font=visu.env$tk.font)
+    tk.slider.big.label <- tklabel(tk.slider.right.frame, text="big tuning", fg="black", bg="white", font=visu.env$tk.font)
     tkbind(tk.slider.big, "<ButtonRelease-1>", OnPlotSample) #Sample plotted only when mouse released
     tkbind(tk.slider.big, "<ButtonRelease-2>", OnPlotSample) #Sample plotted only when mouse released
     tkbind(tk.slider.tune, "<ButtonRelease-1>", OnPlotSample)
     tkbind(tk.slider.tune, "<ButtonRelease-2>", OnPlotSample)
-    tk.mem.but <- tkbutton(tk.slider.left.frame, text="MR", command=OnMem, font=tk.font.normal)
-    tk.mem.hide.but <- tkbutton(tk.slider.left.frame, text="MC", command=OnMemHide, font=tk.font.normal)
-    tk.change.profile.mode <- tkbutton(tk.slider.left.frame, text="CPM", command=ChangeProfileMode, font=tk.font.normal)
+    tk.mem.but <- tkbutton(tk.slider.left.frame, text="MR", command=OnMem, font=visu.env$tk.font)
+    tk.mem.hide.but <- tkbutton(tk.slider.left.frame, text="MC", command=OnMemHide, font=visu.env$tk.font)
+    tk.change.profile.mode <- tkbutton(tk.slider.left.frame, text="CPM", command=ChangeProfileMode, font=visu.env$tk.font)
 
     tk.pairs.frame <- tkframe(tk.plot.frame, bg="white")
-    tk.pairs.valid.but <- tkbutton(tk.pairs.frame, text="Valid set of pairs", command=OnValidPairs, font=tk.font.normal)
+    tk.pairs.valid.but <- tkbutton(tk.pairs.frame, text="Valid set of pairs", command=OnValidPairs, font=visu.env$tk.font)
     tk.pairs.buts.frame <- tkframe(tk.pairs.frame, bg="white")
-    tk.pairs.label <- tklabel(tk.pairs.buts.frame, bg="white", fg="black", width=20, font=tk.font.normal)
-    tk.pairs.ML.but <- tkbutton(tk.pairs.buts.frame, text="ML Pair", command=OnML, font=tk.font.normal)
-    tk.pairs.CNL.but <- tkbutton(tk.pairs.buts.frame, text="CNL Pair", command=OnCNL, font=tk.font.normal)
-    tk.pairs.cancel.but <- tkbutton(tk.pairs.buts.frame, text="Cancel pair", command=OnCancelPair, font=tk.font.normal)
+    tk.pairs.label <- tklabel(tk.pairs.buts.frame, bg="white", fg="black", width=20, font=visu.env$tk.font)
+    tk.pairs.ML.but <- tkbutton(tk.pairs.buts.frame, text="ML Pair", command=OnML, font=visu.env$tk.font)
+    tk.pairs.CNL.but <- tkbutton(tk.pairs.buts.frame, text="CNL Pair", command=OnCNL, font=visu.env$tk.font)
+    tk.pairs.cancel.but <- tkbutton(tk.pairs.buts.frame, text="Cancel pair", command=OnCancelPair, font=visu.env$tk.font)
 
     tk.protos.frame <- tkframe(tk.plot.frame, bg="white")
     #tk.protos.valid.but <- tkbutton(tk.protos.frame, text="Valid set\nof protos", command=OnValidPairs)
     tk.protos.buts.frame <- tkframe(tk.protos.frame, bg="white")
     tk.protos.entry <- tkentry(tk.protos.frame, textvariable=visu.env$tcl.proto.label, width=50,
-                               justify="left", fg="black", bg="white", font=tk.font.normal)
-    tk.cluster.rename.but <- tkbutton(tk.protos.buts.frame, text="Rename\ncluster", command=OnRenameCluster, font=tk.font.normal)
-    tk.protos.select.but <- tkbutton(tk.protos.buts.frame, text="Select\nproto", command=OnSelectProto, font=tk.font.normal)
-    tk.protos.cancel.but <- tkbutton(tk.protos.buts.frame, text="Cancel\nproto", command=OnCancelProto, font=tk.font.normal)
+                               justify="left", fg="black", bg="white", font=visu.env$tk.font)
+    tk.cluster.rename.but <- tkbutton(tk.protos.buts.frame, text="Rename\ncluster", command=OnRenameCluster, font=visu.env$tk.font)
+    tk.protos.select.but <- tkbutton(tk.protos.buts.frame, text="Select\nproto", command=OnSelectProto, font=visu.env$tk.font)
+    tk.protos.cancel.but <- tkbutton(tk.protos.buts.frame, text="Cancel\nproto", command=OnCancelProto, font=visu.env$tk.font)
     tkbind(tk.protos.entry, "<Leave>", OnLeaveProto)
 
 
@@ -1706,12 +1735,12 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     #positioning
     #------------------
     tkpack(tklabel(tk.plot.frame, text=visu.env$data.sample$name, fg="black",
-                   bg="white", wraplength=600, font=tk.font.big.bold), fill="x")
+                   bg="white", wraplength=600, font=visu.env$tk.font), fill="x")
     tkpack(tk.plot.fig, fill="x")
     tkpack(tk.plot.frame, side="left")
 
     tkpack(tklabel(tk.plot.compare.frame, text=visu.env$data.sample$name, fg="black",
-                   bg="white", wraplength=600, font=tk.font.big.bold), fill="x")
+                   bg="white", wraplength=600, font=visu.env$tk.font), fill="x")
     tkpack(tk.plot.compare.fig, fill="x")
     if (visu.env$compare.mode!="off")
         tkpack(tk.plot.compare.frame, side="left", anchor="n")
@@ -1792,6 +1821,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 #' @param type character vector specifying the analysis type. Must be 'boxplot', 'gapSE', 'histo', 'pcaCorr' or 'pcaVar'.
 #' @param hscale numeric value corresponding to the horizontal scale of graphic.
 #' @param K.max maximal number of clusters (K.Max=20 by default).
+#' @param fontsize size of font (fontsize=11 by default).
 #' @return None
 #' @importFrom graphics barplot par layout boxplot title hist plot arrows text axis abline mtext box
 #' @importFrom grDevices colorRampPalette
@@ -1818,7 +1848,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 #'
 #' @keywords internal
 #' 
-analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale = 1.2, K.max=20) {
+analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale = 1.2, K.max=20, fontsize=11) {
     datTemp <- data.sample$features[["preprocessed"]]$x[data.sample$id.clean,
                                                         which(colnames(data.sample$features[["preprocessed"]]$x) == selectedVar)]
     # Check if all values are numeric
@@ -1826,7 +1856,7 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
         # Boxplot for selected parameter
         if (type == "boxplot") {
         tk2add.notetab(nb, "    Statistics    ", "Statistics")
-        tk2draw.notetab(nb, "Statistics",
+        tk2draw.notetab(nb, "Statistics", hscale = hscale,
         function() { 
         						opar <- graphics::par(no.readonly=TRUE)
 								on.exit(graphics::par(opar))
@@ -1855,12 +1885,15 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
         if (type == "pcaCorr") {
             res.pca <- data.sample$features[[selectedVar]]$save
             tk2add.notetab(nb, "    PCA Correlation    ", "pcaCorr")
-            tk2draw.notetab(nb, "pcaCorr",
+            tk2draw.notetab(nb, "pcaCorr", hscale = hscale,
                              function() { 
 										p <- factoextra::fviz_pca_var(res.pca,
              							col.var = "contrib", 
              							gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              							repel = TRUE)
+             							p <- p + ggplot2::theme(text = element_text(size = fontsize),
+        									 axis.title = element_text(size = fontsize),
+        									 axis.text = element_text(size = fontsize))
              							plot(p)
                              })
         }
@@ -1871,7 +1904,7 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
             variance <- eig*100/sum(eig)
             df=data.frame(Variance=variance ,CumVariance=cumsum(variance))
             tk2add.notetab(nb, "    PCA Variance    ", "pcaVar")
-            tk2draw.notetab(nb, "pcaVar",
+            tk2draw.notetab(nb, "pcaVar", hscale = hscale,
                             function() {
                             	opar <- graphics::par(no.readonly=TRUE)
 								on.exit(graphics::par(opar))
@@ -1894,7 +1927,7 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
             eig <- data.sample$features[[selectedVar]]$eig[1:min(length.eig)]
             gap <- data.sample$features[[selectedVar]]$gap
             tk2add.notetab(nb, "    Gap Spectral    ", "gapSE")
-            tk2draw.notetab(nb, "gapSE",
+            tk2draw.notetab(nb, "gapSE", hscale = hscale,
                             function() {
                                 opar <- graphics::par(no.readonly=TRUE)
 								on.exit(graphics::par(opar)) 
@@ -1930,20 +1963,20 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
         	}
     		) 
             tk2add.notetab(nb, "    Correlations    ", "Corr")
-            tk2draw.notetab(nb, "Corr",
+            tk2draw.notetab(nb, "Corr", hscale = hscale,
                              function() { 
                                  col <- grDevices::colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
                                  if (length(selectedVar) > 12){
                                  	corrplot::corrplot(M, type="upper", order="hclust", col=col(200),  
          									 p.mat = p.mat, sig.level = 0.05, insig = "blank", tl.col="black",
-         									 diag=FALSE,title= title.mat, mar=c(0,0,1,0))
+         									 diag=FALSE,title= title.mat, mar=c(0,0,1,0), tl.cex= fontsize/11, cl.cex = fontsize/11, number.cex=fontsize/11)
                                  } else {
 								 	corrplot::corrplot(M, method="color", col=col(200),  
          						 	type="upper", order="hclust", 
          						 	addCoef.col = "black",
          						 	tl.col="black", tl.srt=45, 
         						 	p.mat = p.mat, sig.level = 0.05, insig = "blank", 
-         						 	diag=FALSE, title= title.mat, mar=c(0,0,1,0))
+         						 	diag=FALSE, title= title.mat, mar=c(0,0,1,0), tl.cex= fontsize/11, cl.cex = fontsize/11, number.cex=fontsize/11)
          						 }
                              	 })
         }
@@ -1982,6 +2015,7 @@ cor.mtest <- function(mat) {
 #' @param clusterings clustering list.
 #' @param nb a notebook.
 #' @param RclusTool.env environment in which all global parameters, raw data and results are stored.
+#' @param hscale numeric value corresponding to the horizontal scale of graphic.
 #' @return None
 #'
 #' @examples 
@@ -2007,7 +2041,7 @@ cor.mtest <- function(mat) {
 #'
 #' @keywords internal
 #' 
-abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters())
+abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters(), hscale= 1.2)
 {
     num.cluster <- 0
     for (title in names(clusterings))
@@ -2019,7 +2053,7 @@ abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters())
         text <- paste("", as.character(num.cluster),"")
         tk2add.notetab(nb, text, as.character(num.cluster))
 
-        tk2draw.notetab(nb, as.character(num.cluster), 
+        tk2draw.notetab(nb, as.character(num.cluster), hscale= hscale,
                         function() abdPlot(label, title, point.param=RclusTool.env$param$visu$palette.colors))
     }
 }
@@ -2029,6 +2063,7 @@ abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters())
 #' @description Display the abundances barplot of a clustering.
 #' @param label factor describing the clustering.
 #' @param title naming the graph.
+#' @param charsize character size
 #' @param point.param specifying the colors and the symbols to use for clusters display.
 #' @return None
 #' @importFrom grDevices colors
@@ -2052,7 +2087,7 @@ abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters())
 #'
 #' @keywords internal
 #' 
-abdPlot <- function(label, title, point.param=c("grey","black","red","blue","green","cyan", "yellow","orange",
+abdPlot <- function(label, title, charsize=11, point.param=c("grey","black","red","blue","green","cyan", "yellow","orange",
                                      "rosybrown","palevioletred","darkblue","deeppink","blueviolet", 'darkgoldenrod1', 'chartreuse',
                                      "darkorchid1", "deeppink", "coral", "darkolivegreen1","#66C2A5","#9DAE8C","#D49A73","#F08F6D",
                                      "#C79693","#9E9DBA","#9F9BC9","#C193C6","#E28BC3","#D2A29F","#BABF77","#AAD852","#CBD844",
@@ -2070,6 +2105,9 @@ abdPlot <- function(label, title, point.param=c("grey","black","red","blue","gre
 	p <- p + ggplot2::theme(axis.text.x = element_text(angle = 90, size=11))
 	p <- p + ggplot2::scale_fill_manual(values=point.param[1:length(l)], drop=F)
 	p <- p + ggplot2::theme(legend.position='none')
+	p <- p + ggplot2::theme(axis.text.x = element_text(size = charsize))
+	p <- p + ggplot2::theme(axis.text.y = element_text(size = charsize))
+	p <- p + ggplot2::theme(plot.title = element_text(size = charsize))
 	print(p)
 }
 
@@ -2079,18 +2117,20 @@ abdPlot <- function(label, title, point.param=c("grey","black","red","blue","gre
 #' @param nb tk-notebook in which the Elbow plot will be made.
 #' @param method.space.name complete name of space.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
+#' @param hscale numeric value corresponding to the horizontal scale of graphic
+#' @param charsize character size
 #' @return None
 #' @import ggplot2
 #' @keywords internal
 
 
-ElbowPlot <- function(nb, method.space.name, RclusTool.env) {
+ElbowPlot <- function(nb, method.space.name, RclusTool.env, hscale= 1.2, charsize=11) {
 
 	Within=RclusTool.env$data.sample$clustering[[method.space.name]]$Within
 	K=ElbowFinder(1:length(Within),Within)
 	df=data.frame(K= 1:length(Within) , Within=Within)
     tk2add.notetab(nb, "    Elbow    ", "Elbow")
-    tk2draw.notetab(nb, "Elbow",
+    tk2draw.notetab(nb, "Elbow", hscale= hscale,
         						function() { 
         							    tryCatch(
         									expr = {
@@ -2102,6 +2142,9 @@ ElbowPlot <- function(nb, method.space.name, RclusTool.env) {
 												p <- p + ggplot2::ggtitle(paste('Elbow', method.space.name, sep=" "))
 												p <- p + ggplot2::geom_vline(xintercept = K, linetype="dashed", color = "red", size=1.5)
 												p <- p + ggplot2::scale_x_continuous(breaks=1:length(Within))
+												p <- p + ggplot2::theme(axis.text.x = element_text(size = charsize))
+												p <- p + ggplot2::theme(axis.text.y = element_text(size = charsize))
+												p <- p + ggplot2::theme(plot.title = element_text(size = charsize))
 												print(p)
        			 									},
         									error = function(e){
@@ -2162,12 +2205,13 @@ tk2add.notetab <- function(nb, tab.label, tab.name=NULL)
 #' @description Draw in a Notetab with a function.
 #' @param nb a notebook.
 #' @param tab.name string : name of the tk2notetab variable.
+#' @param hscale numeric value corresponding to the horizontal scale of graphic
 #' @param fun : a function.
 #' @return None
 #' @keywords internal
 
-tk2draw.notetab <- function(nb, tab.name, fun){
-    Plot <- tkrplot.RclusTool(nb$env[[tab.name]], hscale = 1.2, fun=fun)        
+tk2draw.notetab <- function(nb, tab.name, fun, hscale= 1.2){
+    Plot <- tkrplot.RclusTool(nb$env[[tab.name]], hscale = hscale, fun=fun)        
     tkgrid(Plot, row = 0, column = 1, sticky = "w")
 }
 
@@ -2215,8 +2259,8 @@ tk2notetab.RclusTool <- function (nb, tab.label, tab.name=NULL)
 #' @description RclusTool adaptation of tkrplot.
 #' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param fun : a function
-#' @param hscale : int horizontal scale
-#' @param vscale : int vertical scale 
+#' @param hscale numeric value corresponding to the horizontal scale of graphic
+#' @param vscale : vertical scale 
 #' @return None
 #' @importFrom grDevices png
 #' @keywords internal
@@ -2258,4 +2302,22 @@ tkrreplot.RclusTool <- function(env.graphic)
     tkimage.create("photo", env.graphic$image, file=env.graphic$file)
 }
 
+#' StringToTitle Convert a string to title.
+#' @title String To Title.
+#' @description Make a grahical title from string.
+#' @param string : string to convert
+#' @param size : size of the title in cm
+#' @param fontsize : size of font (default=11)
+#' @return title
+#' @importFrom graphics strwidth
+#' @keywords internal
+
+StringToTitle <- function(string,size,fontsize=11){
+size=size/2.54
+string_return=paste(strrep('_', 5),string,sep="")
+while(graphics::strwidth(string_return, font = fontsize, units="inches")<=size){
+  string_return=paste(string_return,"_",sep="")
+}
+return(string_return)  
+}
 

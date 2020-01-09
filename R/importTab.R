@@ -35,11 +35,12 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 	
 	import.env <- RclusTool.env$gui$tabs.env$import
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = 11)
+    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
 	tkgrid(tklabel(win1.nb$env$import, text="      "), row = 3, column = 1)
 	
     ## Build the 'Required files' frame
-    RequiredFrame <- tkwidget(win1.nb$env$import, "labelframe", text = "REQUIRED INPUT DATA FILES", font = fontFrame, padx = 30, pady=20, pady = 8, relief = "groove")
+    RequiredFrametext <- StringToTitle("REQUIRED INPUT DATA FILES", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    RequiredFrame <- tkwidget(win1.nb$env$import, "labelframe", text = RequiredFrametext , font = fontFrame, padx = 30, pady=20, pady = 8, relief = "flat")
     tkgrid(RequiredFrame, columnspan = 3, row = 2, sticky = "w")
 
     # Select separator and decimal separator for csv (for features file)
@@ -63,7 +64,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     combo.Mis.Feat <- ttkcombobox(RequiredFrame, values=misList, textvariable=misSelectFeat, state="readonly", width = 2) 
     
     # Select the features file (.csv)
-    featuresName <- tktext(RequiredFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    featuresName <- tktext(RequiredFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     import.env$refreshFeaturesName <- function()
     {
@@ -93,18 +94,23 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                     }
                                 })
 
+    tkconfigure(opt1,font = fontFrame)
+    tkconfigure(opt2,font = fontFrame)
+    tkconfigure(opt3,font = fontFrame)
     tkgrid(featuresButton, row = 1, column = 1, padx = 7, sticky = "w")
     tkgrid(featuresName, row = 1, column= 2)
     tkgrid(opt1, row = 1, column = 3, sticky = "e")
     tkgrid(combo.Sep.Feat, row = 1, column = 4, sticky = "w")
     tkgrid(opt2, row = 1, column = 5, sticky = "e")
     tkgrid(combo.Dec.Feat, row = 1, column = 6, sticky = "w")
+    
     tkgrid(opt3, row = 1, column = 7, sticky = "e")
     tkgrid(combo.Mis.Feat, row = 1, column = 8, sticky = "w")
    
     tkgrid(tklabel(win1.nb$env$import, text="      "), row = 1, column = 1)
     ## Build the 'Optional files' frame
-    OptionalFrame <- tkwidget(win1.nb$env$import, "labelframe", text = "OPTIONAL INPUT DATA FILES", font = fontFrame, padx = 30, pady = 20, relief = "groove")
+    OptionalFrametext <- StringToTitle("OPTIONAL INPUT DATA FILES", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    OptionalFrame <- tkwidget(win1.nb$env$import, "labelframe", text = OptionalFrametext, font = fontFrame, padx = 30, pady = 20, relief = "flat")
     tkgrid(OptionalFrame, columnspan = 3, row = 6, sticky = "w")
     
     # Import signals parameters 
@@ -121,7 +127,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     
     # Select the signal file (.csv)
         
-    signalsName <- tktext(OptionalFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    signalsName <- tktext(OptionalFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     import.env$refreshSignalsName <- function()
     {
@@ -139,6 +145,10 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                       tkmessageBox(message = "No file selected!")
                               	  }
                                })
+    
+    tkconfigure(opt1,font = fontFrame)
+    tkconfigure(opt2,font = fontFrame)
+    tkconfigure(opt3,font = fontFrame)
     tkgrid(signalButton, row = 1, column = 1, padx = 20, sticky = "w")
     tkgrid(signalsName, row = 1, column = 2)
     tkgrid(opt1, row = 1, column = 3, sticky = "e")
@@ -149,7 +159,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkgrid(combo.Mis.Sig, row = 1, column = 8, sticky = "w")
   
     # Select the images directory
-    imagesName <- tktext(OptionalFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    imagesName <- tktext(OptionalFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     import.env$refreshImagesName <- function()
     {
@@ -173,7 +183,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkgrid(imagesName, row = 2, column = 2)
 
     # Select the metadata file (.txt)
-    metadataFileName <- tktext(OptionalFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    metadataFileName <- tktext(OptionalFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
     
         import.env$refreshMetadataFileName <- function()
     {
@@ -255,7 +265,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                           
   			tk2delete.notetab(win2.nb)
 
-            abdPlotTabs(RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env)
+            abdPlotTabs(RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
 
             RclusTool.env$gui$win1$env$authorization$prepro <- TRUE
             RclusTool.env$gui$win1$env$authorization$classif <- FALSE
@@ -279,17 +289,17 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     }
     butReset <- tk2button(win1.nb$env$import, text = "Reset", image = "reset", compound = "left", width = 15, command = onReset)
 
-    tkgrid(tklabel(win1.nb$env$import, text="      "), row = 7, column = 1)
-    tkgrid(tk.compute.but, row = 8, column = 0)
-    tkgrid(butReset, row = 8, column = 2)
+    tkgrid(tk.compute.but, row = 20, column = 0)
+    tkgrid(butReset, row = 20, column = 2)
     tkgrid(tklabel(win1.nb$env$import, text="      "), row = 9, column = 1)
    
  	## Build the 'Working Directory' frame
-    WdFrame <- tkwidget(win1.nb$env$import, "labelframe", text = "WORKING DIRECTORY", font = fontFrame, padx = 30, pady = 20, relief = "flat")
+ 	WdFrametext <- StringToTitle("WORKING DIRECTORY", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    WdFrame <- tkwidget(win1.nb$env$import, "labelframe", text = WdFrametext, font = fontFrame, padx = 30, pady = 20, relief = "flat")
     tkgrid(WdFrame, columnspan = 3, row = 7, sticky = "w")
      
     # Select the directory
-    Dir <- tktext(WdFrame, bg="white", font="courier", width=75, height=2, font = fontFrame, state="disabled")
+    Dir <- tktext(WdFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
     import.env$refreshDirectoryName <- function()
     {
@@ -315,43 +325,59 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
  
      
  ## Build the 'Advices Frame' frame
-    AdviceFrame <- tkwidget(win1.nb$env$import, "labelframe", text = "ADVICES", font = fontFrame, padx = 100, pady = 8, relief = "groove")
+    AdviceFrametext <- StringToTitle("ADVICES", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
+    AdviceFrame <- tkwidget(win1.nb$env$import, "labelframe", text = AdviceFrametext, font = fontFrame, padx =  20, pady = 8, relief = "flat")
     tkgrid(AdviceFrame, columnspan = 3, row = 13, sticky = "w")
     
  # What kind of CSV file for features
     FeaturesAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "How to format features data",
-                            padx = 30, pady = 8, relief = "groove")
+                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+    FeaturesAdviceText <- tk2label(FeaturesAdvice, text = "Data must be in a .csv file\nObservations in rows\nFeatures in columns\nMissing value must be 'empty'", width = 30)                   
+    tkconfigure(FeaturesAdvice,font = fontFrame)
+    tkconfigure(FeaturesAdviceText,font = fontFrame)
     tkgrid(FeaturesAdvice, columnspan = 1, column = 1, row = 1)
-    tkgrid(tk2label(FeaturesAdvice, text = "Data must be in a .csv file\nObservations in rows\nFeatures in columns\nMissing value must be 'empty'", width = 30)) #\nDates column -> Dates\nHours column -> Hours")) #Dates must be in  'yyyy-mm-dd'\n Hours must be in  'hh:mm:ss'\n
-
+    tkgrid(FeaturesAdviceText)
+    
   # What kind of CSV file for signal
     SignalsAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "How to format signal data", 
-                            padx = 30, pady = 8, relief = "groove")
+                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+    SignalsAdviceText <- tk2label(SignalsAdvice, text = "Data must be in a .csv file\nSignals in columns\nA same ID for all signal values\nMissing value must be 'empty'", width = 30)
+    tkconfigure(SignalsAdvice,font = fontFrame)
+    tkconfigure(SignalsAdviceText,font = fontFrame)    
     tkgrid(SignalsAdvice, columnspan = 1, column = 2, row = 1)
-    tkgrid(tk2label(SignalsAdvice, text = "Data must be in a .csv file\nSignals in columns\nA same ID for all signal values\nMissing value must be 'empty'", width = 30))
+    tkgrid(SignalsAdviceText)
 
     # What is an RDS
     RDSAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "What is an RDS file ?",
-                            padx = 30, pady = 8, relief = "groove")
+                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+    RDSAdviceText <- tk2label(RDSAdvice, text = "After a first use of yours files\n an Rclustool RDS file is saved.\nThis file contains all the data\n you used and it's faster to load\n", width = 30)
+    tkconfigure(RDSAdvice,font = fontFrame)
+    tkconfigure(RDSAdviceText,font = fontFrame)     
     tkgrid(RDSAdvice, columnspan = 1, column = 3, row = 1)
-    tkgrid(tk2label(RDSAdvice, text = "After a first use of yours files\n an Rclustool RDS file is saved.\nThis file contains all the data\n you used and it's faster to load\n", width = 30))
+    tkgrid(RDSAdviceText)
     
     # What kind of file for images
     ImagesAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "Important : how to format images data", 
-                            padx = 30, pady = 8, relief = "groove")
+                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+    ImagesAdviceText <- tk2label(ImagesAdvice, text = "JPEG or PNG images\nObservation's ID for filename\n\n", width = 30)
+    tkconfigure(ImagesAdvice,font = fontFrame)
+    tkconfigure(ImagesAdviceText,font = fontFrame)
     tkgrid(ImagesAdvice, columnspan = 1, column = 1, row = 2)
-    tkgrid(tk2label(ImagesAdvice, text = "JPEG or PNG images\nObservation's ID for filename\n\n", width = 30))
+    tkgrid(ImagesAdviceText)
 
     # What kind of TXT file for metadata
     MetaAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "How to format metadata", 
-                            padx = 30, pady = 8, relief = "groove")
+                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+    MetaAdviceText <- tk2label(MetaAdvice, text = "Data must be in a .txt file\n'Metadata name: value'\n\n", width = 30)
+    tkconfigure(MetaAdvice,font = fontFrame)
+    tkconfigure(MetaAdviceText,font = fontFrame)    
     tkgrid(MetaAdvice, columnspan = 1, column = 2, row = 2)
-    tkgrid(tk2label(MetaAdvice, text = "Data must be in a .txt file\n'Metadata name: value'\n\n", width = 30))
+    tkgrid(MetaAdviceText)
     
     
 }
