@@ -246,7 +246,9 @@ buildsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         tk2delete.notetab(win2.nb)
         abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
         # Save prototypes (csv + image files in 'prototypes' directory)
-        saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
+        if (length(new.protos$prototypes[[method.select]]>0)){
+        	saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
+        }
     }
     ProtoFrametext <- StringToTitle("TRAINING SET", RclusTool.env$param$visu$sizecm,fontsize=RclusTool.env$param$visu$size)
     ProtoFrame <- tkwidget(win1.nb$env$sup, "labelframe", text = ProtoFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")

@@ -16,8 +16,8 @@ Other functions can be used in R scripts and are detailed in the documentation.
 \tabular{ll}{
 Package: \tab RclusTool \cr
 Type: \tab Package \cr
-Version: \tab 0.91 \cr
-Date: \tab 2019-10-07 \cr
+Version: \tab 0.91.3 \cr
+Date: \tab 2020-01-16 \cr
 License: \tab GPL (>=2) \cr
 LazyLoad: \tab yes\cr
 }

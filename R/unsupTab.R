@@ -367,7 +367,9 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
             }
 
             # Save prototypes (csv + image files in 'prototypes' directory)
-            saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
+            if (length(new.protos$prototypes[[method.space.name]]>0)){
+            	saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
+            }
 
         }, error=function(err){tkmessageBox(err$message);warning(err$message)})
     }

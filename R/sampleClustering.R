@@ -592,8 +592,7 @@ extractProtos <- function(data.sample, method, K.max=20, kmeans.variance.min=0.9
     label <- data.sample$clustering[[method]]$label
     grp <- levels(label)[-1]
     protos <- NULL
-
-    dirProto <- file.path(data.sample$files$results$prototypes, paste("protos", user.name, method))
+    dirProto <- file.path(data.sample$files$results$prototypes, paste("protos", user.name, method, sep = "_"))
     if (dir.exists(dirProto))
         unlink(dirProto, recursive = TRUE)
     dir.create(dirProto)
@@ -615,7 +614,7 @@ extractProtos <- function(data.sample, method, K.max=20, kmeans.variance.min=0.9
         res.kmeans <- computeKmeans(x, K.max=K.max,
                                     kmeans.variance.min=kmeans.variance.min)
         K <- max(res.kmeans$cluster)
-        x <- scale(x, center=TRUE, scale=TRUE) #???
+        #x <- scale(x, center=TRUE, scale=TRUE) #???
 
         res.pam <- list()
         if (nrow(x)>K) {
@@ -977,6 +976,9 @@ addClustering <- function(clustering, new.clustering.name, new.cluster.summary, 
 #' @export 
 #' 
 saveManualProtos <- function(data.sample, protos) {
+    dirsaveManualProtos= file.path(data.sample$files$results$prototypes, paste("protos","manual", format(Sys.time(),'_%Y%m%d_%Hh%Mm%Ss'), sep = "_"))
+    unlink(dirsaveManualProtos, recursive = TRUE)
+    dir.create(dirsaveManualProtos)
     if (length(unlist(protos)) >= 1) {
         protos.all <- NULL
         for (i in 1:length(protos))
@@ -986,12 +988,12 @@ saveManualProtos <- function(data.sample, protos) {
         Id <- paste(names(protos.all), "protos", data.sample$name, "manual", sep = "_")
         protos.dat <- cbind(protos.dat, Id)
         colnames(protos.dat)[which(names(protos.dat) == "protos.all")] <- "Class"
-        write.csv(protos.dat, file.path(data.sample$files$results$prototypes,
+        write.csv(protos.dat, file.path(dirsaveManualProtos,
                                         paste("protos", data.sample$name, "manual.csv", sep="_")), 
                   append = TRUE, row.names = FALSE)
         # Save selected prototypes (signals + images)
         for (i in unique(protos.all)) {
-            dirProtoCluster <- file.path(data.sample$files$results$prototypes, i)
+            dirProtoCluster <- file.path(dirsaveManualProtos, i)
             if (!dir.exists(dirProtoCluster))
                 dir.create(dirProtoCluster)
             idx <- names(protos.all)[which(protos.all==i)]

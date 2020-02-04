@@ -2,8 +2,8 @@ Package: RclusTool
 Type: Package
 Title: Graphical Toolbox for Clustering and Classification of Data
         Frames
-Version: 0.91.2
-Date: 2020-01-07
+Version: 0.91.3
+Date: 2020-01-29
 Authors@R: c(   person("Guillaume", "Wacquet", role = c("aut"),
                      email = "wacquet@univ-littoral.fr"),
 		        person("Pierre-Alexandre", "Hebert", role = c("aut", "cre"),
@@ -37,7 +37,7 @@ Imports: class, cluster, conclust, corrplot, e1071, factoextra,
         nnet, png, randomForest, reshape, sp, stringi, stringr, tools
 SystemRequirements: XQuartz (on OSX)
 NeedsCompilation: no
-Packaged: 2020-01-08 09:53:26 UTC; camille
+Packaged: 2020-02-04 15:51:29 UTC; camille
 Repository: CRAN
-Date/Publication: 2020-01-09 13:50:02 UTC
+Date/Publication: 2020-02-04 16:20:05 UTC
 URL: http://mawenzi.univ-littoral.fr/RclusTool/
