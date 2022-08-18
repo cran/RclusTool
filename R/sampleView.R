@@ -32,6 +32,7 @@
 #' @importFrom graphics layout plot rasterImage matplot legend
 #' @importFrom jpeg readJPEG
 #' @importFrom png readPNG
+#' @importFrom rlang .data
 #' @import reshape ggplot2
 #' @seealso \code{\link{plotSampleFeatures}}, \code{\link{visualizeSampleClustering}}
 #'
@@ -47,10 +48,9 @@
 #' tf2 <- tempfile()
 #' write.table(sig, tf2, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, file.profiles=tf2)
 #' 
 #' plotProfile(x$profiles[[1]])
-#'  
 #'
 #'
 #' @keywords internal 
@@ -73,7 +73,7 @@ plotProfile <- function(profiles, profiles.colors=NULL, image=NULL, curve.names=
     profiles.df$line<-1:nrow(profiles.df)
     profiles.df <- reshape::melt(profiles.df, id.vars="line")
     # Everything on the same plot
-    p <- ggplot2::ggplot(profiles.df, ggplot2::aes(profiles.df$line,value, col=profiles.df$variable)) + ggplot2::labs(col="Variable")
+    p <- ggplot2::ggplot(profiles.df, ggplot2::aes(x=.data$line,y=.data$value,col=.data$variable)) + ggplot2::labs(col="Profiles")
     p <- p + ggplot2::ggtitle(paste(title,sub)) 
     p <- p + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) 
     p <- p + ggplot2::xlab("") + ggplot2::ylab("Value")
@@ -135,10 +135,10 @@ plotProfile <- function(profiles, profiles.colors=NULL, image=NULL, curve.names=
 #' tf2 <- tempfile()
 #' write.table(sig, tf2, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, file.profiles=tf2)
 #' 
 #' plotProfileExtract(x$profiles[[1]])
-#'  
+#'
 #'
 #' @keywords internal
 #' 
@@ -222,13 +222,13 @@ plotProfileExtract <- function(profiles, profiles.colors=NULL, image=NULL, curve
 #' tf2 <- tempfile()
 #' write.table(sig, tf2, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, file.profiles=tf2)
 #' 
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' new.labels <- formatLabelSample(res$cluster, x)
 #' 
 #' plotSampleFeatures(x$features$initial$x, label = new.labels, parH="x", parV="y")
-#'  
+#'
 #'
 #' @keywords internal
 #' 
@@ -256,7 +256,7 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
     vlabel <- levels(label)
 
     #construction des donnees
-    x <- data[, c(parH, parV), drop=F]
+    x <- data[, c(parH, parV), drop=FALSE]
     if (cex==0.8){
 	graphics::par(mar=c(3.9, 3.9, 1.5, 10.5), xpd=TRUE)
 	} else if (cex==0.7) {
@@ -278,7 +278,7 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
            pch=point.param$pch[1:length(vlabel)], cex=cex, pt.cex=cex, inset=c(-0.25,0), box.lty=0)
     if (!is.null(env.plot))
     {
-        env.plot$parPlotSampleFeatures <- par(no.readonly=T)
+        env.plot$parPlotSampleFeatures <- par(no.readonly=TRUE)
     }
 }
 
@@ -298,10 +298,10 @@ plotSampleFeatures<- function(data, label, parH=NULL, parV=NULL, figure.title="S
 #' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
-#' tf1 <- tempfile()
-#' write.table(dat, tf1, sep=",", dec=".")
+#' tf <- tempfile()
+#' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' 
 #' label<-x[["clustering"]][["K-means_preprocessed"]][["label"]]
@@ -362,7 +362,7 @@ plotDensity2D <- function(data, parH=NULL, clustering.name, charsize = 11,
 #' @return prototypes in \code{selection.mode} = "prototypes" mode, pairs in \code{selection.mode} = "pairs" mode.
 #' @seealso \code{\link{plotProfile}}, \code{\link{plotSampleFeatures}}
 #' @importFrom graphics barplot boxplot axis points filled.contour par
-#' @importFrom class knn
+#' @importFrom SearchTrees createTree knnLookup
 #' @importFrom grDevices gray topo.colors
 #' @importFrom MASS kde2d
 #' @import tcltk tcltk2 tkrplot ggplot2
@@ -378,7 +378,7 @@ plotDensity2D <- function(data, parH=NULL, clustering.name, charsize = 11,
 #' tf2 <- tempfile()
 #' write.table(sig, tf2, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, file.profiles=tf2)
 #' 
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' new.labels <- formatLabelSample(res$cluster, x)
@@ -386,7 +386,6 @@ plotDensity2D <- function(data, parH=NULL, clustering.name, charsize = 11,
 #' visualizeSampleClustering(x, label = new.labels, clustering.name="K-means", 
 #'			     profile.mode="whole sample")
 #'  
-#'
 #' @export 
 #' 
 visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="proposed clustering",
@@ -414,6 +413,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     visu.env$prototypes <- NULL
     visu.env$profile.mode <- profile.mode
     visu.env$slider.values <- NULL #ids of subset of particles dealt with (may be a cluster, or prototypes)
+    visu.env$pts.search.tree <- NULL #search tree to locate mouse-selected points in scatter plot
     visu.env$profile.id <- c(
                     sel=NA, #profile selected (in the top) id relative to described particles (by features$x)
                     mem=NA, #profile memorized (in the bottom)
@@ -483,7 +483,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     #  prototypes$id.abs.inv[prototypes$id.abs] <- 1:length(prototypes$label) #id: in prototypes
     #
 
-    if (length(grep("prototype", visu.env$profile.mode, ignore.case=T))&&(!length(visu.env$prototypes)))
+    if (length(grep("prototype", visu.env$profile.mode, ignore.case=TRUE))&&(!length(visu.env$prototypes)))
         visu.env$profile.mode <- "none"
 
     if (is.null(pairs)) {
@@ -647,12 +647,12 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         # add point whose profile is plotted
         #colored cross + circle + point on selected point(s)
         if ((visu.env$profile.mode!="none") && (!(is.na(ids["sel"]))))
-            graphics::points(x[rep(ids["sel"],3),,drop=F], 
+            graphics::points(x[rep(ids["sel"],3),,drop=FALSE], 
                    pch=c("+", "O", RclusTool.env$param$visu$point.style$pch[unclass(label[ids["sel"]])]),
                    cex=c(2, 2, RclusTool.env$param$visu$cex),
                    col=c(color.select[1:2], RclusTool.env$param$visu$point.style$col[unclass(label[ids["sel"]])]))
         if ((visu.env$mem.mode) && (!(is.na(ids["mem"]))))
-            graphics::points(x[rep(ids["mem"],3),,drop=F], 
+            graphics::points(x[rep(ids["mem"],3),,drop=FALSE], 
                    pch=c("+", "O",  RclusTool.env$param$visu$point.style$pch[unclass(label[ids["mem"]])]),
                    cex=c(2, 2, RclusTool.env$param$visu$cex),
                    col=c(color.select[1:2], RclusTool.env$param$visu$point.style$col[unclass(label[ids["mem"]])]))
@@ -675,8 +675,8 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         visu.env$features$x.2D.pixel <- cbind((visu.env$features$x.2D[,1]-usrCoords[1])*(xMax-xMin)/rangeX + xMin,
                                       (visu.env$features$x.2D[,2]-usrCoords[3])*(yMax-yMin)/rangeY + yMin )
         rownames(visu.env$features$x.2D.pixel) <- rownames(visu.env$features$x.2D)
-
         visu.env$box.pixel <- c(xMin, xMax, yMin, yMax)
+        visu.env$usrCoords <- usrCoords
     }
     
     plotDensity2Dcall <- function(compare=FALSE){
@@ -708,7 +708,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             laby <- 10^ytick
 
         densite <- MASS::kde2d(x[,1], x[,2], n=100, h=.1)
-        densite$z <- log10( removeZeros(densite$z, threshold=10^-6, positive=T) ) #echelle log...
+        densite$z <- log10( removeZeros(densite$z, threshold=10^-6, positive=TRUE) ) #echelle log...
 
         graphics::filled.contour(densite, color = grDevices::topo.colors,
                        plot.axes = { graphics::axis(1, at=xtick, labels=labx);
@@ -743,7 +743,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 			p <- p + ggplot2::ggtitle(title)
 			p <- p + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) 
 			p <- p + ggplot2::theme(axis.text.x = element_text(angle = 90, size=11))
-			p <- p + ggplot2::scale_fill_manual(values=col, drop=F)
+			p <- p + ggplot2::scale_fill_manual(values=col, drop=FALSE)
 			p <- p + ggplot2::theme(legend.position='none')
 			p <- p + ggplot2::theme(axis.text.x = element_text(size = RclusTool.env$param$visu$size))
 	        p <- p + ggplot2::theme(axis.text.y = element_text(size = RclusTool.env$param$visu$size))
@@ -782,6 +782,10 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     OnMouseMove <- function(x, y) {
         if (is.element(visu.env$profile.mode, c("none", "constrained pairs")))
             return()
+
+        if (is.null(visu.env$pts.search.tree))
+            return()
+
         xClick <- as.numeric(x)+0.5
         yClick <- as.numeric(y)-0.5
         yClick <- visu.env$plot.height - yClick
@@ -795,8 +799,22 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         #   coords <- 10^c(usrCoords[1]+(xClick-xMin)*rangeX/(xMax-xMin),
         #             usrCoords[3]+(yClick-yMin)*rangeY/(yMax-yMin))
 
-        w <- as.character(class::knn(visu.env$features$x.2D.pixel[visu.env$slider.values,,drop=F],
-                              c(xClick, yClick), visu.env$slider.values)) #A VERIFIER !!
+
+        rangeX <- visu.env$usrCoords[2] - visu.env$usrCoords[1]
+        rangeY <- visu.env$usrCoords[4] - visu.env$usrCoords[3]
+
+        # A VERIFIER
+#pour info:  visu.env$features$x.2D.pixel <- cbind((visu.env$features$x.2D[,1]-usrCoords[1])*(xMax-xMin)/rangeX + xMin,
+#                                      (visu.env$features$x.2D[,2]-usrCoords[3])*(yMax-yMin)/rangeY + yMin )
+#pour info:  visu.env$box.pixel <- c(xMin, xMax, yMin, yMax)
+ 
+        xClick <- (xClick - visu.env$box.pixel[1]) * rangeX / (visu.env$box.pixel[2] - visu.env$box.pixel[1]) + visu.env$usrCoords[1]
+        yClick <- (yClick - visu.env$box.pixel[3]) * rangeY / (visu.env$box.pixel[4] - visu.env$box.pixel[3]) + visu.env$usrCoords[3]
+
+        
+        w <- as.character(visu.env$slider.values[SearchTrees::knnLookup(visu.env$pts.search.tree, xClick, yClick, k=1)[1]])
+        #w <- as.character(class::knn(visu.env$features$x.2D.pixel[visu.env$slider.values,,drop=FALSE],
+        #                      c(xClick, yClick), visu.env$slider.values)) #A VERIFIER !!
 
         setProfileId("fig", w)
     }
@@ -949,8 +967,8 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
     }
     
     # Transform parameters button
-    OnModifAxisH <- function() {OnModifAxisHV(Horizontal=T)}
-    OnModifAxisV <- function() {OnModifAxisHV(Horizontal=F)}
+    OnModifAxisH <- function() {OnModifAxisHV(Horizontal=TRUE)}
+    OnModifAxisV <- function() {OnModifAxisHV(Horizontal=FALSE)}
 
     OnModifAxisHV <- function(Horizontal) {
         feat.names <- colnames(visu.env$features$x)
@@ -1080,7 +1098,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 
 
     modifAxisUpdate <- function() {
-        visu.env$features$x.2D <- visu.env$features$x[, c(visu.env$parH, visu.env$parV), drop=F]
+        visu.env$features$x.2D <- visu.env$features$x[, c(visu.env$parH, visu.env$parV), drop=FALSE]
         visu.env$features$x.2D.logscale <- visu.env$features$x.2D #representation for plot functions with log scale
 
         logscale <- ""
@@ -1093,6 +1111,8 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             visu.env$features$x.2D.logscale[,2] <- 10^visu.env$features$x.2D[,2]
         }
         visu.env$features$logscale.2D <- logscale
+
+        buildPtsSearchTree()
     }
 
     #without plotSample
@@ -1170,6 +1190,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         }
 
         configureSliders(values) #settings BEFORE positioning !
+        buildPtsSearchTree()
 
         if (visu.env$profile.mode=="constrained pairs") {
             setMemMode(TRUE)
@@ -1210,6 +1231,20 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             id <- length(visu.env$slider.values)
         }
         switch(value+1, id, visu.env$slider.values[id])
+    }
+
+    buildPtsSearchTree <- function()
+    {
+
+        #search tree not useful => not computed
+        if (is.element(visu.env$profile.mode, c("none", "constrained pairs")))
+            return()
+
+        #data required
+        if (is.null(visu.env$features$x.2D) || !length(visu.env$slider.values))
+            return()
+
+        visu.env$pts.search.tree <- SearchTrees::createTree(visu.env$features$x.2D[visu.env$slider.values,,drop=FALSE])
     }
 
     configureSliders <- function(values, reset=TRUE){
@@ -1454,7 +1489,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         if (visu.env$clustering.name=="import clustering"){
             filename.csv <- tclvalue(tkgetOpenFile(initialfile = "",
                                                    filetypes="{{csv Files} {.csv .CSV}}"))
-            res <- loadClusteringSample(filename.csv, visu.env$data.sample, RclusTool.env$param$preprocess$noise.cluster)
+            res <- buildClusteringSample(filename.csv, visu.env$data.sample, RclusTool.env$param$preprocess$noise.cluster)
             if ( !is.null(res) ) {
                 visu.env$clustering.name <- basename(filename.csv)
                 visu.env$data.sample$clustering[[visu.env$clustering.name]] <- res
@@ -1510,14 +1545,18 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 
         rep.init <- visu.env$data.sample$files$results$clustering
 
-        filename.csv <- tclvalue(tkgetSaveFile(initialfile = filename.init,
-                                               filetypes="{{csv Files} {.csv .CSV}}"))
+        params <- list(initialfile = filename.init, initialdir = rep.init,
+                                               filetypes="{{csv Files} {.csv .CSV}}")
+        if (!length(rep.init))
+            params$initialdir <- NULL
+
+        filename.csv <- tclvalue(do.call(tkgetSaveFile, params))
                                                
 		rep.final <- substr(filename.csv, 1, (nchar(filename.csv)-nchar(basename(filename.csv)))-1)
 		
         # saveClustering(filename.csv, label=visu.env$label, id.abs=rownames(visu.env$data.sample$features[[1]]$x))
-        saveClustering(filename.init, label=visu.env$label, rep.final)
-        visu.env$data.sample$clustering[[visu.env$clustering.name]] <- loadClusteringSample(filename.csv, visu.env$data.sample, RclusTool.env$param$preprocess$noise.cluster)
+        saveClustering(filename.init, label=visu.env$label, dir=rep.final)
+        visu.env$data.sample$clustering[[visu.env$clustering.name]] <- buildClusteringSample(filename.csv, visu.env$data.sample, RclusTool.env$param$preprocess$noise.cluster)
     }
 
     OnExportSummary <- function() {
@@ -1531,26 +1570,30 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 
         rep.init <- visu.env$data.sample$files$results$clustering
 
-        filename.csv <- tclvalue(tkgetSaveFile(initialfile = filename.init,
-                                               filetypes="{{csv Files} {.csv .CSV}}"))
-                                               
+        params <- list(initialfile = filename.init, initialdir = rep.init,
+                                               filetypes="{{csv Files} {.csv .CSV}}")
+        if (!length(rep.init))
+            params$initialdir <- NULL
+
+        filename.csv <- tclvalue(do.call(tkgetSaveFile, params))
+                                      
         rep.final <- substr(filename.csv, 1, (nchar(filename.csv)-nchar(basename(filename.csv)))-1)
 
         #     saveSummary(filename.csv=filename.csv, cluster.summary=visu.env$cluster.summary,
         #                 data.sample=visu.env$data.sample, operator.name=RclusTool.env$gui$user.name, method.name=visu.env$clustering.name)
-        saveSummary(filename.csv=filename.init, cluster.summary=visu.env$cluster.summary, rep.final)
+        saveSummary(filename.csv=filename.init, cluster.summary=visu.env$cluster.summary, dir=rep.final)
     }
 
     # OnCountItems <- function() {
     #   if (is.character(visu.env$data.sample$files$images)) {
     #     #dev.off()
-    #     countItemsGUI(RclusTool.env)
+    #     countItemsSampleGUI(visu.env$data.sample, RclusTool.env=RclusTool.env)
     #   } else 
     #     tkmessageBox(message = "No images to process!", icon = "warning", type = "ok")
     # }
     # 
     # OnApplyItems <- function() {
-    #   computeItemsGUI(method.select = visu.env$clustering.name)
+    #   computeItemsSampleGUI(visu.env$data.sample, method.select = visu.env$clustering.name, RclusTool.env=RclusTool.env)
     # }
 
 
@@ -1622,10 +1665,10 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 
     }
     
-    tk.topmenu <- tkmenu(tt, tearoff=F)
+    tk.topmenu <- tkmenu(tt, tearoff=FALSE)
     tkconfigure(tt, menu=tk.topmenu)
     tkconfigure(tk.topmenu, font=visu.env$tk.font) 
-    tk.plot.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tk.plot.mode.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
     tkconfigure(tk.plot.mode.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Plot type", menu=tk.plot.mode.menu)
     tkadd(tk.plot.mode.menu, "radio", label="scatter-plot", variable=tcl.plot.mode,
@@ -1636,32 +1679,32 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
           value="clusters summary", command=OnModifPlotMode)
     tkadd(tk.plot.mode.menu, "radio", label="variables density by cluster", variable=tcl.plot.mode,
           value="variables density by cluster", command=OnModifPlotMode)
-    tk.features.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tk.features.mode.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
     tkconfigure(tk.features.mode.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Features space", menu=tk.features.mode.menu)
     for (name in sortCharAsNum(names(visu.env$data.sample$features)))
-        tkadd(tk.features.mode.menu, "radio", label=featSpaceNameConvert(name, short2long=T, RclusTool.env), variable=tcl.features.mode,
+        tkadd(tk.features.mode.menu, "radio", label=featSpaceNameConvert(name, short2long=TRUE, RclusTool.env), variable=tcl.features.mode,
               value=name, command=OnModifFeaturesMode)
-    tk.axis.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tk.axis.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
     tkconfigure(tk.axis.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Scatter Plot-axis", menu=tk.axis.menu)
 
     if (!is.null(visu.env$cluster.summary)) {
-        tk.summary.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+        tk.summary.mode.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
         tkconfigure(tk.summary.mode.menu, font=visu.env$tk.font) 
         tkadd(tk.topmenu, "cascade", label="Clusters summaries", menu=tk.summary.mode.menu)
         buildMenuSummary()
     }
 
-    tk.profile.mode.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tk.profile.mode.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
     tkconfigure(tk.profile.mode.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Signals/Images view", menu=tk.profile.mode.menu)
 
-    tk.clustering.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tk.clustering.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
     tkconfigure(tk.clustering.menu, font=visu.env$tk.font) 
     tkadd(tk.topmenu, "cascade", label="Clustering", menu=tk.clustering.menu)
 
-    tk.compare.menu <- tkmenu(tk.topmenu, tearoff=F)
+    tk.compare.menu <- tkmenu(tk.topmenu, tearoff=FALSE)
     tkconfigure(tk.compare.menu, font=visu.env$tk.font)
     tkadd(tk.topmenu, "cascade", label="Comparison", menu=tk.compare.menu)
     tkadd(tk.compare.menu, "radio", label="off", variable=tcl.compare.mode,
@@ -1836,7 +1879,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' mainWindow <- tktoplevel()
 #' tktitle(mainWindow) <- "Barplot clustering"  
@@ -1844,13 +1887,13 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 #' tkpack(mainWindow$env$nb, fill="both", expand= TRUE)
 #' 
 #' analyzePlot(mainWindow$env$nb, x, selectedVar="x", type="boxplot")
-#'  
+#'
 #'
 #' @keywords internal
 #' 
 analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale = 1.2, K.max=20, fontsize=11) {
     datTemp <- data.sample$features[["preprocessed"]]$x[data.sample$id.clean,
-                                                        which(colnames(data.sample$features[["preprocessed"]]$x) == selectedVar)]
+                                                        which(colnames(data.sample$features[["preprocessed"]]$x) %in% selectedVar)]
     # Check if all values are numeric
     if (all(sapply(datTemp, is.numeric))) {
         # Boxplot for selected parameter
@@ -1863,7 +1906,7 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
                                 graphics::par(bg = "white", oma = c(0,2,2,0))
                                 graphics::layout(matrix(c(1,2), 1, 2, byrow = TRUE), widths=c(1.5,2.5))
                                 bp <- graphics::boxplot(data.sample$features[["preprocessed"]]$x[data.sample$id.clean, 
-                                              which(colnames(data.sample$features[["preprocessed"]]$x) == selectedVar)], 
+                                              which(colnames(data.sample$features[["preprocessed"]]$x) %in% selectedVar)], 
                                 main = NULL, ylab = "Values", outline = FALSE, col="black")
                                 graphics::title(sub = paste("Max: ", toString(signif(bp$stats[5], digits = 5)), 
                                                   "\n3rd quartile: ", toString(signif(bp$stats[4], digits = 5)),
@@ -1873,7 +1916,7 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
                                       adj = 1, font.sub = 1, cex.sub = 0.8)
 
                                 graphics::hist(data.sample$features[["preprocessed"]]$x[data.sample$id.clean,
-                                     which(colnames(data.sample$features[["preprocessed"]]$x) == selectedVar)], 
+                                     which(colnames(data.sample$features[["preprocessed"]]$x) %in% selectedVar)], 
                                 main = NULL, xlab = "Values", col="black")
                                 graphics::title(selectedVar, outer=TRUE)
         
@@ -2031,18 +2074,21 @@ cor.mtest <- function(mat) {
 #' mainWindow$env$nb <- tk2notebook(mainWindow, tabs = c())
 #' tkpack(mainWindow$env$nb, fill="both", expand= TRUE)
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' method <- "K-means"
 #' 
 #' x <- computeUnSupervised(x, K=3, method.name=method)
 #' 
 #' abdPlotTabs(x$clustering, mainWindow$env$nb)
-#'  
+#'
 #'
 #' @keywords internal
 #' 
-abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters(), hscale= 1.2)
+abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters(), hscale=NULL)
 {
+    if (is.null(hscale))
+        hscale <- 1.2
+
     num.cluster <- 0
     for (title in names(clusterings))
     {
@@ -2056,6 +2102,23 @@ abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters(), hscale=
         tk2draw.notetab(nb, as.character(num.cluster), hscale= hscale,
                         function() abdPlot(label, title, point.param=RclusTool.env$param$visu$palette.colors))
     }
+}
+
+#' abdPlotTabsGUI calls abdPlotTabs to display the abundances barplot of the clusterings of the current RclusTool.env$data.sample, inside the GUI.
+#' @title Abundances barplots inside Tk tabs.
+#' @description Display the abundances barplot of a clustering.
+#' @param RclusTool.env environment in which all global parameters, raw data and results are stored.
+#' @return None
+#'
+#' @keywords internal
+abdPlotTabsGUI <- function(RclusTool.env=initParameters())
+{
+    clusterings <- RclusTool.env$data.sample$clustering
+    nb <- RclusTool.env$gui$win2$env$nb
+    hscale <- RclusTool.env$param$visu$hscale
+
+    if (!is.null(clusterings) && !is.null(nb))
+        abdPlotTabs(clusterings, nb, RclusTool.env, hscale=hscale)
 }
  
 #' abdPlot displays the abundances barplot of a clustering.
@@ -2078,12 +2141,12 @@ abdPlotTabs <- function(clusterings, nb, RclusTool.env=initParameters(), hscale=
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' x <- computeUnSupervised(x, K=3, method.name='K-means')
 #' 
 #' abdPlot(x[["clustering"]][["K-means_preprocessed"]][["label"]], 'K-means_preprocessed')
-#'  
+#'
 #'
 #' @keywords internal
 #' 
@@ -2098,12 +2161,12 @@ abdPlot <- function(label, title, charsize=11, point.param=c("grey","black","red
   	id=names(label)
 	values=unname(label)
 	df<-data.frame(id=id,label=values)
-	p <- ggplot2::ggplot(df, aes(factor(label),fill=label)) + ggplot2::geom_bar() + ggplot2::scale_x_discrete(drop=F) 
+	p <- ggplot2::ggplot(df, aes(factor(label),fill=label)) + ggplot2::geom_bar() + ggplot2::scale_x_discrete(drop=FALSE) 
 	p <- p + ggplot2::xlab("") + ggplot2::ylab("Abundances")
 	p <- p + ggplot2::ggtitle(title)
 	p <- p + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) 
 	p <- p + ggplot2::theme(axis.text.x = element_text(angle = 90, size=11))
-	p <- p + ggplot2::scale_fill_manual(values=point.param[1:length(l)], drop=F)
+	p <- p + ggplot2::scale_fill_manual(values=point.param[1:length(l)], drop=FALSE)
 	p <- p + ggplot2::theme(legend.position='none')
 	p <- p + ggplot2::theme(axis.text.x = element_text(size = charsize))
 	p <- p + ggplot2::theme(axis.text.y = element_text(size = charsize))
@@ -2302,22 +2365,55 @@ tkrreplot.RclusTool <- function(env.graphic)
     tkimage.create("photo", env.graphic$image, file=env.graphic$file)
 }
 
-#' StringToTitle Convert a string to title.
-#' @title String To Title.
-#' @description Make a grahical title from string.
-#' @param string : string to convert
-#' @param size : size of the title in cm
-#' @param fontsize : size of font (default=11)
+#' makeTitle Makes a title from a string.
+#' @title RclusTool makeTitle.
+#' @description Makes a character title from string by completion with a specified character.
+#' @param string: string to be completed
+#' @param length: final title length in characters
+#' @param prefix.length: space length in front of the title
+#' @param char: character used to complete the title
 #' @return title
-#' @importFrom graphics strwidth
 #' @keywords internal
 
-StringToTitle <- function(string,size,fontsize=11){
-size=size/2.54
-string_return=paste(strrep('_', 5),string,sep="")
-while(graphics::strwidth(string_return, font = fontsize, units="inches")<=size){
-  string_return=paste(string_return,"_",sep="")
-}
-return(string_return)  
+makeTitle <- function(string, length=120, prefix.length=5, char='_'){
+    n.reps <- length - nchar(string) - prefix.length
+    if (n.reps<1)
+        return(string)
+    string_return <- paste(strrep(char, 5), string, strrep(char, n.reps), sep='')
+    return(string_return)  
 }
 
+#' tkEmptyLine Inserts an empty line in a graphical tk objects dealt with grid.
+#' @title RclusTool tkEmptyLine.
+#' @description Makes a character title from string by completion with a specified character.
+#' @param tk.object: tk object in which to insert the new line
+#' @param row: row number of the insertion
+#' @return None
+#' @keywords internal
+
+tkEmptyLine <- function(tk.object, row=NULL)
+{
+    label <- tklabel(tk.object, text="  ")
+    if (!is.null(row)) {
+        tkgrid(label, row = row)
+    } else {
+        tkgrid(label)
+    }
+}
+
+#' consoleMessage Adds a message in the RclusTool GUI.
+#' @title RclusTool consoleMessage.
+#' @description Adds a message in the RclusTool GUI.
+#' @param message: string to print in the console.
+#' @param RclusTool.env environment in which all global parameters, raw data and results are stored.
+#' @return None
+#' @keywords internal
+
+messageConsole <- function(message, RclusTool.env=initParameters())
+{
+    console <- RclusTool.env$gui$console
+    if (!is.null(console))
+    {
+        tkinsert(console, "0.0", message)
+    }
+}

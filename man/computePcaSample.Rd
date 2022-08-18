@@ -8,8 +8,8 @@ computePcaSample(
   data.sample,
   pca.nb.dims = 0,
   selected.var = NULL,
-  echo = F,
-  prcomp.options = list(center = T, scale = T),
+  echo = FALSE,
+  prcomp.options = list(center = TRUE, scale = TRUE),
   pca.variance.cum.min = 0.95
 )
 }
@@ -41,7 +41,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 res <- computePcaSample(x, echo = TRUE)
 

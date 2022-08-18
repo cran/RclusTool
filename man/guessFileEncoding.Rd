@@ -23,12 +23,11 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 
-write.table(dat, 'test.csv', sep=",", dec=".")
+csv.file <- tempfile()
+write.table(dat, csv.file, sep=",", dec=".")
 
-guessFileEncoding('test.csv')
+guessFileEncoding(csv.file)
 
-#cleanup
-unlink('test.csv')
 
 }
 \keyword{internal}

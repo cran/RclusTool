@@ -8,12 +8,12 @@ computeUnSupervised(
   data.sample,
   K = 0,
   method.name = "K-means",
-  pca = F,
+  pca = FALSE,
   pca.nb.dims = 0,
-  spec = F,
+  spec = FALSE,
   use.sampling = FALSE,
   sampling.size.max = 0,
-  scaling = F,
+  scaling = FALSE,
   RclusTool.env = initParameters(),
   echo = FALSE
 )
@@ -56,12 +56,12 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 x <- computeUnSupervised(x, K=0, pca=TRUE, echo=TRUE)
 label <- x$clustering[["K-means_pca"]]$label
 plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y", 
-col = label, main = "K-means clustering")
+    col = label, main = "K-means clustering")
 
 
 }

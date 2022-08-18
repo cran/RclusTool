@@ -15,8 +15,14 @@ buildConstraintsMatrix(n, list.ML = list(), list.CNL = list())
 }
 \value{
 C constraints matrix (with 1 for must-link and -1 for cannot-link).
-
-#' @examples 
+}
+\description{
+Compute the constraints matrix C, based on ML and CNL sets.
+}
+\details{
+buildConstraintsMatrix generate constraints matrix, based on ML and CNL sets
+}
+\examples{
 dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
            matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
            matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
@@ -30,11 +36,6 @@ CNL[[1]] <- c(sel="30",mem="80")
 CNL[[2]] <- c(sel="90",mem="120")
 
 C <- buildConstraintsMatrix(n=nrow(dat), list.ML=ML, list.CNL=CNL)
-}
-\description{
-Compute the constraints matrix C, based on ML and CNL sets.
-}
-\details{
-buildConstraintsMatrix generate constraints matrix, based on ML and CNL sets
+
 }
 \keyword{internal}

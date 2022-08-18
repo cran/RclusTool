@@ -57,7 +57,7 @@
 #' 
 #' plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y", 
 #'	col = res$label, main = "Constrained spectral clustering")
-#' 
+#'
 #' @keywords internal
 #' 
 KwaySSSC <- function (sim, K=0, list.ML=list(), list.CNL=list(),
@@ -133,7 +133,7 @@ KwaySSSC <- function (sim, K=0, list.ML=list(), list.CNL=list(),
 #' res <- KwaySSSC(sim, K=0, list.ML=ML, list.CNL=CNL)
 #' 
 #' measureConstraintsOk(res$label, list.ML=ML, list.CNL=CNL)
-#' 
+#'
 #' @keywords internal 
 #' 
 measureConstraintsOk <- function(label, list.ML=list(), list.CNL=list()) {
@@ -175,7 +175,7 @@ measureConstraintsOk <- function(label, list.ML=list(), list.CNL=list()) {
 #' res <- KwaySSSC(sim, K=0, list.ML=ML, list.CNL=CNL)
 #' 
 #' measureMNCut(sim, res$label)
-#' 
+#'
 #' @keywords internal
 #' 
 measureMNCut <- function(sim, label) {
@@ -212,7 +212,7 @@ measureMNCut <- function(sim, label) {
 #' res <- KwaySSSC(sim, K=0, list.ML=ML, list.CNL=CNL)
 #' 
 #' critMNCut(sim, res$label)
-#' 
+#'
 #' @keywords internal 
 #' 
 critMNCut <- function(sim, label) {
@@ -234,7 +234,7 @@ critMNCut <- function(sim, label) {
 #' @param list.CNL list of CNL (cannot-link) constrained pairs.
 #' @return C constraints matrix (with 1 for must-link and -1 for cannot-link).
 #' 
-#' #' @examples 
+#' @examples 
 #' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
 #'            matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'            matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
@@ -248,7 +248,7 @@ critMNCut <- function(sim, label) {
 #' CNL[[2]] <- c(sel="90",mem="120")
 #' 
 #' C <- buildConstraintsMatrix(n=nrow(dat), list.ML=ML, list.CNL=CNL)
-#' 
+#'
 #' @keywords internal
 #' 
 buildConstraintsMatrix <- function(n, list.ML=list(), list.CNL=list()) {

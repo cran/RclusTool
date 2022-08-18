@@ -4,15 +4,9 @@
 \alias{buildsupTab}
 \title{Supervised tab}
 \usage{
-buildsupTab(mainWindow, console, graphicFrame, RclusTool.env)
+buildsupTab(RclusTool.env)
 }
 \arguments{
-\item{mainWindow}{: window in which the 'supTab' is created.}
-
-\item{console}{: frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{: frame of the RclusTool interface in which graphics should be dispayed.}
-
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 }
 \value{

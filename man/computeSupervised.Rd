@@ -46,7 +46,7 @@ traindir <- file.path(rep, "train_example")
 tf <- tempfile()
 write.table(features, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf, dir.save=dirname(tf))
 
 train <- readTrainSet(traindir)
 

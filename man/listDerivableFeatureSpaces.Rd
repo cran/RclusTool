@@ -5,9 +5,9 @@
 \title{Builds list of derivable feature spaces}
 \usage{
 listDerivableFeatureSpaces(
-  scaling = F,
-  pca = F,
-  spectral = F,
+  scaling = FALSE,
+  pca = FALSE,
+  spectral = FALSE,
   RclusTool.env = initParameters()
 )
 }

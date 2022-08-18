@@ -11,7 +11,7 @@ importSample(
   file.RDS = "",
   file.config = "",
   dir.images = "",
-  dir.save = ".",
+  dir.save = "",
   sepFeat = ",",
   decFeat = ".",
   naFeat = c("", "NA"),
@@ -20,7 +20,6 @@ importSample(
   naSig = c("", "NA"),
   headerCSV = TRUE,
   RclusTool.env = new.env(),
-  save.to.disk = TRUE,
   ...
 )
 }
@@ -37,7 +36,7 @@ importSample(
 
 \item{dir.images}{character vector containing the path of images directory.}
 
-\item{dir.save}{character vector specifying path of the working directory.}
+\item{dir.save}{character vector specifying path of the working directory to save results ; "" to not save any results}
 
 \item{sepFeat}{character specifying the field separator for the csv file containing features data.}
 
@@ -54,8 +53,6 @@ importSample(
 \item{headerCSV}{boolean if TRUE (default) the file contains the names of the variables as its first line.}
 
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
-
-\item{save.to.disk}{boolean if TRUE (default) some data files and folders are saved to disk.}
 
 \item{...}{parameters adressed to read.csv functions.}
 }
@@ -79,7 +76,7 @@ metadat <- rbind("First metadata: ...", "Second metadata: ...")
 tf2 <- tempfile()
 writeLines(metadat, tf2)
 
-x <- importSample(file.features=tf1, file.meta=tf2, dir.save=tempdir())
+x <- importSample(file.features=tf1, file.meta=tf2)
 
 
 }

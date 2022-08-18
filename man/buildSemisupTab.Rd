@@ -4,15 +4,9 @@
 \alias{buildSemisupTab}
 \title{Semi-Supervised tab}
 \usage{
-buildSemisupTab(mainWindow, console, graphicFrame, RclusTool.env)
+buildSemisupTab(RclusTool.env)
 }
 \arguments{
-\item{mainWindow}{window in which the 'semisupTab' is created.}
-
-\item{console}{frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{frame of the RclusTool interface in which graphics should be dispayed.}
-
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
 \value{

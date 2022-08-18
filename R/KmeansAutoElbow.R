@@ -88,7 +88,7 @@ ElbowFinder <- function(x, y) {
 #' 
 #' @keywords internal
 #'
-KmeansAutoElbow <- function(features, Kmax, StopCriteria=0.99, graph=F, Elbow=T) {
+KmeansAutoElbow <- function(features, Kmax, StopCriteria=0.99, graph=FALSE, Elbow=TRUE) {
     N <- nrow(features)
     Within <- rep(-1,Kmax)
     explainedVar <- rep(-1,Kmax)
@@ -97,7 +97,7 @@ KmeansAutoElbow <- function(features, Kmax, StopCriteria=0.99, graph=F, Elbow=T)
         fastCenters <- NULL; #find center quickly on 5% of points
         #if (N>20000) {
         #    idx <- sample((1:N), round(N*0.05), replace=FALSE)
-        #    res <- stats::kmeans(features[idx,,drop=F], centers=i, iter.max = 200, nstart = 20, algorithm = c("Lloyd"))
+        #    res <- stats::kmeans(features[idx,,drop=FALSE], centers=i, iter.max = 200, nstart = 20, algorithm = c("Lloyd"))
         #    fastCenters <- res$centers
         #} else 
             fastCenters <- i
@@ -106,7 +106,7 @@ KmeansAutoElbow <- function(features, Kmax, StopCriteria=0.99, graph=F, Elbow=T)
         names(Res.km$cluster) <- rownames(features)
         Within[i] <- Res.km$tot.withinss
         explainedVar[i] <- Res.km$betweenss/Res.km$totss
-        if (Elbow==F){
+        if (Elbow==FALSE){
           if (explainedVar[i]>StopCriteria) {
              K <- i
              break
@@ -114,12 +114,12 @@ KmeansAutoElbow <- function(features, Kmax, StopCriteria=0.99, graph=F, Elbow=T)
              K <- i
         }
     }
-    if (Elbow==T){
+    if (Elbow==TRUE){
     	K=ElbowFinder(1:Kmax,Within[1:Kmax])
     	Res.km <- stats::kmeans(features, centers=K, iter.max = 200, nstart = 1, algorithm = c("Lloyd"))
     	Res.km[["Withins_tot"]]=Within
     }
-    if (graph==T) {
+    if (graph==TRUE) {
         wind1<- tktoplevel()
         tkwm.title(wind1, "Elbow method")
         AbdP <- tkrplot(wind1, hscale = 1.2, 
@@ -197,10 +197,10 @@ KmeansQuick <- function(features, K) {
 #'            matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #'            
 #' res <- FindNumberK(dat, Kmax=20, graph=TRUE)
-#' 
+#'
 #' @keywords internal 
 #'
-FindNumberK <- function(features, Kmax, StopCriteria=0.99, graph=F) {
+FindNumberK <- function(features, Kmax, StopCriteria=0.99, graph=FALSE) {
     #selection of representative point by kmeans
     res <- KmeansAutoElbow(features, Kmax, StopCriteria=StopCriteria, graph=graph)
     selected <- res$res.kmeans$centers

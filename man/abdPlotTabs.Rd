@@ -4,7 +4,7 @@
 \alias{abdPlotTabs}
 \title{Abundances barplots inside Tk tabs.}
 \usage{
-abdPlotTabs(clusterings, nb, RclusTool.env = initParameters(), hscale = 1.2)
+abdPlotTabs(clusterings, nb, RclusTool.env = initParameters(), hscale = NULL)
 }
 \arguments{
 \item{clusterings}{clustering list.}
@@ -37,13 +37,13 @@ tktitle(mainWindow) <- "Barplot clustering"
 mainWindow$env$nb <- tk2notebook(mainWindow, tabs = c())
 tkpack(mainWindow$env$nb, fill="both", expand= TRUE)
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 method <- "K-means"
 
 x <- computeUnSupervised(x, K=3, method.name=method)
 
 abdPlotTabs(x$clustering, mainWindow$env$nb)
- 
+
 
 }
 \keyword{internal}

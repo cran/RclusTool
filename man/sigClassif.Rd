@@ -33,7 +33,8 @@ sig <- data.frame(ID=rep(1:150, each=30), SIGNAL=rep(dnorm(seq(-2,2,length=30)),
 tf2 <- tempfile()
 write.table(sig, tf2, sep=",", dec=".")
 
-x <- importSample(file.features=tf1,file.profiles = tf2, dir.save=tempdir())
+dir.results <- tempdir()
+x <- importSample(file.features=tf1,file.profiles = tf2, dir.save=dir.results)
 x <- computeUnSupervised(x, K=3, method.name="K-means")
 
 sigClassif(x, method = "K-means_preprocessed")

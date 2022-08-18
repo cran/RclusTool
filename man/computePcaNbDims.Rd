@@ -27,7 +27,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 res.pca <- computePcaSample(x)
 computePcaNbDims(res.pca$pca$sdev)
 

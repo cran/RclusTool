@@ -31,7 +31,7 @@
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' res.pca <- computePcaSample(x)
 #' computePcaNbDims(res.pca$pca$sdev)
 #' 
@@ -64,7 +64,7 @@ computePcaNbDims <- function(sdev, pca.variance.cum.min=0.9) {
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' res.kmeans <- computeKmeans(x$features$initial$x, K=0, graph=TRUE)
 #' plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y", 
 #'	col = res.kmeans$cluster, main = "K-means clustering")
@@ -73,7 +73,7 @@ computePcaNbDims <- function(sdev, pca.variance.cum.min=0.9) {
 #' 
 #' @keywords internal
 #' 
-computeKmeans <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=F) {
+computeKmeans <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=FALSE) {
     K.max <- min(nrow(x), K.max)
     if (K.max <= 2)
         K <- K.max
@@ -110,7 +110,7 @@ computeKmeans <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=F) {
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' res.em <- computeEM(x$features$initial$x, K=0, graph=TRUE)
 #' plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y", 
 #'	col = res.em$classification, main = "EM clustering")
@@ -118,7 +118,7 @@ computeKmeans <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=F) {
 #' 
 #' @keywords internal
 #' 
-computeEM <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=F, Mclust.options=list()) {
+computeEM <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=FALSE, Mclust.options=list()) {
 	Within <- NULL
     if (K==0) { # #KMeans Auto Method Elbow : includes selection of K, with rule of thumb
         message("EM computing and K estimation: method Elbow")
@@ -152,12 +152,11 @@ computeEM <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=F, Mclus
 #'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' 
-#' write.table(dat, 'test.csv', sep=",", dec=".")
+#' csv.file <- tempfile()
+#' write.table(dat, csv.file, sep=",", dec=".")
 #' 
-#' guessFileEncoding('test.csv')
+#' guessFileEncoding(csv.file)
 #' 
-#' #cleanup
-#' unlink('test.csv')
 #' 
 #' @keywords internal
 guessFileEncoding <- function(file.name)
@@ -181,12 +180,12 @@ guessFileEncoding <- function(file.name)
 #' @keywords internal
 sortCharAsNum <- function(char.vec, ...)
 {
-    ok <- T
+    ok <- TRUE
     vec <- suppressWarnings(as.numeric(char.vec))
     if (any(is.na(vec)))
     {
         vec <- char.vec
-        ok <- F
+        ok <- FALSE
     }
     res <- order(vec, ...)
     char.vec[res]
@@ -236,10 +235,10 @@ convNamesPairsToIndexPairs <- function(pair.list, full.name.set)
     if (!length(pair.list)){
         pair.matrix <- matrix(0,nrow=0,ncol=2)
     } else {
-        pair.list <- sapply(pair.list, function(ligne) convNamesToIndex(ligne, full.name.set), simplify=F)
+        pair.list <- sapply(pair.list, function(ligne) convNamesToIndex(ligne, full.name.set), simplify=FALSE)
         pair.matrix <- do.call(rbind, pair.list)
         colnames(pair.matrix) <- NULL
-        pair.matrix <- pair.matrix[apply(pair.matrix,1,function(ligne) all(!is.na(ligne))),,drop=F]
+        pair.matrix <- pair.matrix[apply(pair.matrix,1,function(ligne) all(!is.na(ligne))),,drop=FALSE]
     }
     pair.matrix
 }
@@ -264,7 +263,7 @@ convNamesPairsToIndexPairs <- function(pair.list, full.name.set)
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' ML=list(c(sel="10",mem="20"))
 #' CNL=list(c(sel="1",mem="140"))
@@ -323,7 +322,7 @@ computeCKmeans <- function(x, K=0, K.max=20, mustLink=NULL, cantLink=NULL, maxIt
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' ML=list(c(sel="10",mem="20"))
 #' CNL=list(c(sel="1",mem="140"))
@@ -338,12 +337,12 @@ computeCKmeans <- function(x, K=0, K.max=20, mustLink=NULL, cantLink=NULL, maxIt
 computeCSC <- function(x, K=0, K.max=20, mustLink=list(), cantLink=list(), alphas=seq(from=0, to=1, length=100)) {
     # conversion names to indexes + to matrix
     if (length(mustLink)){
-        mustLink <- sapply(mustLink, function(ligne) convNamesToIndex(ligne, row.names(x)), simplify=F)
+        mustLink <- sapply(mustLink, function(ligne) convNamesToIndex(ligne, row.names(x)), simplify=FALSE)
         mustLink <- mustLink[sapply(mustLink,function(ligne) all(!is.na(ligne)))]
     }
 
     if (length(cantLink)){
-        cantLink <- sapply(cantLink, function(ligne) convNamesToIndex(ligne, row.names(x)), simplify=F)
+        cantLink <- sapply(cantLink, function(ligne) convNamesToIndex(ligne, row.names(x)), simplify=FALSE)
         cantLink <- cantLink[sapply(cantLink,function(ligne) all(!is.na(ligne)))]
     }
 
@@ -381,7 +380,7 @@ computeCSC <- function(x, K=0, K.max=20, mustLink=list(), cantLink=list(), alpha
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' res.sampling <- computeSampling(x$features$initial$x)
 #' 
@@ -389,7 +388,7 @@ computeCSC <- function(x, K=0, K.max=20, mustLink=list(), cantLink=list(), alpha
 #' @keywords internal
 #' 
 
-computeSampling <- function(x, label=NULL, K=0, toKeep = NULL, sampling.size.max=3000, K.max=20, kmeans.variance.min=0.95) {
+computeSampling <- function(x, label=NULL, K=0, toKeep=NULL, sampling.size.max=3000, K.max=20, kmeans.variance.min=0.95) {
       if (!sampling.size.max)
         sampling.size.max <- 3000
 
@@ -401,7 +400,7 @@ computeSampling <- function(x, label=NULL, K=0, toKeep = NULL, sampling.size.max
 
     if (is.null(label)) {
         res.kmeans <- computeKmeans(x, K=K, K.max=K.max,
-                                    kmeans.variance.min=kmeans.variance.min, graph=F)
+                                    kmeans.variance.min=kmeans.variance.min, graph=FALSE)
         label <- res.kmeans$cluster
         label_prob <- stats::ave(label,label,FUN=length)
         label_prob <- 1/(label_prob*max(unname(label)))
@@ -427,13 +426,47 @@ computeSampling <- function(x, label=NULL, K=0, toKeep = NULL, sampling.size.max
     #       selection.ids <- sort(unlist(by(label, factor(label), 
     #                                 function (x) {sample(x, min(length(x), nb.max.sample))})))
     #generalization by k-nn, works if selection.ids are sorted
-    # res.knn <- class::knn(x[selection.ids,,drop=F], x, cl=selection.ids, k=1) #WARNING #neighbours=1
-    res.knn <- class::knn(x[selection.ids,,drop=F], x, cl=selection.ids, k=1)
+    # res.knn <- class::knn(x[selection.ids,,drop=FALSE], x, cl=selection.ids, k=1) #WARNING #neighbours=1
+    res.knn <- class::knn(x[selection.ids,,drop=FALSE], x, cl=selection.ids, k=1)
     #!!!!! (sinon, prototypes peuvent changer de classes)
     matching <- as.character(res.knn) #as.integer(as.character(res.knn))
 
     list(selection.ids=selection.ids, selection.labs=selection.labs, matching=matching, size.max=sampling.size.max, K=length(levels(label)))
 }
+
+#' addIds2Sampling adds some observations to set of sampled observations.
+#' @title Adding Ids To a Sampling
+#' @description adds some observations to set of sampled observations.
+#' @param sampling object of a data sample.
+#' @param toAdd vector of ids to add.
+#' @return The completed sampling object.
+#'
+#' @examples 
+#' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
+#' tf <- tempfile()
+#' write.table(dat, tf, sep=",", dec=".")
+#' x <- importSample(file.features=tf)
+#' 
+#' res.sampling <- computeSampling(x$features$initial$x)
+#' completed.sampling <- addIds2Sampling(res.sampling, rownames(x$features$initial$x[1:5,,drop=FALSE]))
+#' 
+#' 
+#' @keywords internal
+#' 
+
+addIds2Sampling <- function(sampling, toAdd=NULL) {
+    if (length(toAdd)) {
+        toAdd <- setdiff(unique(toAdd),sampling$selection.ids)
+        sampling$selection.ids <- c(sampling$selection.ids, toAdd)
+        sampling$selection.labs <- c(sampling$selection.labs, rep(NA,length(toAdd))) # Warning !!!
+        sampling$matching <- c(sampling$matching, toAdd)
+        sampling$size.max <- max(sampling$size.max, length(sampling$selection.ids))
+    }
+    sampling
+}
+
 
 #' computePcaSample performs Principal Components Analysis, dealing with the number of dimensions, automatically or not
 #' @title Principal Components Analysis
@@ -454,7 +487,7 @@ computeSampling <- function(x, label=NULL, K=0, toKeep = NULL, sampling.size.max
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' res <- computePcaSample(x, echo = TRUE)
 #' 
@@ -463,7 +496,7 @@ computeSampling <- function(x, label=NULL, K=0, toKeep = NULL, sampling.size.max
 #' 
 #' @keywords internal
 #' 
-computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo=F, prcomp.options=list(center=T, scale=T), pca.variance.cum.min=0.95) {
+computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo=FALSE, prcomp.options=list(center=TRUE, scale=TRUE), pca.variance.cum.min=0.95) {
     features <- list("pca_full"=NULL, "pca"=NULL)
 
     numFeat <- colnames(data.sample$features[["preprocessed"]]$x)[sapply(data.sample$features[["preprocessed"]]$x, is.numeric)]
@@ -479,7 +512,7 @@ computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo
         if (echo) message("PCA computing")
 
         # Compute pca
-        df <- as.data.frame(data.sample$features[["preprocessed"]]$x[data.sample$id.clean, selected.var, drop=F])
+        df <- as.data.frame(data.sample$features[["preprocessed"]]$x[data.sample$id.clean, selected.var, drop=FALSE])
         df <- df[,apply(df, 2, stats::var, na.rm=TRUE) != 0]
 
         if (all(dim(df) > 1)) {
@@ -498,6 +531,7 @@ computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo
             names(features$pca$logscale) <- colnames(features$pca$x)
             features[["pca_full"]] <- features$pca
         } else {
+            stop("No valid features: pca cannot be computed")
             features <- data.sample$features[c("pca_full","pca")]
         }
 
@@ -511,7 +545,7 @@ computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo
         if (echo) message(paste("Working on PCA, nb of principal components =", pca.nb.dims))
         if (echo) message(paste("Information lost=", 100-round(features$pca$inertia.prop[pca.nb.dims]*100,2), "%"))
 
-        features[["pca"]]$x <- features$pca$x[,1:pca.nb.dims, drop=F]
+        features[["pca"]]$x <- features$pca$x[,1:pca.nb.dims, drop=FALSE]
         features[["pca"]]$logscale <- features$pca$logscale[1:pca.nb.dims]
         features[["pca"]]$rotation <- features$pca$rotation[1:pca.nb.dims]
         features[["pca"]]$sdev <- features$pca$sdev[1:pca.nb.dims]
@@ -541,7 +575,7 @@ computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' res <- computeSpectralEmbeddingSample(x)
 #' 
@@ -550,7 +584,7 @@ computePcaSample <- function(data.sample, pca.nb.dims=0, selected.var=NULL, echo
 #' 
 #' @keywords internal
 #' 
-computeSpectralEmbeddingSample <- function(data.sample, use.sampling = FALSE, sampling.size.max=0, scale=FALSE, selected.var = NULL, echo=F, RclusTool.env=initParameters()) {
+computeSpectralEmbeddingSample <- function(data.sample, use.sampling = FALSE, sampling.size.max=0, scale=FALSE, selected.var = NULL, echo=FALSE, RclusTool.env=initParameters()) {
     this.call <- list(use.sampling=use.sampling, selected.var=selected.var)
     if (use.sampling)
         this.call[["selection.ids"]] <- data.sample$sampling$selection.ids
@@ -563,7 +597,7 @@ computeSpectralEmbeddingSample <- function(data.sample, use.sampling = FALSE, sa
     this.call[["selected.var"]] <- selected.var
 
     # Compute spectral embedding
-    x <- data.sample$features[["preprocessed"]]$x[data.sample$id.clean, selected.var, drop=F]
+    x <- data.sample$features[["preprocessed"]]$x[data.sample$id.clean, selected.var, drop=FALSE]
         
     #Scale
 	if (scale) {
@@ -577,7 +611,7 @@ computeSpectralEmbeddingSample <- function(data.sample, use.sampling = FALSE, sa
             data.sample$sampling <- computeSampling(x=x, K=RclusTool.env$param$classif$unsup$K.max,
                                                     sampling.size.max=RclusTool.env$param$preprocess$sampling.size.max, kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min)
         }
-        x <- x[data.sample$sampling$selection.ids, , drop=F]
+        x <- x[data.sample$sampling$selection.ids, , drop=FALSE]
     }
 
     if (echo) message("Similarity computing")
@@ -616,7 +650,7 @@ computeSpectralEmbeddingSample <- function(data.sample, use.sampling = FALSE, sa
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' res <- removeZeros(x$features$initial$x)  
 #' 
@@ -641,7 +675,7 @@ removeZeros <- function(x, threshold=.Machine$double.eps, positive=FALSE) {
     x
 }
 
-#' computeItems applies a specific predictive model for counting of number of cells in colonies for each cluster
+#' computeItemsSample applies a specific predictive model for counting of number of cells in colonies for each cluster
 #' @title Prediction of number of cells in colonies
 #' @description Apply a specific predictive model for counting of number of cells in colonies for each cluster.
 #' @param data.sample list containing features, profiles and clustering results.
@@ -661,20 +695,19 @@ removeZeros <- function(x, threshold=.Machine$double.eps, positive=FALSE) {
 #' colnames(dat) <- c("x","y")
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
-#' x <- computeItems(x, method="K-means", cluster="Cluster 1", modelFile)
+#' x <- computeItemsSample(x, method="K-means", cluster="Cluster 1", modelFile=NULL)# to be fixed !
 #'
 #'
 #' }
 #' @keywords internal
 
-computeItems <- function (data.sample, method, cluster, modelFile) {
+computeItemsSample <- function (data.sample, method, cluster, modelFile=NULL) {
 
-    ## Parameters:
-    ## data.sample: sample containing the items to count.
-    ## itemsModels: the file containing the models for items countings.
+    if (is.null(modelFile))
+        return(data.sample)
 
     object <- readRDS(modelFile)
 
@@ -682,35 +715,54 @@ computeItems <- function (data.sample, method, cluster, modelFile) {
     dat <- data.sample$features$initial$x[idxCluster, 
                                           intersect(names(data.sample$features$initial$x), names(object$model))]
 
-    if (class(object) == "lm")
+    if (inherits(object, "lm"))
         pred <- stats::predict(object, newdata = dat)
-    if (class(object) == "lda")
-        pred <- stats::predict(object, newdata = dat)$class
-    if (class(object) == "mda")
-        pred <- stats::predict(object, newdata = dat)
+    else {
+        if (inherits(object, "lda"))
+            pred <- stats::predict(object, newdata = dat)$class
+        else {
+            if (inherits(object, "mda"))
+                pred <- stats::predict(object, newdata = dat)
+        }
+    }
 
     ## Return the modified countings
     data.sample$clustering[[method]]$nbItems[names(pred)] <- pred
     data.sample
 }
 
-#' computeItemsGUI opens a Graphical User Interface allowing to choose cluster name and model file for the estimation and the saving of the number of cells in colonies
+#' computeItemsSampleGUI opens a Graphical User Interface allowing to choose cluster name and model file for the estimation and the saving of the number of cells in colonies
 #' @title GUI to estimate the number of cells in colonies for each cluster
 #' @description Open a Graphical User Interface allowing to choose cluster name and model file for the estimation and the saving of the number of cells in colonies.
+#' @param data.sample list containing features, profiles and clustering results.
 #' @param method.select character vector specifying the name of the clustering result to use ('K-means' by default).
 #' @param RclusTool.env environment in which all global parameters, raw data and results are stored.
+#' @return data.sample with saved count results
 #' @import tcltk
 #' @return csv file containing the counts.
 #' 
 #' @examples
 #' \donttest{ 
 #'
-#' computeItemsGUI(method.select="K-means")
+#' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
+#' tf <- tempfile()
+#' write.table(dat, tf, sep=",", dec=".")
+#' x <- importSample(file.features=tf)
+#' 
+#' x <- computeUnSupervised(x, K=0, pca=TRUE, echo=TRUE)
+#' computeItemsSampleGUI(x, method.select="K-means")
 #'  
 #' }
 #' @keywords internal
 
-computeItemsGUI <- function(method.select = "K-means", RclusTool.env=RclusTool.env) {
+computeItemsSampleGUI <- function(data.sample, method.select = "K-means", RclusTool.env=initParameters()) {
+    if (is.null(data.sample$clustering[[method.select]]$label)){
+        warning("computeItemsSampleGUI: no clustering results for the selected clustering method.")
+        return(data.sample)
+    }
+
     itemtt <- tktoplevel()
     tktitle(itemtt) <- "Process with items countings"
 
@@ -733,7 +785,7 @@ computeItemsGUI <- function(method.select = "K-means", RclusTool.env=RclusTool.e
     buildMenuClusters <- function() {
         tkconfigure(tk.cluster.but, text = items.env$cluster.select)
         tkdelete(tk.cluster.menu, 0, "end")
-        for (name in levels(RclusTool.env$data.sample$clustering[[method.select]]$label)) 
+        for (name in levels(data.sample$clustering[[method.select]]$label)) 
             tkadd(tk.cluster.menu, "radio", label = name, variable = tcl.cluster.select,
                   command = OnClusterChange)
     }
@@ -750,22 +802,21 @@ computeItemsGUI <- function(method.select = "K-means", RclusTool.env=RclusTool.e
 
     # Apply items counts model
     onApplyModel <- function() {
-        # Call 'computeItems' function
+        # Call 'computeItemsSample' function
         if (is.character(items.env$modelFile))
-            RclusTool.env$data.sample <- computeItems(data.sample = RclusTool.env$data.sample,
+            data.sample <- computeItemsSample(data.sample = data.sample,
                                                       method = method.select, cluster = items.env$cluster.select, modelFile = items.env$modelFile)
         # Save counts for this data.sample (csv file)
         if (items.env$export.counts) {
-            fileCounts.csv <- file.path(RclusTool.env$data.sample$files$results$clustering, 
-                                        paste("counts ", RclusTool.env$operator.name, " ",
-                                              method.select, ".csv", sep=""))
-            saveCounts(fileCounts.csv, RclusTool.env$data.sample$clustering[[method.select]]$nbItems)
+            fileCounts.csv <- paste("counts ", RclusTool.env$operator.name, " ",
+                                              method.select, ".csv", sep="")
+            saveCounts(fileCounts.csv, data.sample$clustering[[method.select]]$nbItems, dir=data.sample$files$results$clustering)
         }
     }
 
     ## Positioning the 'Cluster' button
     tkgrid(tklabel(itemtt, text="      "), row = 0, column = 0)
-    items.env$cluster.select <- levels(RclusTool.env$data.sample$clustering[[method.select]]$label)[1]
+    items.env$cluster.select <- levels(data.sample$clustering[[method.select]]$label)[1]
     tcl.cluster.select <- tclVar(items.env$cluster.select)
     tk.cluster.but <- tkmenubutton(itemtt, text = items.env$cluster.select, relief = "raised", width = 15)
     tk.cluster.menu <- tkmenu(tk.cluster.but, tearoff = FALSE)  
@@ -791,6 +842,7 @@ computeItemsGUI <- function(method.select = "K-means", RclusTool.env=RclusTool.e
     tkgrid(tklabel(itemtt, text="      "), row = 5, column = 5)
 
     tkwait.window(itemtt)
+    data.sample
 }
 
 #' itemsModel computes and saves specific predictive model from manual countings for the estimation of number of cells in colonies
@@ -803,20 +855,22 @@ computeItemsGUI <- function(method.select = "K-means", RclusTool.env=RclusTool.e
 #' @import MASS
 #' @import mda
 #' @return RDS file containing the predictive model.
-#' @seealso \code{\link{computeItems}}, \code{\link{countItems}} 
+#' @seealso \code{\link{computeItemsSample}}, \code{\link{countItems}} 
 #' 
 #' @examples
 #' \donttest{
-#' dat <- rbind(matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
-#'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2), 
-#'              matrix(rnorm(100, mean = 6, sd = 0.3), ncol = 2))
-#' colnames(dat) <- c("x","y")
+#' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
-#' countItemsGUI()
-#' itemsModel(x$features$initial$x, countFile)
+#' x <- computeUnSupervised(x, K=0, pca=TRUE, echo=TRUE)
+#' 
+#' countFile <- countItemsSampleGUI(x)
+#' if (file.exists(countFile))
+#'      itemsModel(x$features$initial$x, countFile)
 #' }
 #' @keywords internal
 
@@ -857,6 +911,7 @@ itemsModel <- function (dat, countFile, method = "mda") {
         saveRDS(model, file = modelPath)
     }
     message("Done!")
+    modelPath
 }
 
 #' countItems displays the profile and the image of each particle and allows the user to manually count the number of cells by simple left-clicking on each of them
@@ -873,7 +928,7 @@ itemsModel <- function (dat, countFile, method = "mda") {
 #' @importFrom jpeg readJPEG
 #' @importFrom png readPNG
 #' @return nbItemsTot number of cells manually counted on each image.
-#' @seealso \code{\link{itemsModel}}, \code{\link{computeItems}} 
+#' @seealso \code{\link{itemsModel}}, \code{\link{computeItemsSample}} 
 #' 
 #' @examples
 #' \donttest{ 
@@ -888,7 +943,7 @@ itemsModel <- function (dat, countFile, method = "mda") {
 #' tf2 <- tempfile()
 #' write.table(sig, tf2, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, file.profiles=tf2)
 #' 
 #' nbItems <- countItems(x$profiles[[1]])
 #' 
@@ -940,7 +995,7 @@ countItems <- function(profile, feature = NULL, imgdir = NULL, image = NULL) {
             h <- dimg[1]
             w <- dimg[2]
             rotate <- function(x) t(apply(x, 2, rev))
-            image(rotate(img[,,1]), col = gray((0:255)/255), axes = F)
+            image(rotate(img[,,1]), col = gray((0:255)/255), axes = FALSE)
             #       title(paste0(
             #         "\n\nFWS_NbCells: ",
             #         toString(signif(feature[[nbFeatures[grep("FWS",nbFeatures)][1]]]), digits = 4), 
@@ -978,23 +1033,32 @@ countItems <- function(profile, feature = NULL, imgdir = NULL, image = NULL) {
 }
 
 ## GUI function for counting items on images
-#' countItemsGUI opens a Graphical User Interface allowing to choose the images directory, to count manually the number of cells in colonies and to build specific predictive model
+#' countItemsSampleGUI opens a Graphical User Interface allowing to choose the images directory, to count manually the number of cells in colonies and to build specific predictive model
 #' @title GUI to manually count the number of cells in colonies
 #' @description Open a Graphical User Interface allowing to choose the images directory, to count manually the number of cells in colonies and to build specific predictive model.
+#' @param data.sample list containing features, profiles and clustering results.
 #' @param RclusTool.env environment in which all global parameters, raw data and results are stored.
 #' @return RDS file containing the counts.
 #' 
 #' @examples
 #' \donttest{ 
-#' countItemsGUI()
+#' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
+#'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
+#' tf <- tempfile()
+#' write.table(dat, tf, sep=",", dec=".")
+#' x <- importSample(file.features=tf)
+#' 
+#' x <- computeUnSupervised(x, K=0, pca=TRUE, echo=TRUE)
+#' countResult <- countItemsSampleGUI(x)
 #' }
 #' @keywords internal
 
-countItemsGUI <- function (RclusTool.env=initParameters()) {
+countItemsSampleGUI <- function (data.sample, RclusTool.env=initParameters()) {
     ## Get the training set directory
     imgdir <- tk_choose.dir()
     if (is.na(imgdir))
-        return(invisible(NULL))
+        return("")
 
     ## Ask to reset (if something is already set)
     countPath <- file.path(dirname(imgdir), paste(basename(imgdir), "_itemsCount.RData", sep = ""))
@@ -1008,7 +1072,7 @@ countItemsGUI <- function (RclusTool.env=initParameters()) {
             } else msg <- paste("There are", ncount,
                                 "images already processed. Do you want to keep these counts?")
             res <- tkmessageBox(message = msg, icon = "question", type = "yesnocancel", default = "yes")
-            if (tclvalue(res) == "cancel") return(invisible(NULL))
+            if (tclvalue(res) == "cancel") return("")
             reset = (tclvalue(res) == "no")    
         }        
     }
@@ -1024,9 +1088,9 @@ countItemsGUI <- function (RclusTool.env=initParameters()) {
 
         if (!(imgNum %in% row.names(nbItems))) {
             ## Keep the initial 'Number.of.items' features + Manual counting
-            nb <- c(RclusTool.env$data.sample$features$initial$x[imgNum,], 
-                    countItems(profile = RclusTool.env$data.sample$profiles[[imgNum]],
-                               feature = RclusTool.env$data.sample$features$initial$x[imgNum,],
+            nb <- c(data.sample$features$initial$x[imgNum,], 
+                    countItems(profile = data.sample$profiles[[imgNum]],
+                               feature = data.sample$features$initial$x[imgNum,],
                                imgdir = imgdir, image = img[i]))
 
             nbItems <- rbind(nbItems, nb)
@@ -1038,7 +1102,7 @@ countItemsGUI <- function (RclusTool.env=initParameters()) {
     ## Save the counts ('Number.of.items' features + Manual counts)
     saveRDS(nbItems, countPath)
     ## Call 'itemsModel' function to build predictive models
-    itemsModel(dat = RclusTool.env$data.sample$features$initial$x, countFile = countPath, method = "lm")
+    itemsModel(dat = data.sample$features$initial$x, countFile = countPath, method = "lm")
 }
 
 #' toStringDataFrame convert dataframe to string to print it in console

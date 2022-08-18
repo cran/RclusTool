@@ -4,7 +4,7 @@
 \alias{createResFolder}
 \title{Results directories creation}
 \usage{
-createResFolder(data.sample, dir.name = "", dir.path = ".")
+createResFolder(data.sample, dir.name = "", dir.path = "")
 }
 \arguments{
 \item{data.sample}{sample object.}
@@ -27,13 +27,12 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
-dir <- tempdir()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=dir)
+x <- importSample(file.features=tf, dir.save=dirname(tf))
 
 #Already called in importSample 
-createResFolder(x, dir.path=dir)
+createResFolder(x, dir.path=dirname(tf))
 
 
 }

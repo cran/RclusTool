@@ -4,22 +4,9 @@
 \alias{initPreprocessTab}
 \title{build Preprocess tab}
 \usage{
-initPreprocessTab(
-  mainWindow,
-  console,
-  graphicFrame,
-  RclusTool.env,
-  reset = F,
-  readConfig = F
-)
+initPreprocessTab(RclusTool.env, reset = FALSE, readConfig = FALSE)
 }
 \arguments{
-\item{mainWindow}{window in which the 'preprocessTab' is created.}
-
-\item{console}{frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{frame of the RclusTool interface in which graphics should be dispayed.}
-
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 
 \item{reset}{boolean to reset the whole interface}

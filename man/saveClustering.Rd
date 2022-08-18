@@ -38,5 +38,5 @@ saveClustering(basename(tf2), res$cluster, tempdir())
 
 }
 \seealso{
-\code{\link{loadClusteringSample}}
+\code{\link{buildClusteringSample}}
 }

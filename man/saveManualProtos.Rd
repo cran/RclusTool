@@ -21,19 +21,18 @@ Save the profiles and images of prototypes selected manually by user in a scatte
 saveManualProtos saves the profiles and images of prototypes selected manually by user in a scatterplot
 }
 \examples{
-\donttest{
+\dontrun{
 dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
-tf1 <- tempfile()
-write.table(dat, tf1, sep=",", dec=".")
+tf <- tempfile()
+write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf1, dir.save=dirname(tf))
 
 new.protos <- visualizeSampleClustering(x, selection.mode = "prototypes", 
 			 profile.mode="whole sample", wait.close=FALSE)
 saveManualProtos(x, new.protos)
-
 
 }
 }

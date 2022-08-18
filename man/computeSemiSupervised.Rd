@@ -12,14 +12,14 @@ computeSemiSupervised(
   kmax = 20,
   method.name = "Constrained_KM",
   maxIter = 2,
-  pca = F,
+  pca = FALSE,
   pca.nb.dims = 0,
-  spec = F,
+  spec = FALSE,
   use.sampling = FALSE,
   sampling.size.max = 0,
-  scaling = F,
+  scaling = FALSE,
   RclusTool.env = initParameters(),
-  echo = T
+  echo = TRUE
 )
 }
 \arguments{
@@ -72,14 +72,14 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 pairs.abs <- visualizeSampleClustering(x, selection.mode = "pairs", 
 		    profile.mode="whole sample", wait.close=TRUE)
 
 res.ckm <- computeSemiSupervised(x, ML=pairs.abs$ML, CNL=pairs.abs$CNL, K=0)
 plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y",
-col = res.ckm$label, main = "Constrained K-means clustering")
+    col = res.ckm$label, main = "Constrained K-means clustering")
 
 
 }

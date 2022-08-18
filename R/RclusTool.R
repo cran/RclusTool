@@ -24,10 +24,11 @@
 #' @importFrom grDevices graphics.off
 #' @import tcltk tcltk2
 #' @return Nothing, just open the graphical user interface.
+#' @export 
 #' @examples 
 #' RclusToolGUI()
-#' 
-RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
+#'
+RclusToolGUI <- function(RclusTool.env = new.env(), debug=FALSE) {
 
     if (!length(RclusTool.env))
         initParameters(RclusTool.env)
@@ -72,25 +73,21 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
 	RclusTool.env$param$visu$screenheight <- as.integer(dimensions[2])
 	RclusTool.env$param$visu$style <- tk2font.get("TkDefaultFont")
 	
-	if (RclusTool.env$param$visu$screenlength<1400){
-	    RclusTool.env$param$visu$size=7
-		RclusTool.env$param$visu$sizecm=32
-		RclusTool.env$param$visu$style$size=7
-		RclusTool.env$param$visu$hscale=0.7
-		RclusTool.env$param$visu$console=45
-	} else if (RclusTool.env$param$visu$screenlength<1900){
-	    RclusTool.env$param$visu$size=9
-	    RclusTool.env$param$visu$sizecm=32
-	    RclusTool.env$param$visu$style$size=9
-	    RclusTool.env$param$visu$hscale=0.9
-	    RclusTool.env$param$visu$console=55
-	} else {
-		RclusTool.env$param$visu$size=11
-		RclusTool.env$param$visu$sizecm=32
-		RclusTool.env$param$visu$style$size=11
-		RclusTool.env$param$visu$hscale=1.2
-		RclusTool.env$param$visu$console=70
-	}
+    setSizes <- function(screenlength=NULL, screenheight=NULL)
+    {
+        if (is.null(screenlength))
+            screenlength <- RclusTool.env$param$visu$screenlength
+        if (is.null(screenheight))
+            screenheight <- RclusTool.env$param$visu$screenheight
+
+        f <- min(screenlength/1920.0, screenheight/1080.0)
+   		RclusTool.env$param$visu$size <- floor(RclusTool.env$param$visu$size*f)
+        RclusTool.env$param$visu$titlesize <- floor(RclusTool.env$param$visu$titlesize*f)
+		RclusTool.env$param$visu$style$size <- floor(RclusTool.env$param$visu$style$size*f)
+		RclusTool.env$param$visu$hscale <- RclusTool.env$param$visu$hscale*f
+		RclusTool.env$param$visu$console <- floor(RclusTool.env$param$visu$console*f)
+    }
+    setSizes()
 
     standardGUIgo <- function()
     {
@@ -133,62 +130,58 @@ RclusToolGUI <- function(RclusTool.env = new.env(), debug=F) {
 	ScreenFrame <- tkwidget(userBlock,"labelframe", text = "Screen Resolution")
 	tkgrid(ScreenFrame)
 
+    # Button for default size screen
+    DSButton <- tkbutton(ScreenFrame, text = "Auto", width = 2, command = function() {
+                                 setSizes()
+                                 tkconfigure(DSButton, borderwidth= 2, state="disabled")
+                                 tkconfigure(SSButton, borderwidth= 2, state="normal")
+                                 tkconfigure(MSButton, borderwidth= 2, state="normal")
+                                 tkconfigure(LSButton, borderwidth= 2, state="normal")
+})
+
+	tkgrid(DSButton, row=5, column=0)
+
     # Button for Small screen
     SSButton <- tkbutton(ScreenFrame, text = "S", width = 2, command = function() {
-                                 RclusTool.env$param$visu$size=7
-                                 RclusTool.env$param$visu$sizecm=32
-                                 RclusTool.env$param$visu$style$size=7
-                                 RclusTool.env$param$visu$hscale=0.7
-                                 RclusTool.env$param$visu$console=65
+                                 setSizes(1360)
+                                 tkconfigure(DSButton, borderwidth= 2, state="normal")
                                  tkconfigure(SSButton, borderwidth= 2, state="disabled")
                                  tkconfigure(MSButton, borderwidth= 2, state="normal")
                                  tkconfigure(LSButton, borderwidth= 2, state="normal")
 })
 
-	tkgrid(SSButton, row=5, column=0)
+	tkgrid(SSButton, row=5, column=1)
 
     # Button for Medium screen
     MSButton <- tkbutton(ScreenFrame, text = "M", width = 2, command = function() {
-                                 RclusTool.env$param$visu$size=9
-                                 RclusTool.env$param$visu$sizecm=32
-                                 RclusTool.env$param$visu$style$size=9
-                                 RclusTool.env$param$visu$hscale=0.9
-                                 RclusTool.env$param$visu$console=60
+                                 setSizes(1600)
+                                 tkconfigure(DSButton, borderwidth= 2, state="normal")
                                  tkconfigure(SSButton, borderwidth= 2, state="normal")
                                  tkconfigure(MSButton, borderwidth= 2, state="disabled")
                                  tkconfigure(LSButton, borderwidth= 2, state="normal")
 })
 
-	tkgrid(MSButton, row=5, column=1)
+	tkgrid(MSButton, row=5, column=2)
 	
     # Button for Large screen
     LSButton <- tkbutton(ScreenFrame, text = "L", width = 2, command = function() {
-                                 RclusTool.env$param$visu$size=11
-                                 RclusTool.env$param$visu$sizecm=32
-                                 RclusTool.env$param$visu$style$size=11
-                                 RclusTool.env$param$visu$hscale=1.2
-                                 RclusTool.env$param$visu$console=70
+                                 setSizes(1920)
+                                 tkconfigure(DSButton, borderwidth= 2, state="normal")
                                  tkconfigure(SSButton, borderwidth= 2, state="normal")
                                  tkconfigure(MSButton, borderwidth= 2, state="normal")
                                  tkconfigure(LSButton, borderwidth= 2, state="disabled")
 })
 
-	tkgrid(LSButton, row=5, column=2)
+	tkgrid(LSButton, row=5, column=3)
 	
 	
-	if (RclusTool.env$param$visu$size==7){
-		tkconfigure(SSButton, borderwidth= 2, state = "disabled")
-	} else if (RclusTool.env$param$visu$size==9){
-		tkconfigure(MSButton, borderwidth= 2, state = "disabled")
-	} else if (RclusTool.env$param$visu$size==11){
-		tkconfigure(LSButton, borderwidth= 2, state = "disabled")
-	}
+    tkconfigure(DSButton, borderwidth= 2, state = "disabled")
 	
 	
     ############### test only #############
-    if (RclusTool.env$gui$debug.mode == T)
+    if (RclusTool.env$gui$debug.mode == TRUE)
         expertGUIgo()
-    ############### end test only #############}
+    ############### end test only #############
 }
 
 #' function to display the graphical user interface to classify dataset.
@@ -221,7 +214,6 @@ MainWindow <- function(RclusTool.env) {
                               saveLogFile(LogFile.txt, tclvalue(tkget(console,"0.0","end")), RclusTool.env$data.sample$files$results$dir)
                           }
                           tkdestroy(mainWindow)
-                          rm(list=ls())
                       }
 })
 
@@ -247,9 +239,9 @@ MainWindow <- function(RclusTool.env) {
     tkgrid(scrx, sticky = "ew")
 
     # Insert operator name and user type
-    tkinsert(console, "0.0", paste("Date: ", format(Sys.time(),'%Y-%m-%d %Hh%Mm'), "\n",
+    messageConsole(paste("Date: ", format(Sys.time(),'%Y-%m-%d %Hh%Mm'), "\n",
                                    "Operator:  ", RclusTool.env$gui$user.name, "\n",
-                                   "User type:  ", RclusTool.env$gui$user.type, "\n\n", sep = ""))
+                                   "User type:  ", RclusTool.env$gui$user.type, "\n\n", sep = ""), RclusTool.env=RclusTool.env)
 
     # Graphic Frame
     graphicFrame <- tkwidget(mainWindow, "labelframe", borderwidth = 0)
@@ -304,10 +296,12 @@ MainWindow <- function(RclusTool.env) {
     tkbind(nb1$env$semisup, "<Enter>", classif_authorization)
     tkbind(nb1$env$sup, "<Enter>", classif_authorization)
 
-    initImportTab(mainWindow = mainWindow, console = console, 
-             	  graphicFrame = graphicFrame, RclusTool.env = RclusTool.env)
-    initBatchTab(mainWindow = mainWindow, console = console, 
-             graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+    RclusTool.env$gui$mainWindow <- mainWindow
+    RclusTool.env$gui$console <- console
+    RclusTool.env$gui$graphicFrame <- graphicFrame
+
+    initImportTab(RclusTool.env = RclusTool.env)
+    initBatchTab(RclusTool.env = RclusTool.env, reset=TRUE)
     
 }
 

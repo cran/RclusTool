@@ -24,7 +24,7 @@
 #' @importFrom grDevices colors
 #' @param RclusTool.env environment in which data and intermediate results are stored.
 #' @examples 
-#' initParameters()
+#' RclusTool.env <- initParameters()
 #' 
 #' @keywords internal
 #'
@@ -40,7 +40,7 @@ initParameters <- function(RclusTool.env=new.env()) {
     RclusTool.env$param$classif$unsup$kmeans.variance.min <- 0.95 #minimal explained variance in K-means
     RclusTool.env$param$preprocess$sampling.size.max <- 1000
     RclusTool.env$param$classif$unsup$nb.neighbours <- ceiling(6.99/100*RclusTool.env$param$preprocess$sampling.size.max/RclusTool.env$param$classif$unsup$K.max)
-    RclusTool.env$gui$debug.mode <- F
+    RclusTool.env$gui$debug.mode <- FALSE
 
     # OS detection
     if (length(grep("linux", version$platform)))
@@ -84,9 +84,12 @@ initParameters <- function(RclusTool.env=new.env()) {
     # Parameter pch and size and colors
     pch <- 20 
     RclusTool.env$param$visu$cex <- 0.5
-    RclusTool.env$param$visu$size <- 11
+    RclusTool.env$param$visu$titlefont <- "Consolas"
+    RclusTool.env$param$visu$font <- "Arial"
+    RclusTool.env$param$visu$titlesize <- 10
+    RclusTool.env$param$visu$size <- 9
     RclusTool.env$param$visu$sizecm <- 32
-    RclusTool.env$param$visu$style$size <- 11
+    RclusTool.env$param$visu$style$size <- 9
     RclusTool.env$param$visu$hscale <- 1.2
     RclusTool.env$param$visu$console <- 70
     RclusTool.env$param$visu$palette.colors <- c("grey","black","red","blue","green","cyan", "yellow","orange",

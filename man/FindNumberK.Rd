@@ -4,7 +4,7 @@
 \alias{FindNumberK}
 \title{Automatic estimation of the number of clusters}
 \usage{
-FindNumberK(features, Kmax, StopCriteria = 0.99, graph = F)
+FindNumberK(features, Kmax, StopCriteria = 0.99, graph = FALSE)
 }
 \arguments{
 \item{features}{matrix of raw data (point by line).}

@@ -32,9 +32,9 @@
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(tf, dir.save=tempdir())
+#' x <- importSample(tf, dir.save=dirname(tf))
 #' 
-#' res <- loadSample(file.path(getwd(), x$files$RDS))       
+#' res <- loadSample(x$files$RDS)       
 #' 
 #'
 #' @keywords internal
@@ -72,7 +72,7 @@ loadSample <- function(file.RDS, RclusTool.env=initParameters(), file.config="")
 #'
 #' @keywords internal
 #' 
-listDerivableFeatureSpaces <- function(scaling=F, pca=F, spectral=F, RclusTool.env=initParameters())
+listDerivableFeatureSpaces <- function(scaling=FALSE, pca=FALSE, spectral=FALSE, RclusTool.env=initParameters())
 {
     prefix.space.name <- c()
     space.names <- "preprocessed"
@@ -92,11 +92,11 @@ listDerivableFeatureSpaces <- function(scaling=F, pca=F, spectral=F, RclusTool.e
         space.names <- sapply(merged.prefix, paste, space.names, sep=".")
 
     # empty space name with prefix values contain ".." that must be set to ""
-    space.names <- sapply(space.names, function(x) gsub(pattern="..", replacement="", x=x, fixed=T))
+    space.names <- sapply(space.names, function(x) gsub(pattern="..", replacement="", x=x, fixed=TRUE))
     names(space.names) <- space.names
 
     # long names
-    sapply(space.names, featSpaceNameConvert, short2long=T, RclusTool.env)
+    sapply(space.names, featSpaceNameConvert, short2long=TRUE, RclusTool.env)
 }
 
 #' featSpaceNameConvert converts feature space names: either long name to short name, or short name to long name.
@@ -122,11 +122,11 @@ featSpaceNameConvert <- function(name2convert, short2long=TRUE, RclusTool.env=in
     result <- NULL
     if (!(short2long))
     {
-        split.names <- unlist(strsplit(name2convert, split=" - ", fixed=T))
+        split.names <- unlist(strsplit(name2convert, split=" - ", fixed=TRUE))
         reduced.names <- sapply(split.names, function(x) {names(set)[set==x]})
         result <- paste(rev(reduced.names), collapse=".")
     } else {
-        split.names <- unlist(strsplit(name2convert, split=".", fixed=T))
+        split.names <- unlist(strsplit(name2convert, split=".", fixed=TRUE))
         long.names <- set[split.names]
         result <- paste(rev(long.names), collapse=" - ")
     }
@@ -143,7 +143,7 @@ featSpaceNameConvert <- function(name2convert, short2long=TRUE, RclusTool.env=in
 #' @param file.RDS character vector for a RDS file containing a data.sample object. This file is automatically saved when importing a (csv-)file-features. When both a csv-file-features and a RDS file are given, the last one is ignored.
 #' @param file.config character vector for the name of the configuration file.
 #' @param dir.images character vector containing the path of images directory.
-#' @param dir.save character vector specifying path of the working directory.
+#' @param dir.save character vector specifying path of the working directory to save results ; "" to not save any results
 #' @param sepFeat character specifying the field separator for the csv file containing features data.
 #' @param decFeat character specifying the decimal points for the csv file containing features data.
 #' @param naFeat vector containing missing values for the csv file containing features data.
@@ -152,7 +152,6 @@ featSpaceNameConvert <- function(name2convert, short2long=TRUE, RclusTool.env=in
 #' @param naSig vector containing missing values for the csv file containing profiles data.
 #' @param headerCSV boolean if TRUE (default) the file contains the names of the variables as its first line. 
 #' @param RclusTool.env environment in which data and intermediate results are stored.
-#' @param save.to.disk boolean if TRUE (default) some data files and folders are saved to disk.
 #' @param ... parameters adressed to read.csv functions.
 #' @return data.sample loaded data.sample.
 #' @importFrom tools file_path_sans_ext file_ext file_path_as_absolute
@@ -169,25 +168,25 @@ featSpaceNameConvert <- function(name2convert, short2long=TRUE, RclusTool.env=in
 #' tf2 <- tempfile()
 #' writeLines(metadat, tf2)
 #' 
-#' x <- importSample(file.features=tf1, file.meta=tf2, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, file.meta=tf2)
 #' 
 #'
 #' @export 
 #' 
-importSample <- function(file.features="", file.meta="", file.profiles="", file.RDS="", file.config="", dir.images="", dir.save=".", sepFeat = ",", decFeat = ".", naFeat=c("","NA"), sepSig = ",", decSig= ".", naSig=c("","NA"), headerCSV=TRUE, RclusTool.env=new.env(), save.to.disk=TRUE, ...) {
+importSample <- function(file.features="", file.meta="", file.profiles="", file.RDS="", file.config="", dir.images="", dir.save="", sepFeat = ",", decFeat = ".", naFeat=c("","NA"), sepSig = ",", decSig= ".", naSig=c("","NA"), headerCSV=TRUE, RclusTool.env=new.env(), ...) {
     data.sample <- NULL
     naFeat <- unique(c("","NA",naFeat))
     naSig <- unique(c("","NA",naSig))
 
     if ((file.features!="")&&(file.RDS!=""))
     {
-        warning("Function importSample can't accept both csv-features file and RDS file: in this case, the RDS file is ignored.")
+        message("Function importSample can't accept both csv-features file and RDS file: in this case, the RDS file is ignored.")
         file.RDS <- ""
     }
 
-    if (!dir.exists(dir.save))
+    if ( !dir.exists(dir.save) )
     {
-        warning("Save directory does not exist !")
+        message("Save directory does not exist: no RDS file saved.")
     }
 
     if (!length(RclusTool.env))
@@ -245,6 +244,18 @@ importSample <- function(file.features="", file.meta="", file.profiles="", file.
             }
         }
 
+        #purge features from nan and na
+        a.retirer <- sapply(features.csv, function (x) any(is.na(x)))
+        if (any(a.retirer)) {
+            message(paste("Drop variables containing NA values:", paste(colnames(features.csv)[a.retirer], collapse= " ")))
+            features.csv[a.retirer] <- NULL
+        }
+        a.retirer <- sapply(features.csv, function (x) any(is.nan(x)))
+        if (any(a.retirer)) {
+            message(paste("Drop variables containing NaN values:", paste(colnames(features.csv)[a.retirer], collapse= " ")))
+            features.csv[a.retirer] <- NULL
+        }
+
 
         within(data.sample, {
                name <- sample.name
@@ -258,7 +269,7 @@ importSample <- function(file.features="", file.meta="", file.profiles="", file.
                              dir=dirname(tools::file_path_as_absolute(file.features)))
 
                features <- list()
-               features[["initial"]] <- list(x=features.csv, logscale=rep(F,ncol(features.csv)), prefered=NULL)
+               features[["initial"]] <- list(x=features.csv, logscale=rep(FALSE,ncol(features.csv)), prefered=NULL)
 
                names(features[["initial"]]$logscale) <- colnames(features.csv)
 
@@ -276,14 +287,14 @@ importSample <- function(file.features="", file.meta="", file.profiles="", file.
     {
         RDS.to.be.saved <-TRUE
 
-    	message("Import Profiles...")
-    	profiles.csv <- NULL
+        message("Import Profiles...")
+        profiles.csv <- NULL
         profiles.csv <- utils::read.csv(file.profiles, sep = sepSig, dec = decSig, na.strings=naSig, header = headerCSV, ...)
         ind.id.sig <- which(toupper(names(profiles.csv))=="ID")[1]
         if (is.na(ind.id.sig)) {
             ind.id.sig <- which(grepl('ID',names(profiles.csv)))
             if (length(ind.id.sig)==0 || length(ind.id.sig)>1){
-            	ind.id.sig<-NA
+                ind.id.sig<-NA
             }
         }	
         if (is.na(ind.id.sig))
@@ -293,15 +304,15 @@ importSample <- function(file.features="", file.meta="", file.profiles="", file.
             profiles.csv[[ind.id.sig]] <- as.factor(profiles.csv[[ind.id.sig]]) # individuals IDs 
 
         profiles.ok <- !apply(profiles.csv,2,function(x) any(is.na(x)))
-        profiles.csv <- profiles.csv[,profiles.ok,drop=F]
+        profiles.csv <- profiles.csv[,profiles.ok,drop=FALSE]
         profiles <- NULL
         if (!is.null(profiles.csv)) {
-        	profiles <- by(profiles.csv, profiles.csv[[ind.id.sig]], function(x) as.matrix(x[,-ind.id.sig,drop=F]))
+            profiles <- by(profiles.csv, profiles.csv[[ind.id.sig]], function(x) as.matrix(x[,-ind.id.sig,drop=FALSE]))
         }
         data.sample$profiles <- profiles
         data.sample$files$profiles=file.profiles       
     }
-    
+
     if (dir.exists(dir.images))
     {
         RDS.to.be.saved <- TRUE
@@ -341,14 +352,16 @@ importSample <- function(file.features="", file.meta="", file.profiles="", file.
     # Create the results folder
     old.results.dir <- data.sample$files$results
 
-    if (save.to.disk)
+    if (dir.save != "") {
         data.sample <- createResFolder(data.sample = data.sample, dir.path=dir.save)
+    } else
+        data.sample$files$RDS <- NULL
 
     if (!identical(old.results.dir, data.sample$files$results))
         RDS.to.be.saved <- TRUE
 
     # Saving RDS file
-    if (RDS.to.be.saved && save.to.disk)
+    if (RDS.to.be.saved && (dir.save != ""))
         saveRDS(data.sample, file=data.sample$files$RDS, compress="bzip2")
 
     operations <- NULL
@@ -385,7 +398,7 @@ importSample <- function(file.features="", file.meta="", file.profiles="", file.
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' x <- purgeSample(x, purge.clustering=TRUE)
 #' 
@@ -434,7 +447,7 @@ purgeSample <- function(data.sample, purge.preprocessing=TRUE, purge.clustering=
 #' 
 loadPreprocessFile <- function(file.config, ...)
 {
-    operations <-  utils::read.csv(file.config, header=F, na.strings=c("NA",""), colClasses="character", ...)
+    operations <-  utils::read.csv(file.config, header=FALSE, na.strings=c("NA",""), colClasses="character", ...)
     if (ncol(operations)!=4)
         stop("Preprocessing error: bad config file (number of fields per line should be 4)")
     as.matrix(operations)
@@ -458,7 +471,7 @@ loadPreprocessFile <- function(file.config, ...)
 #' colnames(dat) <- c("x","y","z")
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=";", dec=",")
-#' x <- importSample(file.features=tf1, sepFeat=";", decFeat=",", dir.save=tempdir())
+#' x <- importSample(file.features=tf1, sepFeat=";", decFeat=",")
 #' 
 #' instr <- rbind(c("select","x","log",""), c("select","y","log",""))
 #' tf2 <- tempfile()
@@ -497,7 +510,7 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
     if (preprocessed.only)
     {
         to.remove <- tolower(operations[,1]) %in% c("projection", "space", "sampling")
-        operations <- operations[!to.remove,,drop=F]
+        operations <- operations[!to.remove,,drop=FALSE]
     }
 
     pca.compute <- FALSE
@@ -531,7 +544,8 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
                     data.sample$id.clean <- data.sample$id.clean[!(data.sample$features[["preprocessed"]]$x[data.sample$id.clean,feature] == threshold)]
                 } 
             } else {
-                warning("Corrupted configuration file, please retry with another one (filter operation).")
+                message("Error: Corrupted preprocessing configuration, please retry with another one (filter operation).")
+                warning("Corrupted preprocessing configuration, please retry with another one (filter operation).")
                 return(NULL)
             }
         }
@@ -542,7 +556,8 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
             if (length(feature)){
                 data.sample$config$selectFeat <- c(data.sample$config$selectFeat, feature)
             } else {
-                warning("Corrupted configuration file, please retry with another one (select operation).")
+                message("Error: Corrupted preprocessing configuration, please retry with another one (select operation).")
+                warning("Corrupted preprocessing configuration, please retry with another one (select operation).")
                 return(NULL)
             }
         }
@@ -557,7 +572,8 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
                 #feature <- names(data.sample$config$logFeat)[id] #pour la visu, on vire le log
                 data.sample$config$defaultFeat <- c(data.sample$config$defaultFeat, feature)
             } else {
-                warning("Corrupted configuration file, please retry with another one (default operation).")
+                message("Error: Corrupted preprocessing configuration, please retry with another one (default operation).")
+                warning("Corrupted preprocessing configuration, please retry with another one (default operation).")
                 return(NULL)
             }
         }
@@ -568,7 +584,8 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
             if (length(feature)){
                 data.sample$config$signalColor[feature] <- tolower(op[3])
             } else {
-                warning("Corrupted configuration file, please retry with another one (signalColor operation). ")
+                message("Error: Corrupted preprocessing configuration, please retry with another one (signalColor operation). ")
+                warning("Corrupted preprocessing configuration, please retry with another one (signalColor operation). ")
                 return(NULL)
             }                
         }
@@ -592,7 +609,8 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
                 y <- matrix(y, ncol=1)
                 data.sample$features[["preprocessed"]]$x[,operation.name] <- y
             } else {
-                warning("Corrupted configuration file, please retry with another one (/*+- operation).")
+                message("Error: Corrupted preprocessing configuration, please retry with another one (/*+- operation).")
+                warning("Corrupted preprocessing configuration, please retry with another one (/*+- operation).")
                 return(NULL)
             }  
             feature <- operation.name
@@ -607,10 +625,11 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
             if (ok && length(feature)) {
                 newName <- paste(feature, "(log)")
                 names(newName) <- feature
-                data.sample$features[["preprocessed"]]$x[, newName] <- log10(removeZeros(z, threshold=RclusTool.env$param$preprocess$zero.threshold, positive=T))
+                data.sample$features[["preprocessed"]]$x[, newName] <- log10(removeZeros(z, threshold=RclusTool.env$param$preprocess$zero.threshold, positive=TRUE))
                 data.sample$config$logFeat[feature] <- newName
             } else {
-                warning("Corrupted configuration file, please retry with another one (log operation).")
+                message("Error: Corrupted preprocessing configuration, please retry with another one (log operation).")
+                warning("Corrupted preprocessing configuration, please retry with another one (log operation).")
                 return(NULL)
             } 
         }
@@ -686,7 +705,7 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
         prefix.space.name <- c(prefix.space.name, "scaled")
         space.name <- paste(prefix.space.name, collapse=".")
 
-        if ((reset==T)||is.null(data.sample$features[[space.name]]))
+        if ((reset==TRUE)||is.null(data.sample$features[[space.name]]))
         {
             data.sample$features[[space.name]] <- data.sample$features[["preprocessed"]]
             data.sample$features[[space.name]]$x <- as.data.frame(scale(data.sample$features[["preprocessed"]]$x, center=TRUE, scale=TRUE))
@@ -702,9 +721,9 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
         }
 
         # Call 'computeSampling' function
-        if ((reset==T)||is.null(data.sample$sampling)|| (!is.null(data.sample$config$sampling.size.max)&&(sampling.size.max!=0)&&(data.sample$config$sampling.size.max!=sampling.size.max)))
+        if ((reset==TRUE)||is.null(data.sample$sampling)|| (!is.null(data.sample$config$sampling.size.max)&&(sampling.size.max!=0)&&(data.sample$config$sampling.size.max!=sampling.size.max)))
         {
-            data.sample$sampling <- computeSampling(data.sample$features[[space.name]]$x[data.sample$id.clean,data.sample$config$selectFeat,drop=F], K.max=RclusTool.env$param$classif$unsup$K.max, 
+            data.sample$sampling <- computeSampling(data.sample$features[[space.name]]$x[data.sample$id.clean,data.sample$config$selectFeat,drop=FALSE], K.max=RclusTool.env$param$classif$unsup$K.max, 
                                                     sampling.size.max=sampling.size.max, kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min)
             data.sample$config$sampling.size.max <- sampling.size.max
         }
@@ -724,7 +743,7 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
         space.name <- paste(c(prefix.space.name, "pca"), collapse=".")
         space.name.full <- paste(c(prefix.space.name, "pca_full"), collapse=".")
         
-        if ((reset==T)||is.null(data.sample$features[[space.name]]))
+        if ((reset==TRUE)||is.null(data.sample$features[[space.name]]))
         {
 
             # Call 'computePcaSample' function
@@ -741,16 +760,16 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
         prefix.space.name <- c(prefix.space.name, "spectral")
         space.name <- paste(prefix.space.name, collapse=".")
 
-        sampling.change <- F
+        sampling.change <- FALSE
         if (!is.null(data.sample$features[[space.name]]))
         { 
             sampling.ok <- (nrow(data.sample$features[[space.name]]$x) == length(data.sample$sampling$selection.ids))
             if (sampling.compute && !sampling.ok)
-                sampling.change <- T
+                sampling.change <- TRUE
 
             no.sampling.ok <- (nrow(data.sample$features[[space.name]]$x) == nrow(data.sample$features$preprocessed$x))
             if (!sampling.compute && !no.sampling.ok)
-                sampling.change <- T
+                sampling.change <- TRUE
         }
 
         if (reset || is.null(data.sample$features[[space.name]]) || sampling.change)
@@ -770,9 +789,9 @@ applyPreprocessing <- function(data.sample, operations=NULL, RclusTool.env=initP
         space <- "preprocessed"
         pattern <- tolower(default.space.info)
         if ((pattern=="pca")||(pattern=="principal components analysis"))
-            space <- grep("pca", names(data.sample$features), fixed=T, value=T)[1]
+            space <- grep("pca", names(data.sample$features), fixed=TRUE, value=TRUE)[1]
         if ((pattern=="spectral")||(pattern=="spectral embedding"))
-            space <- grep("spectral", names(data.sample$features), fixed=T, value=T)[1]
+            space <- grep("spectral", names(data.sample$features), fixed=TRUE, value=TRUE)[1]
         data.sample$config$default.classif.feature.space <- space
     }
 
@@ -833,23 +852,23 @@ addOperation <- function(parameterList, featureOperations){
 #' 
 #' @keywords internal
 
-makeFeatureSpaceOperations <- function(pca=F, pca.nb.dims=0, spectral=F, sampling=F, sampling.size.max=0, scaling=F) {
+makeFeatureSpaceOperations <- function(pca=FALSE, pca.nb.dims=0, spectral=FALSE, sampling=FALSE, sampling.size.max=0, scaling=FALSE) {
 	featureOperations <- matrix(ncol=4,nrow=0)
 	txt.scaling <- NULL
 	txt.space <- "preprocessed"
-	if (sampling==T){
+	if (sampling==TRUE){
 		featureOperations <- addOperation(list("sampling",as.character(sampling.size.max)), featureOperations)
 	}
-	if (scaling==T){
+	if (scaling==TRUE){
 		featureOperations <- addOperation(list("scaling","on"), featureOperations)
 		txt.space <- NULL
 		txt.scaling="scaled"
 	}
-	if (pca==T){
+	if (pca==TRUE){
 		featureOperations <- addOperation(list("projection","pca", as.character(pca.nb.dims)), featureOperations)
 		txt.space<- "pca"
 	}
-	if (spectral==T){
+	if (spectral==TRUE){
 		featureOperations <- addOperation(list("projection","spectral"), featureOperations)
 		txt.space<- "spectral"
 	}
@@ -878,7 +897,7 @@ makeFeatureSpaceOperations <- function(pca=F, pca.nb.dims=0, spectral=F, samplin
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' 
 #' new.labels <- formatLabelSample(res$cluster, x)
@@ -928,7 +947,7 @@ formatLabelSample <- function(label, data.sample, new.labels=TRUE, use.sampling=
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' 
 #' sortLabel(res$cluster)
@@ -956,7 +975,7 @@ sortLabel <- function(label) {
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' 
 #' new.labels <- importLabelSample(res$cluster, x)
@@ -1010,31 +1029,31 @@ importLabelSample <- function(label, data.sample, noise.cluster="Noise") {
 #'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
-#' dir <- tempdir()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=dir)
+#' x <- importSample(file.features=tf, dir.save=dirname(tf))
 #'
 #' #Already called in importSample 
-#' createResFolder(x, dir.path=dir)
+#' createResFolder(x, dir.path=dirname(tf))
 #' 
 #'
 #' @keywords internal
 #' 
-createResFolder <- function(data.sample, dir.name="", dir.path=".") {
+createResFolder <- function(data.sample, dir.name="", dir.path="") {
     if (!length(data.sample))
         return()
 
-    # What name to give???
-    if (!dir.exists(dir.name))
-        dir.name <- paste(tools::file_path_sans_ext(basename(data.sample$files$features )), 
+    if (!dir.exists(dir.path))
+    {
+        resDir <- tempdir()
+    } else {
+        # What name to give???
+        if (dir.name == "")
+            dir.name <- paste(tools::file_path_sans_ext(basename(data.sample$files$features )), 
                               "_RclusTool", sep = "")
 
-    if (!dir.exists(dir.path))
-        dir.path <- "."
-
-    resDir <- file.path(dir.path, dir.name)
-
+        resDir <- file.path(dir.path, dir.name)
+    }
     data.sample$files$results$dir <- resDir
     data.sample$files$results$preprocess <- file.path(resDir, "preprocess")
     data.sample$files$results$clustering <- file.path(resDir, "clustering")
@@ -1069,7 +1088,7 @@ createResFolder <- function(data.sample, dir.name="", dir.path=".") {
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf, dir.save=dirname(tf))
 #' loadPreviousRes(x)
 #' 
 #'
@@ -1079,37 +1098,41 @@ loadPreviousRes <- function(data.sample, noise.cluster="Noise") {
     message("Search previous results...\n")
 
     # Load features spaces
-    rdataFiles <- list.files(data.sample$files$results$rdata)
-    if (length(rdataFiles) > 0) {
+    rep <- data.sample$files$results$rdata
+    rdataFiles <- NULL
+    if (is.character(rep) && dir.exists(rep)) {
+        rdataFiles <- list.files(rep)
         for (i in rdataFiles) {
-                message("Load", i, "...")
-                data.sample$features[[i]] <- readRDS(file.path(data.sample$files$results$rdata, i))
-                message("done!\n")
-            }
+            message("Load", i, "...")
+            data.sample$features[[i]] <- readRDS(file.path(data.sample$files$results$rdata, i))
+            message("done!\n")
+        }
     }
 
     # Load clusterings
-    resultsFiles <- list.files(data.sample$files$results$clustering, pattern = ".csv")
-    clusteringFiles <- resultsFiles[grep("clustering", resultsFiles)]
-    if (length(clusteringFiles) > 0) {
+    rep <- data.sample$files$results$clustering
+    clusteringFiles <- NULL
+    if (is.character(rep) && dir.exists(rep)) {
+        resultsFiles <- list.files(rep, pattern = ".csv")
+        clusteringFiles <- resultsFiles[grep("clustering", resultsFiles)]
         for (i in clusteringFiles) {
-        		clustering_name <- unlist(strsplit(i, split='.csv', fixed=TRUE))[1]
-        		clustering_name <- unlist(strsplit(clustering_name, split='clustering ', fixed=TRUE))[2]
-                message("Load", clustering_name, "...")
-                clustering_name <- paste(clustering_name, "(Loaded)", sep=" ")
-                data.sample$clustering[[clustering_name]] <- loadClusteringSample(file.path(data.sample$files$results$clustering, i), 
-								    								data.sample, noise.cluster=noise.cluster)
-                countFiles <- resultsFiles[grep("counts", resultsFiles)]
-                countFiles <- countFiles[grep(i, countFiles)]
-                if (length(countFiles) > 0) {
-                    file <- file.path(data.sample$files$results$clustering, countFiles)
-                    counts.df <- utils::read.csv(file, row.names=1)
-                    nbItems <- counts.df[[2]]
-                    names(nbItems) <- counts.df[[1]]
-                    data.sample$clustering[[i]]$nbItems <- nbItems
-                }
-                message("done!\n")
-            
+            clustering_name <- unlist(strsplit(i, split='.csv', fixed=TRUE))[1]
+            clustering_name <- unlist(strsplit(clustering_name, split='clustering ', fixed=TRUE))[2]
+            message("Load", clustering_name, "...")
+            clustering_name <- paste(clustering_name, "(Loaded)", sep=" ")
+            data.sample$clustering[[clustering_name]] <- buildClusteringSample(file.path(data.sample$files$results$clustering, i), 
+                                                                              data.sample, noise.cluster=noise.cluster)
+            countFiles <- resultsFiles[grep("counts", resultsFiles)]
+            countFiles <- countFiles[grep(i, countFiles)]
+            if (length(countFiles) > 0) {
+                file <- file.path(data.sample$files$results$clustering, countFiles)
+                counts.df <- utils::read.csv(file, row.names=1)
+                nbItems <- counts.df[[2]]
+                names(nbItems) <- counts.df[[1]]
+                data.sample$clustering[[i]]$nbItems <- nbItems
+            }
+            message("done!\n")
+
         }
     }
 
@@ -1129,9 +1152,9 @@ loadPreviousRes <- function(data.sample, noise.cluster="Noise") {
 #' @importFrom utils alarm write.table
 #'
 #' @examples 
-#' test.file <- "test.savePreprocess.csv"
+#' test.file <- tempfile()
 #' config <- matrix(c("select","x",NA,NA,"select","y",NA,NA), byrow=TRUE, ncol=4)
-#' savePreprocess(test.file, config, tempdir())
+#' savePreprocess(basename(test.file), config, dirname(test.file))
 #' 
 #'
 #' @export
@@ -1193,7 +1216,7 @@ matchNames <- function(requested.names, names.set)
 #' @keywords internal
 #' 
 
-formatParameterList <- function(parameterList, lowercase=F)
+formatParameterList <- function(parameterList, lowercase=FALSE)
 {
     vec <- as.character(parameterList)
     n <- length(vec)
@@ -1223,7 +1246,7 @@ formatParameterList <- function(parameterList, lowercase=F)
 #' @keywords internal
 #' 
 
-buildNameOperation <- function(formatedRow, lowercase=F)
+buildNameOperation <- function(formatedRow, lowercase=FALSE)
 {
     name <- NULL
     if (lowercase)
@@ -1273,7 +1296,7 @@ detailOperation <- function(config=NULL)
         return(newConfig)
     for (i in 1:nrow(config))
     {
-        op <- formatParameterList(config[i,,drop=F])
+        op <- formatParameterList(config[i,,drop=FALSE])
         if ((op[1]=="select") && (!is.na(op[3]))) # case: (op[3]=="log")
         {
             newfeat <- formatParameterList(list(op[3], op[2]))

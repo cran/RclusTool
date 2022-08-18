@@ -4,7 +4,7 @@
 \alias{formatParameterList}
 \title{Format Parameter List}
 \usage{
-formatParameterList(parameterList, lowercase = F)
+formatParameterList(parameterList, lowercase = FALSE)
 }
 \arguments{
 \item{parameterList}{list describing a single preprocessing instruction.}

@@ -19,19 +19,18 @@
 #' function to create the 'unsupTab' for data clustering
 #' @title Unsupervised tab 
 #' @description This function generates the unsupervised classification tab of the \code{\link{RclusToolGUI}}, in which the user can choose and configure the clustering method to apply.
-#' @param mainWindow : window in which the 'unsupTab' is created.
-#' @param console : frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
 #' @return None
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
-buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
-
+buildUnsupTab <- function(RclusTool.env) {
     unsup.env <- RclusTool.env$gui$tabs.env$unsup
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
+    fontFrame <- tkfont.create(family = RclusTool.env$param$visu$font, weight = "bold", size = RclusTool.env$param$visu$size)
+    fontTitleFrame <- tkfont.create(family = RclusTool.env$param$visu$titlefont, weight = "bold", size = RclusTool.env$param$visu$titlesize)
+    padx = "6m"
+    pady = "1m"
 
     unsup.env$tcl.export.clustering <-tclVar("1")
     unsup.env$tcl.classif.imgsig <- tclVar("0")
@@ -58,14 +57,14 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                              "Spectral"="Method: spectrum of data similarity matrix\nTechnique: evaluate the relative similarity of each pair\nResults: partition of N items into K clusters\nDisadvantage: slow for large datasets\nAdvantage: processing of non convex data\n",
                              "EM"="Method: maximum likelihood estimation\nTechnique: evaluate the expectation and maximize\nResults: partition of N items into K clusters\nDisadvantage: slow convergence\n\n")
 	
-	MethodFrametext <- StringToTitle("CLUSTERING", RclusTool.env$param$visu$sizecm,fontsize=RclusTool.env$param$visu$size)
-    MethodFrame <- tkwidget(win1.nb$env$unsup, "labelframe", text = MethodFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm , pady = 8, relief = "flat")
-    AdviceFrame <- tkwidget(MethodFrame, "labelframe", text = "method name", padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "groove")
-    tkgrid(AdviceFrame, columnspan = 3, rowspan = 5, column = 2, row = 2, padx = RclusTool.env$param$visu$sizecm)
+	MethodFrametext <- makeTitle("CLUSTERING")
+    MethodFrame <- tkwidget(win1.nb$env$unsup, "labelframe", text = MethodFrametext, font = fontTitleFrame, padx = padx , pady = pady, relief = "flat")
+    AdviceFrame <- tkwidget(MethodFrame, "labelframe", text = "method name", padx = padx, pady = pady, relief = "groove")
+    tkgrid(AdviceFrame, columnspan = 3, rowspan = 5, column = 2, row = 2, padx = padx)
     AdviceFrameText <- tk2label(AdviceFrame, text = "method description", width=50)
     tkgrid(AdviceFrameText, sticky = "w")
-    MethodFrameExpert <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, relief = "flat")
-    MethodFrameStandard <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = RclusTool.env$param$visu$sizecm, relief = "flat")
+    MethodFrameExpert <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = padx, relief = "flat")
+    MethodFrameStandard <- tkwidget(MethodFrame, "labelframe", font = fontFrame, padx = padx, relief = "flat")
 
     unsup.env$onMethodDescription <- function()
     {
@@ -78,17 +77,17 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                              tkr <- tkradiobutton(MethodFrameExpert, variable=unsup.env$tcl.method.select, value=name, text=method.title[name])
                              tkbind(tkr, "<ButtonRelease-1>", unsup.env$onMethodDescription)
                              tkr
-                             }, simplify=F)
+                             }, simplify=FALSE)
     
 
     # Space selection frame for expert mode
     # First listbox with all spaces
-    SpaceFrametext <- StringToTitle("FEATURE SPACE SELECTION", RclusTool.env$param$visu$sizecm,fontsize=RclusTool.env$param$visu$size)
-    SpaceFrame <- tkwidget(win1.nb$env$unsup, "labelframe", text = SpaceFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
+    SpaceFrametext <- makeTitle("FEATURE SPACE SELECTION")
+    SpaceFrame <- tkwidget(win1.nb$env$unsup, "labelframe", text = SpaceFrametext, font = fontTitleFrame, padx = padx, pady = pady, relief = "flat")
     unsup.env$spaceList <- tk2listbox(SpaceFrame, selectmode = "single", activestyle = "dotbox",
                             height = 5, width = 45, autoscroll = "none", background = "white")
     # Space frame
-    tkgrid(tk2label(SpaceFrame, text="Apply sampling"), row=11, column=0, sticky="w")
+    tkgrid(tk2label(SpaceFrame, text="Apply sampling"), row=11, column=0, sticky="w", pady = pady)
     tk.sampling.check <- tkcheckbutton(SpaceFrame, text="", variable=unsup.env$tcl.sampling.check, state="disabled")
     tkgrid(unsup.env$spaceList, row = 2, column = 1)
     tkgrid(tk.sampling.check, row=11, column=1, sticky="e")
@@ -107,9 +106,9 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     initAvailableSpaces <- function()
     {
         spaces <- names(RclusTool.env$data.sample$features) 
-        spaces <- spaces[!grepl("pca_full", spaces, fixed=T)]
+        spaces <- spaces[!grepl("pca_full", spaces, fixed=TRUE)]
         spaces <- spaces[spaces!="initial"]
-        unsup.env$available.spaces <- sapply(spaces, featSpaceNameConvert, short2long=T)
+        unsup.env$available.spaces <- sapply(spaces, featSpaceNameConvert, short2long=TRUE)
     }
 
     eraseSpaceList <- function()
@@ -117,13 +116,13 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         sapply(1:size(unsup.env$spaceList), function(x) tkdelete(unsup.env$spaceList, "end"))
     }
 
-    unsup.env$updateSpaceList <- function(reset=F) {
+    unsup.env$updateSpaceList <- function(reset=FALSE) {
         eraseSpaceList()
 
         initAvailableSpaces()
 
         sapply(unsup.env$available.spaces, function(s) tkinsert(unsup.env$spaceList, "end", s))
-        ind <- which(unsup.env$featSpace==featSpaceNameConvert(unsup.env$available.spaces, short2long=F))
+        ind <- which(unsup.env$featSpace==featSpaceNameConvert(unsup.env$available.spaces, short2long=FALSE))
         if (!length(ind))
             ind <- 1
         tkselection.set(unsup.env$spaceList, ind-1)
@@ -135,7 +134,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         space <- NULL
         selection <- tclvalue((tkcurselection(unsup.env$spaceList)))
         if (selection!="")
-            space <- featSpaceNameConvert(unsup.env$available.spaces[as.numeric(selection)+1], short2long=F)  
+            space <- featSpaceNameConvert(unsup.env$available.spaces[as.numeric(selection)+1], short2long=FALSE)  
         space
     }
 
@@ -151,7 +150,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         summarytt <- tktoplevel()
         tktitle(summarytt) <- "Summaries"
         # Summaries frame
-        summaryFrame <- tkwidget(summarytt, "labelframe", text = "SUMMARIES", padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "groove")
+        summaryFrame <- tkwidget(summarytt, "labelframe", text = "SUMMARIES", padx = padx, pady = pady, relief = "groove")
 
         summaries <- c("Min", "Max", "Sum", "Average", "SD")
 
@@ -237,7 +236,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         } 
 
         classif.space <- unsup.env$featSpace
-        decomposition.space <- unlist(strsplit(classif.space, split=".", fixed=T))
+        decomposition.space <- unlist(strsplit(classif.space, split=".", fixed=TRUE))
         pca <- ("pca" %in% decomposition.space) || ("pca_full" %in% decomposition.space)
         spec <- "spectral" %in% decomposition.space
         use.sampling <- tclvalue(unsup.env$tcl.sampling.check)=="1"
@@ -288,9 +287,9 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 				method.K="Elbow"
 			}
 			 
-            tkinsert(console, "0.0", paste("----- Unsupervised Clustering -----\n", spaceMsg, pcaMsg, samplingMsg,
+            messageConsole(paste("----- Unsupervised Clustering -----\n", spaceMsg, pcaMsg, samplingMsg,
                                            method.select, " computing and K estimation: method ", method.K, "\n",
-                                           "Obtained K:  ", length(unique(RclusTool.env$data.sample$clustering[[method.space.name]]$label)), "\n\n", sep = ""))
+                                           "Obtained K:  ", length(unique(RclusTool.env$data.sample$clustering[[method.space.name]]$label)), "\n\n", sep = ""), RclusTool.env=RclusTool.env)
 
             unsup.env$label <- RclusTool.env$data.sample$clustering[[method.space.name]]$label
             unsup.env$cluster.summary <- RclusTool.env$data.sample$clustering[[method.space.name]]$summary
@@ -310,7 +309,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
             # Plot abundances from different methods
             tk2delete.notetab(win2.nb)
-            abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
+            abdPlotTabsGUI(RclusTool.env)
             # Elbow Plot
             if (K==0 && !grepl("Spectral_",method.space.name)){
             	ElbowPlot(win2.nb, method.space.name, RclusTool.env, hscale = RclusTool.env$param$visu$hscale, charsize=RclusTool.env$param$visu$size) 
@@ -339,7 +338,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
             RclusTool.env$data.sample <- updateClustersNames(RclusTool.env$data.sample, new.protos$prototypes)
             # Update clusters names in plots (if necessary)
             tk2delete.notetab(win2.nb)
-            abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
+            abdPlotTabsGUI(RclusTool.env)
             # Elbow Plot
             if (K==0 && !grepl("Spectral_",method.space.name)){
             	ElbowPlot(win2.nb, method.space.name, RclusTool.env, hscale = RclusTool.env$param$visu$hscale, charsize=RclusTool.env$param$visu$size)
@@ -368,7 +367,7 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
             # Save prototypes (csv + image files in 'prototypes' directory)
             if (length(new.protos$prototypes[[method.space.name]]>0)){
-            	saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
+            saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
             }
 
         }, error=function(err){tkmessageBox(err$message);warning(err$message)})
@@ -378,8 +377,8 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 	tkconfigure(tk.K,font = fontFrame)
 
     # Output frames
-    OutputsFrametext <- StringToTitle("OUTPUTS SELECTION", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    OutputsFrame <- tkwidget(win1.nb$env$unsup, "labelframe", text = OutputsFrametext, font = fontFrame, padx = RclusTool.env$param$visu$sizecm, pady = 8, relief = "flat")
+    OutputsFrametext <- makeTitle("OUTPUTS SELECTION")
+    OutputsFrame <- tkwidget(win1.nb$env$unsup, "labelframe", text = OutputsFrametext, font = fontTitleFrame, padx = padx, pady = pady, relief = "flat")
 
     tk.export.clustering <- tkcheckbutton(OutputsFrame, text="", variable=unsup.env$tcl.export.clustering)
     tk.classif.imgsig <- tkcheckbutton(OutputsFrame, text="", variable=unsup.env$tcl.classif.imgsig)
@@ -394,12 +393,10 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     # expert method frame layout
     #positioning radiobutton methods
-    sapply(1:length(rb_methods), function(i) tkgrid(rb_methods[[i]], row=i-1, column=0, columnspan=2, padx= RclusTool.env$param$visu$sizecm, sticky="w"))
-    tkgrid(tk2label(MethodFrameExpert, text="     "))
+    sapply(1:length(rb_methods), function(i) tkgrid(rb_methods[[i]], row=i-1, column=0, columnspan=2, padx= padx, sticky="w"))
 
     #positioning number of clusters wanted
-    tkgrid(tk2label(MethodFrameExpert, text="Number of clusters (0=auto)"), row=6, column=0, sticky="w")
-    tkgrid(tk2label(MethodFrameExpert, text="     "))
+    tkgrid(tk2label(MethodFrameExpert, text="Number of clusters (0=auto)"), row=6, column=0, sticky="w", pady=pady)
     tkgrid(tk.K, row=6, column=1, sticky="e")
 
     # layout OutputsFrame
@@ -417,47 +414,42 @@ buildUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     # Standard method layout
     tkgrid(tk2label(MethodFrameStandard, text="Standard parameters:\n     - PCA\n     - K estimation: method Elbow\n     - K-means"), row = 0, column = 0)#, padx = c(200, 200))
-    tkgrid(tk2label(MethodFrameStandard, text="     "), row = 6, column = 0)
 
     #positioning items
-    tkgrid(tk2label(win1.nb$env$unsup, text="      "), row = 1, column = 1)
-    tkgrid(MethodFrame, columnspan = 3, row = 2, sticky = "w")
-    tkgrid(tk2label(MethodFrame, text="     "), row = 1,column = 0)
+    tkEmptyLine(win1.nb$env$unsup, row=1)
+    tkgrid(MethodFrame, columnspan = 3, row = 2, sticky = "we", pady=pady)
     if (RclusTool.env$gui$user.type=="expert")
     {
         # method selection frame
         tkgrid(MethodFrameExpert, row=2, column=0)
         # secondary frames
-        tkgrid(SpaceFrame, row = 17, columnspan = 3, sticky = "w")
-        tkgrid(OutputsFrame, row = 22, columnspan = 3, sticky = "w")
+        tkEmptyLine(win1.nb$env$unsup, row=16)
+        tkgrid(SpaceFrame, row = 17, columnspan = 3, sticky = "we", pady=pady)
+        tkEmptyLine(win1.nb$env$unsup, row=21)
+        tkgrid(OutputsFrame, row = 22, columnspan = 3, sticky = "we", pady=pady)
     } else {
         tkgrid(MethodFrameStandard, row=2, column=0)
     }
-    tkgrid(tk2label(win1.nb$env$unsup, text="     "))
+    tkEmptyLine(win1.nb$env$unsup)
     tkgrid(tk.compute.but, column = 0)#, columnspan=2, sticky="we")
-    tkgrid(tk2label(win1.nb$env$unsup, text="     "))
-    
 }
 
 #' function to initialize (and to create) the 'unsupTab' for data clustering
 #' @title Unsupervised tab 
 #' @description This function generates the unsupervised classification tab of the \code{\link{RclusToolGUI}}, in which the user can choose and configure the clustering method to apply.
-#' @param mainWindow : window in which the 'unsupTab' is created.
-#' @param console : frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
 #' @param reset : if TRUE the whole tab is reset, with default options
 #' @return None
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
-initUnsupTab <- function(mainWindow, console, graphicFrame, RclusTool.env, reset=F)
+initUnsupTab <- function(RclusTool.env, reset=FALSE)
 {
     if (is.null(RclusTool.env$gui$tabs.env$unsup) || !length(RclusTool.env$gui$tabs.env$unsup))
     {
         RclusTool.env$gui$tabs.env$unsup <- new.env()
-        buildUnsupTab(mainWindow, console, graphicFrame, RclusTool.env)
-        reset <- T
+        buildUnsupTab(RclusTool.env)
+        reset <- TRUE
     }
 
     unsup.env <- RclusTool.env$gui$tabs.env$unsup

@@ -29,10 +29,10 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 
-tf1 <- tempfile()
-write.table(dat, tf1, sep=",", dec=".")
+tf <- tempfile()
+write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 res_new <- KmeansQuick(x$features$initial$x, K=3)
 labels_new <- formatLabelSample(res_new$cluster, x)

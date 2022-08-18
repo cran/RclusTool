@@ -29,9 +29,9 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(tf, dir.save=tempdir())
+x <- importSample(tf, dir.save=dirname(tf))
 
-res <- loadSample(file.path(getwd(), x$files$RDS))       
+res <- loadSample(x$files$RDS)       
 
 
 }

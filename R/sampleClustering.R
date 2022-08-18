@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#' loadClusteringSample loads a clustering result from a csv file into data.sample object
+#' buildClusteringSample builds a clustering result from a csv file to be later embedded into a data.sample object
 #' @title Clustering loading
 #' @description Load a clustering result from a csv file into a data.sample object.
 #' @param filename.csv character vector specifying the path and the name of the csv file containing the clustering result.
@@ -35,18 +35,18 @@
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' 
 #' lab <- data.frame(ID=1:nrow(dat), label=c(rep("Cluster 1",50), rep("Cluster 2",50), 
 #'                                           rep("Cluster 3",50)))
 #' tf2 <- tempfile()
 #' write.table(lab, tf2, sep=",")
 #' 
-#' loadClusteringSample(tf2, x)
+#' clustering <- buildClusteringSample(tf2, x)
 #' 
 #' @keywords internal 
 #' 
-loadClusteringSample <- function(filename.csv, data.sample, noise.cluster="Noise") {
+buildClusteringSample <- function(filename.csv, data.sample, noise.cluster="Noise") {
     clustering <- NULL
     message(filename.csv)
     if (file.exists(filename.csv)) {
@@ -59,9 +59,9 @@ loadClusteringSample <- function(filename.csv, data.sample, noise.cluster="Noise
             clustering <- clustering.df[[2]]
             names(clustering) <- clustering.df[[1]] 
             new.label <- importLabelSample(clustering, data.sample, noise.cluster)
-            #summary=clusterSummary(data.sample, new.label)[,-1,drop=F]
+            #summary=clusterSummary(data.sample, new.label)[,-1,drop=FALSE]
             clustering <- list(label=new.label,
-                               summary=clusterSummary(data.sample, new.label)[,,drop=F], K=sum(table(new.label)>0))
+                               summary=clusterSummary(data.sample, new.label)[,,drop=FALSE], K=sum(table(new.label)>0))
         }
     }
 
@@ -76,7 +76,7 @@ loadClusteringSample <- function(filename.csv, data.sample, noise.cluster="Noise
 #' @param dir character vector specifying the directory where to save the csv file.
 #' @return csv file containing clustering result.
 #' @importFrom utils alarm
-#' @seealso \code{\link{loadClusteringSample}}
+#' @seealso \code{\link{buildClusteringSample}}
 #' 
 #' @examples 
 #' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
@@ -123,11 +123,11 @@ saveClustering <- function(filename.csv, label, dir) {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' 
 #' tf2 <- tempfile()
-#' saveCounts(basename(tf2), table(res$cluster), tempdir())
+#' saveCounts(basename(tf2), table(res$cluster), dirname(tf2))
 #'  
 #' 
 #' @export
@@ -159,11 +159,11 @@ saveCounts <- function(filename.csv, counts, dir) {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' res.pca <- computePcaSample(x)
 #' 
 #' tf2 <- tempfile()
-#' saveCalcul(basename(tf2), res.pca$pca, tempdir())
+#' saveCalcul(basename(tf2), res.pca$pca, dirname(tf2))
 #' 
 #' 
 #' @export 
@@ -195,14 +195,13 @@ saveCalcul <- function(filename.rdata, dat, dir) {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' labels <- formatLabelSample(res$cluster, x)
 #' cluster.summary <- clusterSummary(x, labels)
 #' 
 #' tf2 <- tempfile()
-#' dir <- tempdir()
-#' saveSummary(basename(tf2), cluster.summary, dir)
+#' saveSummary(basename(tf2), cluster.summary, dirname(tf2))
 #' 
 #' loadSummary(tf2)
 #'  
@@ -242,13 +241,13 @@ loadSummary <- function(filename.csv) {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' labels <- formatLabelSample(res$cluster, x)
 #' cluster.summary <- clusterSummary(x, labels)
 #' 
 #' tf2 <- tempfile()
-#' saveSummary(basename(tf2), cluster.summary, tempdir())
+#' saveSummary(basename(tf2), cluster.summary, dirname(tf2))
 #' 
 #' 
 #' @export 
@@ -290,6 +289,7 @@ saveSummary <- function(filename.csv, cluster.summary, dir, info=NULL) {
 #' @param label vector of labels.
 #' @param features.to.keep vector of features names on which the summaries are computed.
 #' @importFrom stats aggregate
+#' @importFrom stats sd
 #' @param summary.functions vector of functions names for the summaries computation. Could be 'Min', 'Max', 'Sum', 'Average', 'sd'. 
 #' @return out data.frame containing the clusters summaries.
 #'
@@ -300,7 +300,7 @@ saveSummary <- function(filename.csv, cluster.summary, dir, info=NULL) {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' res <- KmeansQuick(x$features$initial$x, K=3)
 #' labels <- formatLabelSample(res$cluster, x)
 #' cluster.summary <- clusterSummary(x, labels)
@@ -364,7 +364,7 @@ clusterSummary <- function(data.sample, label, features.to.keep=colnames(data.sa
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #'
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' 
 #' label<-x[["clustering"]][["K-means_preprocessed"]][["label"]]
@@ -415,12 +415,12 @@ return(df)
 extractFeaturesFromSummary <- function(summary, split="...")
 {
     all.feats <- names(summary)
-    is.fun.feat <- grepl(split, all.feats, fixed=T)
+    is.fun.feat <- grepl(split, all.feats, fixed=TRUE)
     simple.feats <- all.feats[!is.fun.feat]
-    fun.feats <- unlist(strsplit(all.feats[is.fun.feat], split=split, fixed=T))
+    fun.feats <- unlist(strsplit(all.feats[is.fun.feat], split=split, fixed=TRUE))
 
-    feats <- unique(fun.feats[rep(c(T,F),length.out=length(fun.feats))])
-    funs <- unique(fun.feats[rep(c(F,T),length.out=length(fun.feats))])
+    feats <- unique(fun.feats[rep(c(TRUE,FALSE),length.out=length(fun.feats))])
+    funs <- unique(fun.feats[rep(c(FALSE,TRUE),length.out=length(fun.feats))])
 
     list(simple.feats=simple.feats, feats=feats, funs=funs)
 }
@@ -446,7 +446,8 @@ extractFeaturesFromSummary <- function(summary, split="...")
 #' rep <- system.file("extdata", package="RclusTool")
 #' imgdir <- file.path(rep, "img_example")
 #'
-#' x <- importSample(file.features=tf1, dir.images=imgdir, dir.save=tempdir())
+#' dir.results <- tempdir()
+#' x <- importSample(file.features=tf1, dir.images=imgdir, dir.save=dir.results)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' 
 #' imgClassif(x, imgdir, method = "K-means_preprocessed")
@@ -458,11 +459,11 @@ imgClassif <- function(data.sample, imgdir, method, user.name="") {
     dat2 <- NULL
     if (is.character(imgdir) && dir.exists(imgdir)) {
         #Determine extension of images
-        if ((length(list.files(imgdir, pattern = ".jpg", ignore.case=T)) > 0)) {
+        if ((length(list.files(imgdir, pattern = ".jpg", ignore.case=TRUE)) > 0)) {
             extension <- ".jpg"
-        } else if ((length(list.files(imgdir, pattern = ".png", ignore.case=T)) > 0)) {
+        } else if ((length(list.files(imgdir, pattern = ".png", ignore.case=TRUE)) > 0)) {
             extension <- ".png"
-        } else if ((length(list.files(imgdir, pattern = ".jpeg", ignore.case=T)) > 0)) {
+        } else if ((length(list.files(imgdir, pattern = ".jpeg", ignore.case=TRUE)) > 0)) {
             extension <- ".jpeg"
         }
         message(paste(extension, "format file"))
@@ -524,7 +525,8 @@ imgClassif <- function(data.sample, imgdir, method, user.name="") {
 #' tf2 <- tempfile()
 #' write.table(sig, tf2, sep=",", dec=".")
 #'
-#' x <- importSample(file.features=tf1,file.profiles = tf2, dir.save=tempdir())
+#' dir.results <- tempdir()
+#' x <- importSample(file.features=tf1,file.profiles = tf2, dir.save=dir.results)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' 
 #' sigClassif(x, method = "K-means_preprocessed")
@@ -580,7 +582,8 @@ sigClassif <- function(data.sample, method, user.name="") {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' dir.results <- tempdir()
+#' x <- importSample(file.features=tf1, dir.save=dir.results)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' 
 #' extractProtos(x, method = "K-means_preprocessed")
@@ -592,6 +595,7 @@ extractProtos <- function(data.sample, method, K.max=20, kmeans.variance.min=0.9
     label <- data.sample$clustering[[method]]$label
     grp <- levels(label)[-1]
     protos <- NULL
+
     dirProto <- file.path(data.sample$files$results$prototypes, paste("protos", user.name, method, sep = "_"))
     if (dir.exists(dirProto))
         unlink(dirProto, recursive = TRUE)
@@ -607,7 +611,7 @@ extractProtos <- function(data.sample, method, K.max=20, kmeans.variance.min=0.9
         if (length(clusterIdx) > 3000) {
             data.sample$sampling <- computeSampling(x=x, K=K.max,
                                                     sampling.size.max=3000, kmeans.variance.min=kmeans.variance.min)
-            x <- x[data.sample$sampling$selection.ids, , drop=F]
+            x <- x[data.sample$sampling$selection.ids, , drop=FALSE]
         }
 
         # subclustering on each cluster and extraction of 10 (max) prototypes (medoids)
@@ -709,20 +713,20 @@ readTrainSet <- function(traindir, keep_ = FALSE, operations=NULL, RclusTool.env
     }
 
     # Merge all data.frames
-    proto.sample <- importSample(file.features = Dats[1], dir.save=tempdir(), sepFeat = ",", decFeat = ".", RclusTool.env=RclusTool.env) 
-    proto.sample <- applyPreprocessing(proto.sample, operations, RclusTool.env, reset=T, preprocessed.only=T)
+    proto.sample <- importSample(file.features = Dats[1], sepFeat = ",", decFeat = ".", RclusTool.env=RclusTool.env) 
+    proto.sample <- applyPreprocessing(proto.sample, operations, RclusTool.env, reset=TRUE, preprocessed.only=TRUE)
     if (is.null(proto.sample)) {
         tkmessageBox(message = "Prototypes reading fails.", icon = "warning", type = "ok")
         return()
     }
-    prototypes <- proto.sample$features$preprocessed$x[proto.sample$id.clean,, drop=F]
+    prototypes <- proto.sample$features$preprocessed$x[proto.sample$id.clean,, drop=FALSE]
     proto.class <- as.character(proto.sample$features$initial$x[proto.sample$id.clean,"Class"])
 
     #prototypes <- prototypes[, -which(names(prototypes) %in% paramDrop)]
     if (length(Dats) > 1) {
         for (i in 2:length(Dats)) {
-            proto.sample <- importSample(file.features = Dats[i], dir.save=tempdir(), sepFeat = ",", decFeat = ".", RclusTool.env=RclusTool.env) 
-            proto.sample <- applyPreprocessing(proto.sample, operations, RclusTool.env, reset=T, preprocessed.only=T)
+            proto.sample <- importSample(file.features = Dats[i], sepFeat = ",", decFeat = ".", RclusTool.env=RclusTool.env) 
+            proto.sample <- applyPreprocessing(proto.sample, operations, RclusTool.env, reset=TRUE, preprocessed.only=TRUE)
             if (is.null(proto.sample)) {
                 tkmessageBox(message = "Prototypes reading fails.", icon = "warning", type = "ok")
                 return()
@@ -731,7 +735,7 @@ readTrainSet <- function(traindir, keep_ = FALSE, operations=NULL, RclusTool.env
             if (!length(feats)){
                 tkmessageBox(message = "Prototypes merging fails: no shared features.", icon = "warning", type = "ok")
             }
-            prototypes <- rbind(prototypes[, feats, drop=F], proto.sample$features$preprocessed$x[proto.sample$id.clean, feats, drop=F])
+            prototypes <- rbind(prototypes[, feats, drop=FALSE], proto.sample$features$preprocessed$x[proto.sample$id.clean, feats, drop=FALSE])
             proto.class <- c(proto.class, as.character(proto.sample$features$initial$x[proto.sample$id.clean,"Class"]))
         }
     }
@@ -793,14 +797,14 @@ dropTrainSetVars <- function (dat, VarToDrop) {
 #' @return data.sample list containing features, profiles and clustering results with updated labels names.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' x <- computeUnSupervised(x, K=3, method.name="K-means")
 #' 
 #' nameClusters(x, method = "K-means_preprocessed")
@@ -833,8 +837,8 @@ nameClusters <- function(data.sample, method, RclusTool.env=initParameters()) {
             stop("Training aborted: there isn't any common features between training set and sample set.")
 
         if (dim(test)[1] > 0) {
-            res.knn <- class::knn(prototypes[,selected.var, drop=F], 
-                                  test[, selected.var, drop=F], cl=prototypes.label, 
+            res.knn <- class::knn(prototypes[,selected.var, drop=FALSE], 
+                                  test[, selected.var, drop=FALSE], cl=prototypes.label, 
                                   k=min(RclusTool.env$param$classif$unsup$nb.neighbours, min(table(prototypes.label))))
             levels(data.sample$clustering[[method]]$label)[which(levels(data.sample$clustering[[method]]$label) == i)] <- names(which.max(table(res.knn)))[1]
         }
@@ -856,8 +860,9 @@ nameClusters <- function(data.sample, method, RclusTool.env=initParameters()) {
 #' @importFrom utils alarm
 #' 
 #' @examples 
-#' logfile <- 'logfile.txt'
-#' saveLogFile(logfile, txt=rbind("Analysis date: ...", "Analysis duration: ..."), tempdir())
+#' logfile <- tempfile()
+#' saveLogFile(basename(logfile), txt=rbind("Analysis date: ...", "Analysis duration: ..."), 
+#'      dirname(logfile))
 #' 
 #'
 #' @keywords internal 
@@ -891,12 +896,11 @@ saveLogFile <- function(filename.txt, txt, dir) {
 #' tf1 <- tempfile()
 #' write.table(dat, tf1, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1)
 #' 
 #' new.protos <- visualizeSampleClustering(x, selection.mode = "prototypes", 
-#'				 profile.mode="whole sample", wait.close=FALSE)
-#' x <- updateClustersNames(x, new.protos)
-#' 
+#'				 profile.mode="none", wait.close=FALSE)
+#' x <- updateClustersNames(x, new.protos$prototypes)
 #' 
 #' }
 #' @keywords internal 
@@ -927,10 +931,10 @@ updateClustersNames <- function(data.sample, protos) {
 #'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' 
-#' tf1 <- tempfile()
-#' write.table(dat, tf1, sep=",", dec=".")
+#' tf <- tempfile()
+#' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' res_new <- KmeansQuick(x$features$initial$x, K=3)
 #' labels_new <- formatLabelSample(res_new$cluster, x)
@@ -958,24 +962,27 @@ addClustering <- function(clustering, new.clustering.name, new.cluster.summary, 
 #' @return profiles and images of prototypes selected, csv file with detail.
 #' @importFrom grDevices jpeg dev.off
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
-#' tf1 <- tempfile()
-#' write.table(dat, tf1, sep=",", dec=".")
+#' tf <- tempfile()
+#' write.table(dat, tf, sep=",", dec=".")
 #' 
-#' x <- importSample(file.features=tf1, dir.save=tempdir())
+#' x <- importSample(file.features=tf1, dir.save=dirname(tf))
 #' 
 #' new.protos <- visualizeSampleClustering(x, selection.mode = "prototypes", 
 #'				 profile.mode="whole sample", wait.close=FALSE)
 #' saveManualProtos(x, new.protos)
 #' 
-#' 
 #' }
 #' @export 
 #' 
 saveManualProtos <- function(data.sample, protos) {
+    if (!length(data.sample$files$results$prototypes)) {
+        warning("directory for prototypes results not specified.")
+        return()
+    }
     dirsaveManualProtos= file.path(data.sample$files$results$prototypes, paste("protos","manual", format(Sys.time(),'_%Y%m%d_%Hh%Mm%Ss'), sep = "_"))
     unlink(dirsaveManualProtos, recursive = TRUE)
     dir.create(dirsaveManualProtos)

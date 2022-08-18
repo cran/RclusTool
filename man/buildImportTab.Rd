@@ -4,15 +4,9 @@
 \alias{buildImportTab}
 \title{Build Import tab}
 \usage{
-buildImportTab(mainWindow, console, graphicFrame, RclusTool.env)
+buildImportTab(RclusTool.env)
 }
 \arguments{
-\item{mainWindow}{window in which the 'importTab' is created.}
-
-\item{console}{frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{frame of the RclusTool interface in which graphics should be displayed.}
-
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
 \value{

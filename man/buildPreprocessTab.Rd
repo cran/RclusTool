@@ -4,15 +4,9 @@
 \alias{buildPreprocessTab}
 \title{build Preprocess tab}
 \usage{
-buildPreprocessTab(mainWindow, console, graphicFrame, RclusTool.env)
+buildPreprocessTab(RclusTool.env)
 }
 \arguments{
-\item{mainWindow}{window in which the 'preprocessTab' is created.}
-
-\item{console}{frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{frame of the RclusTool interface in which graphics should be dispayed.}
-
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
 \value{

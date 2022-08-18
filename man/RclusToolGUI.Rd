@@ -4,7 +4,7 @@
 \alias{RclusToolGUI}
 \title{Username and user type selection}
 \usage{
-RclusToolGUI(RclusTool.env = new.env(), debug = F)
+RclusToolGUI(RclusTool.env = new.env(), debug = FALSE)
 }
 \arguments{
 \item{RclusTool.env}{environment in which data and results will be stored. If NULL, a local environment will be created.}

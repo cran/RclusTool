@@ -19,19 +19,15 @@
 #' function to build the 'preprocessTab' for data preprocessing (variables selection, transformation, creation, ...)
 #' @title build Preprocess tab
 #' @description Generate the data preprocessing tab of the \code{\link{RclusToolGUI}}, in which the user can select, transform, filter or create variables.
-#' @param mainWindow window in which the 'preprocessTab' is created.
-#' @param console frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame frame of the RclusTool interface in which graphics should be dispayed.
 #' @param RclusTool.env environment in which data and intermediate results are stored.
 #' @return None
 #' @importFrom utils write.csv
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
-buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
-
+buildPreprocessTab <- function(RclusTool.env) {
     prepro.env <- RclusTool.env$gui$tabs.env$prepro
-    
+
     prepro.env$tcl.pca.check <- tclVar("1") #mode standard non expert
     prepro.env$tcl.spectral.check <- tclVar("0")
     prepro.env$tcl.pca.nb.dims <- tclVar("0")
@@ -45,8 +41,13 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
     creatVar.env <- new.env()
     signal.names <- colnames(RclusTool.env$data.sample$profiles[[1]])
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
-    
+    fontFrame <- tkfont.create(family = RclusTool.env$param$visu$font, weight = "bold", size = RclusTool.env$param$visu$size)
+    fontTitleFrame <- tkfont.create(family = RclusTool.env$param$visu$titlefont, weight = "bold", size = RclusTool.env$param$visu$titlesize)
+    padx = "6m"
+    padx.m = "3m"
+    pady = "1m"
+    pady.s = "0.5m"
+
     space.title <- c("preprocessed"="Preprocessed Features",
                      "pca"="Principal Components Analysis",
                      "spectral"="Spectral Embedding")
@@ -57,11 +58,12 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                            "spectral"="Statistical procedure: non linear transformation\nResults: spectrum of the data similarity matrix\nUtility 1: dimensionality reduction\nUtility 2: processing of non convex data")
 
 
-	# Import Preprocessing frame
-    preprocessingFrametext <- StringToTitle("IMPORT PREPROCESSING / VISUALIZE DATA SAMPLE (OPTIONAL)", RclusTool.env$param$visu$sizecm ,fontsize=RclusTool.env$param$visu$size)
-    preprocessingFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = preprocessingFrametext, font = fontFrame, padx =  RclusTool.env$param$visu$size*3, pady = 8, relief = "flat")
-    tkgrid(preprocessingFrame, row = 1, columnspan = 3, pady=10, sticky = "w")
-    
+    # Import Preprocessing frame
+    preprocessingFrametext <- makeTitle("IMPORT PREPROCESSING / VISUALIZE DATA SAMPLE (OPTIONAL)")
+    preprocessingFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = preprocessingFrametext, font = fontTitleFrame, padx =  padx, pady = pady, relief = "flat")
+    tkEmptyLine(win1.nb$env$preprocess, row=0)
+    tkgrid(preprocessingFrame, row = 1, pady=pady, sticky = "we")
+
     # Select the Preprocessing file
     preprocessingName <- tktext(preprocessingFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
 
@@ -72,7 +74,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
         tkinsert(preprocessingName,"end", prepro.env$ProcessFile)
         tkconfigure(preprocessingName, state="disabled") 
     }
-    
+
     # Import config file
     onImport <- function() {
         ProcessFile <- tclvalue(tkgetOpenFile(filetypes = "{{csv Files} {.csv}}"))
@@ -84,64 +86,63 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
             # Call 'loadPreprocessFile' function
             operations <- loadPreprocessFile(ProcessFile)
             # Call 'applyPreprocessing' function
-            new.data.sample <- applyPreprocessing(RclusTool.env$data.sample, operations, RclusTool.env, reset=T)
+            new.data.sample <- applyPreprocessing(RclusTool.env$data.sample, operations, RclusTool.env, reset=TRUE)
             if (!is.null(new.data.sample)) {
                 RclusTool.env$data.sample <- new.data.sample
             } else {
+                onReset()
                 return()
             }
 
             # Refresh GUI
-            initPreprocessTab(mainWindow = mainWindow, console = console, 
-                              graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T, readConfig=T)
+            initPreprocessTab(RclusTool.env = RclusTool.env, reset=TRUE, readConfig=TRUE)
             # Display informations in console
-            tkinsert(console, "0.0", paste("----- Preprocessing -----\n",
+            messageConsole(paste("----- Preprocessing -----\n",
                                            "Filename:  ", basename(ProcessFile), "\n",
                                            "Number of objects:  ", dim(RclusTool.env$data.sample$features[["preprocessed"]]$x)[1], "\n",
                                            "Number of features:  ", dim(RclusTool.env$data.sample$features[["preprocessed"]]$x)[2], 
-                                           "\n\n", sep = ""))
+                                           "\n\n", sep = ""), RclusTool.env=RclusTool.env)
 
-            initUnsupTab(mainWindow = mainWindow, console = console, graphicFrame = graphicFrame, 
-                         RclusTool.env = RclusTool.env, reset=T)
+            initUnsupTab(RclusTool.env = RclusTool.env, reset=TRUE)
 
-            initSemisupTab(mainWindow = mainWindow, console = console, 
-                           graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+            initSemisupTab(RclusTool.env = RclusTool.env, reset=TRUE)
 
-            initSupTab(mainWindow = mainWindow, console = console, 
-                       graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+            initSupTab(RclusTool.env = RclusTool.env, reset=TRUE)
         }
     }
 
     butImport <- tk2button(preprocessingFrame, text = "Import Preprocessing", image = "csvFile", compound = "left", width = 20, command = onImport)
-    tkgrid(butImport, row = 2, column = 0, padx = RclusTool.env$param$visu$size*3)
-    tkgrid(preprocessingName, padx = 5, row = 2, column= 1)
-    
+    tkgrid(butImport, row = 2, column = 0, padx = padx)
+    tkgrid(preprocessingName, padx = padx.m, row = 2, column= 1)
+
     # Parameter selection frame
-    parameterFrametext <- StringToTitle("VARIABLE SELECTION", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    parameterFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = parameterFrametext, font = fontFrame, padx =  RclusTool.env$param$visu$size*3, pady = 8, relief = "flat")
-    tkgrid(parameterFrame, row = 4, columnspan = 3, sticky = "w")
+    parameterFrametext <- makeTitle("VARIABLE SELECTION")
+    parameterFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = parameterFrametext, font = fontTitleFrame, padx =  padx, pady = pady, relief = "flat")
+    tkEmptyLine(win1.nb$env$preprocess, row=2)
+    tkgrid(parameterFrame, row = 3, pady=pady, sticky = "we")
+    #tkgrid.rowconfigure(win1.nb$env$preprocess, parameterFrame, weight=1)
 
     # First listbox with all parameters
     dataVarList <- tk2listbox(parameterFrame, selectmode = "multiple", activestyle = "dotbox",
                               height = 10, width = 27, autoscroll = "none", background = "white")
-    tkgrid(tk2label(parameterFrame, text = "Dataset variables:"), row = 1, column = 0, padx = RclusTool.env$param$visu$size*3, pady = c(10,0), sticky = "w")
-    tkgrid(dataVarList, row = 2, column = 0, padx = RclusTool.env$param$visu$size*3)
+    tkgrid(tk2label(parameterFrame, text = "Dataset variables:"), row = 1, column = 0, padx = padx, pady = c(pady,0), sticky = "w")
+    tkgrid(dataVarList, row = 2, column = 0, padx = padx)
 
     # Second listbox with selected parameters
     modelVarList <- tk2listbox(parameterFrame, selectmode = "multiple", activestyle = "dotbox", 
                                height = 10, width = 27, autoscroll = "none", background = "white")
-    tkgrid(tk2label(parameterFrame, text = "Variables used for classification"), row = 1, column = 2, pady = c(10,0), sticky = "w")
+    tkgrid(tk2label(parameterFrame, text = "Variables used for classification"), row = 1, column = 2, pady = c(pady,0), sticky = "w")
     tkgrid(modelVarList, row = 2, column = 2, sticky = "s")
-    
-    
+
+
     # What kind of CSV file for features
     FeaturesAdvice <- tkwidget(parameterFrame, "labelframe", 
-                            text = "Variable statistics",
-                            padx = 2*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+                               text = "Variable statistics",
+                               padx = padx, pady = pady, relief = "groove")
     FeaturesAdviceText <- tk2label(FeaturesAdvice, text = "Inspect variable statistics\nby double-clicking on its name\nin dataset variables section", width = 30)                   
     tkconfigure(FeaturesAdvice,font = fontFrame)
     tkconfigure(FeaturesAdviceText,font = fontFrame)
-    tkgrid(FeaturesAdvice, columnspan = 1, column = 3, row = 2, padx=20)
+    tkgrid(FeaturesAdvice, columnspan = 1, column = 3, row = 2, padx=padx.m)
     tkgrid(FeaturesAdviceText)
 
     # remove all features from both lists: available and selected features
@@ -159,12 +160,12 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
         eraseFeaturesList()
         sapply(prepro.env$featName$unselect, function(x) tkinsert(dataVarList, "end", x))
         sapply(prepro.env$featName$select, function(x) tkinsert(modelVarList, "end", x))
-        tkselection.set(dataVarList, 0)
+        #tkselection.set(dataVarList, 0)
     }
 
 
     # select one or several feature(s) (from available features list)
-    selectFeatures <- function(index=c(), all=F)
+    selectFeatures <- function(index=c(), all=FALSE)
     {
         if (all)
         {
@@ -180,7 +181,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
     }
 
     # remove one or several feature(s)
-    removeFeatures <- function(index=c(), all=F)
+    removeFeatures <- function(index=c(), all=FALSE)
     {
         if (all)
         {
@@ -214,7 +215,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
     {
         ind <- which(tolower(prepro.env$featureOperations[,1])==tolower(type))
         if (length(ind))
-            prepro.env$featureOperations <- prepro.env$featureOperations[-ind,,drop=F]
+            prepro.env$featureOperations <- prepro.env$featureOperations[-ind,,drop=FALSE]
     }
 
     # add a new feature by processing other features: new operation added
@@ -241,13 +242,13 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
 
     # Arrows frame
     arrowFrame <- tkwidget(parameterFrame, "labelframe", relief = "groove", borderwidth = 0)
-    tkgrid(arrowFrame, column = 1, row = 2, sticky = "w", padx = c(30,30)) 
+    tkgrid(arrowFrame, column = 1, row = 2, sticky = "w", padx = c(padx,padx)) 
 
 
     # Add all parameters from first listbox to second listbox
     addAllButton <- tk2button(arrowFrame, text = "ALL =>", command = function() {
                                   # Check if a value is selected
-                                  selectFeatures(all=T)
+                                  selectFeatures(all=TRUE)
                                }) 
     tkgrid(addAllButton)
     # Add one or all parameters from first listbox to second listbox
@@ -280,7 +281,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
     # Delete all parameters from second listbox
     removeAllButton <- tk2button(arrowFrame, text = "ALL <=", command = function() {
                                      # Check if a value is selected
-                                     removeFeatures(all=T)
+                                     removeFeatures(all=TRUE)
                                })
     tkgrid(removeAllButton)
 
@@ -299,14 +300,14 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                 return()
             }
             paramSelect <- prepro.env$featName$unselect[selection]
-			
-			if (!is.null(RclusTool.env$data.sample$features$preprocessed$x[[paramSelect]])){
-            	# Plot boxplot in tab
-            	tk2delete.notetab(win2.nb)
-            	analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = paramSelect, 
-                        	type = "boxplot", hscale = RclusTool.env$param$visu$hscale, fontsize=RclusTool.env$param$visu$size)
+
+            if (!is.null(RclusTool.env$data.sample$features$preprocessed$x[[paramSelect]])){
+                # Plot boxplot in tab
+                tk2delete.notetab(win2.nb)
+                analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = paramSelect, 
+                            type = "boxplot", hscale = RclusTool.env$param$visu$hscale, fontsize=RclusTool.env$param$visu$size)
             } else {
-            	tkmessageBox(message = "Please valid the preprocessing to see the boxplot of this variable.", icon = "warning", type = "ok")
+                tkmessageBox(message = "Please valid the preprocessing to see the boxplot of this variable.", icon = "warning", type = "ok")
             }
         }
     }
@@ -427,7 +428,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                               }
                               butCancel <- tk2button(creatett, text = "Cancel", width = -6, command = onCancel)
                               tkgrid(butCancel, row = 8, column = 2, sticky = "w")
-                        })
+                            })
     tkgrid(createVar, row = 3, column = 0, sticky = "ne")
 
     # Transform parameters button
@@ -476,7 +477,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                                  }
                                  butLog <- tk2button(transformtt, text = "log10", width = -6, command = onLog)
                                  tkgrid(butLog, row = 6, column = 3, sticky = "e")
-                        })
+                            })
     tkgrid(transformVar, row = 3, column = 0, sticky = "n")
 
     # Filter button
@@ -498,7 +499,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                                          row = 5, column = 0, sticky = "w")
 
                                   # Display informations about parameter (min and max values)
-                                  #        featuresClean <- RclusTool.env$data.sample$features[["preprocessed"]]$x[RclusTool.env$data.sample$id.clean, ,drop=F]
+                                  #        featuresClean <- RclusTool.env$data.sample$features[["preprocessed"]]$x[RclusTool.env$data.sample$id.clean, ,drop=FALSE]
                                   #        minVal <- min(featuresClean[, which(colnames(featuresClean) == paramNames[selection])])
                                   #        maxVal <- max(featuresClean[, which(colnames(featuresClean) == paramNames[selection])])
                                   #        tkgrid(tk2label(filtertt, text = paste("[", round(minVal, digits = 4), " ; ", 
@@ -559,17 +560,17 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                                   butCancel <- tk2button(filtertt, text = "Cancel", width = -6, command = onCancel)
                                   tkgrid(butCancel, row = 8, column = 2)
                               }
-                        })
+                            })
     tkgrid(filterVar, row = 3, column = 0, sticky = "nw")
     colDefPlot <- 2  # Column for 'Configure default plot' button in parameterFrame
 
     # Space selection frame for expert mode
     # First listbox with all spaces
-    spaceFrametext <- StringToTitle("FEATURE SPACE TRANSFORMATION", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    spaceFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = spaceFrametext, font = fontFrame, padx = 1*RclusTool.env$param$visu$size, pady = 0, relief = "flat")
-    AdviceFrame <- tkwidget(spaceFrame, "labelframe", text = "", padx = 10, pady = 5, relief = "groove")
-    tkgrid(AdviceFrame, columnspan = 3, rowspan = 3, column = 6, row = 6)
- 
+    spaceFrametext <- makeTitle("FEATURE SPACE TRANSFORMATION")
+    spaceFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = spaceFrametext, font = fontTitleFrame, padx = padx, pady = pady, relief = "flat")
+    AdviceFrame <- tkwidget(spaceFrame, "labelframe", text = "", padx = padx.m, pady = pady, relief = "groove")
+    tkgrid(AdviceFrame, rowspan = 3, column = 6, row = 6)
+
 
     AdviceFrameText <- tk2label(AdviceFrame, text = "Space description", width=0)
     tkgrid(AdviceFrameText, sticky = "w")
@@ -601,7 +602,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
     }
 
 
-    prepro.env$updateSpaceList <- function(reset=F) {
+    prepro.env$updateSpaceList <- function(reset=FALSE) {
         prepro.env$available.spaces <- listDerivableFeatureSpaces(scaling=tclvalue(prepro.env$tcl.scaling.check)=="1",
                                                                   pca=tclvalue(prepro.env$tcl.pca.check) == "1",
                                                                   spectral=tclvalue(prepro.env$tcl.spectral.check) == "1",
@@ -619,16 +620,17 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
 
     if (RclusTool.env$gui$user.type == "expert") {
         # Space selection frame
-        tkgrid(spaceFrame, row = 6, columnspan = 3, sticky = "w")
-        
+        tkEmptyLine(win1.nb$env$preprocess, row=4)
+        tkgrid(spaceFrame, row = 5, sticky = "we", pady=pady)
+
         # Check scaling
         OnScalingCheck <- function() {
-        	prepro.env$updateSpaceList()
+            prepro.env$updateSpaceList()
         }
-        
+
         # Check sampling
         OnSamplingCheck <- function() {
-        	prepro.env$updateSpaceList()
+            prepro.env$updateSpaceList()
             if (tclvalue(prepro.env$tcl.sampling.check)=="1") {
                 tkconfigure(tk.sampling.size, state="normal")
             } else
@@ -636,7 +638,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
         }
 
         # Describe Spaces
-        prepro.env$onSpaceSelection <- function(pca.check=F, spectral.check=F, reset=F) {
+        prepro.env$onSpaceSelection <- function(pca.check=FALSE, spectral.check=FALSE, reset=FALSE) {
             prepro.env$updateSpaceList(reset=reset)
 
             space.type <- "preprocessed" 
@@ -663,25 +665,25 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
 
         #tkbind(spaceList, "<ButtonRelease-1>", OnModifSpace)
 
-        tkgrid(tk2label(spaceFrame, text = "New spaces to build:"), row = 5, column = 1, pady = c(10,0),padx =  RclusTool.env$param$visu$size*3, sticky = "w")
+        tkgrid(tk2label(spaceFrame, text = "New spaces to build:"), row = 5, column = 1, pady = c(pady,0),padx =  padx, sticky = "w")
 
         # PCA check button
         rc_pca <- tkcheckbutton(spaceFrame, variable=prepro.env$tcl.pca.check, text = "PCA - Reduced features (0=auto)",
                                 command=OnPcaCheck)
-        tkgrid(tk2label(spaceFrame), rc_pca, row=6, column=1, padx =  RclusTool.env$param$visu$size*3, sticky="w")
+        tkgrid(tk2label(spaceFrame), rc_pca, row=6, column=1, padx = padx, sticky="w")
 
         # Spectral Embedding check button
         rc_spectral <- tkcheckbutton(spaceFrame, variable = prepro.env$tcl.spectral.check, text = "Spectral Embedding",
                                      command=OnSpectralCheck)
 
-        tkgrid(tk2label(spaceFrame), rc_spectral, row=7, column=1, padx =  RclusTool.env$param$visu$size*3, sticky="w")
-        
-        tkgrid(tk2label(spaceFrame, text = "Scaling:"), row = 8, column = 1, padx =  RclusTool.env$param$visu$size*3, sticky = "w")
-        
+        tkgrid(tk2label(spaceFrame), rc_spectral, row=7, column=1, padx = padx, sticky="w")
+
+        tkgrid(tk2label(spaceFrame, text = "Scaling:"), row = 8, column = 1, padx = padx, sticky = "w")
+
         # Scaling check button
         tk.scaling.check <- tkcheckbutton(spaceFrame, variable = prepro.env$tcl.scaling.check, text = "Scaling", 
-        								  command=OnScalingCheck)
-        tkgrid(tk2label(spaceFrame), tk.scaling.check, row=9, column=1, padx =  RclusTool.env$param$visu$size*3 , sticky="w")
+                                          command=OnScalingCheck)
+        tkgrid(tk2label(spaceFrame), tk.scaling.check, row=9, column=1, padx = padx, sticky="w")
 
         #pca
         tk.pca.nb.dims <- tkentry(spaceFrame, textvariable=prepro.env$tcl.pca.nb.dims, width=2, 
@@ -689,23 +691,23 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
         tkconfigure(tk.pca.nb.dims,font = fontFrame)
 
         #sampling
-        tkgrid(tk2label(spaceFrame, text = "Selection of a subset:"), row = 10, column = 1, pady = c(10,0), padx =  RclusTool.env$param$visu$size*3, sticky = "w")
+        tkgrid(tk2label(spaceFrame, text = "Selection of a subset:"), row = 10, column = 1, pady = c(pady,0), padx = padx, sticky = "w")
 
         tk.sampling.check <- tkcheckbutton(spaceFrame, text="Sampling", variable=prepro.env$tcl.sampling.check,
                                            command=OnSamplingCheck)
-        tkgrid(tk2label(spaceFrame), tk.sampling.check, row=11, column=1, padx =  RclusTool.env$param$visu$size*3, sticky="w")
+        tkgrid(tk2label(spaceFrame), tk.sampling.check, row=11, column=1, padx = padx, sticky="w")
 
         tk.sampling.size <- tkentry(spaceFrame, textvariable=prepro.env$tcl.sampling.size, width=5, 
                                     state="disabled", background = "white")
-                                    
+
         tkconfigure(tk.sampling.size,font = fontFrame)
-        
+
         # Positioning
         tkgrid(tk.pca.nb.dims, row=6, column=2, sticky="w")
         tkgrid(tk.sampling.size, row=11, column=2, sticky="w")
 
-        tkgrid(tk2label(spaceFrame, text = "Space used by classification processes:"), row = 13, column = 1, pady = c(10,0), padx =  RclusTool.env$param$visu$size*3, sticky = "w")
-        tkgrid(spaceList, row = 14, column = 1, padx =  RclusTool.env$param$visu$size*3)
+        tkgrid(tk2label(spaceFrame, text = "Space used by classification processes:"), row = 13, column = 1, pady = c(pady,0), padx = padx, sticky = "w")
+        tkgrid(spaceList, row = 14, column = 1, padx = padx)
 
     }
 
@@ -718,7 +720,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                                 tkgrid(tk2label(defaulttt, text = "     "), row = 1, sticky = "w")
 
                                 # Default axes frame
-                                axisFrame <- tkwidget(defaulttt, "labelframe", text = "X-Y SCATTER PLOT", font = fontFrame, padx = 50, pady = 8, relief = "groove")
+                                axisFrame <- tkwidget(defaulttt, "labelframe", text = "X-Y SCATTER PLOT", font = fontFrame, padx = padx, pady = pady, relief = "groove")
                                 tkgrid(axisFrame, row = 2, columnspan = 2, sticky = "w")
                                 tkgrid(tk2label(axisFrame, text = "     "), row = 1, sticky = "w")
 
@@ -748,12 +750,12 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                                 if (!is.null(prepro.env$defaultFeaturesHV["parH"])) {
                                     tkgrid(tk2label(axisFrame, text = paste("X-axis:", prepro.env$defaultFeaturesHV["parH"]), 
                                                     justify = "left"), row = 7, column = 0, sticky = "e")
-                                    tkselection.set(varlst1, grep(prepro.env$defaultFeaturesHV["parH"], paramNamesTemp, fixed=T)[1]-1)
+                                    tkselection.set(varlst1, grep(prepro.env$defaultFeaturesHV["parH"], paramNamesTemp, fixed=TRUE)[1]-1)
                                 } else tkselection.set(varlst1, 0)
                                 if (!is.null(prepro.env$defaultFeaturesHV["parV"])) {
                                     tkgrid(tk2label(axisFrame, text = paste("Y-axis:", prepro.env$defaultFeaturesHV["parV"]), 
                                                     justify = "left"), row = 7, column = 2, sticky = "w")
-                                    tkselection.set(varlst2, grep(prepro.env$defaultFeaturesHV["parV"], paramNamesTemp, fixed=T)[1]-1)
+                                    tkselection.set(varlst2, grep(prepro.env$defaultFeaturesHV["parV"], paramNamesTemp, fixed=TRUE)[1]-1)
                                 } else tkselection.set(varlst2, 1)
 
                                 # Validate the selection for default axes
@@ -772,7 +774,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
 
                                 if (!is.null(RclusTool.env$data.sample$profiles)) {
                                     # Color frame (for signals only)
-                                    colorFrame <- tkwidget(defaulttt, "labelframe", text = "SIGNALS COLORS", font = fontFrame, padx = 50, pady = 8, relief = "groove")
+                                    colorFrame <- tkwidget(defaulttt, "labelframe", text = "SIGNALS COLORS", font = fontFrame, padx = padx, pady = pady, relief = "groove")
                                     tkgrid(tk2label(defaulttt, text = "     "), row = 1, column = 2, sticky = "w")
                                     tkgrid(colorFrame, row = 2, column = 3, columnspan = 2, sticky = "w")
                                     tkgrid(tk2label(colorFrame, text = "     "), row = 1, sticky = "w")
@@ -814,7 +816,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
                                     onSigSelection <- function() {
                                         sig <- signal.names[as.numeric(tkcurselection(siglst)) + 1]
                                         tkselection.clear(collst, 0, "end")
-                                        tkselection.set(collst, grep(prepro.env$signalColor[sig], colors, fixed=T)[1]-1)
+                                        tkselection.set(collst, grep(prepro.env$signalColor[sig], colors, fixed=TRUE)[1]-1)
                                         tkgrid(tk2label(colorFrame, text = "                    "), row = 7, column = 0)
                                         tkgrid(tk2label(colorFrame, text = "                    "), row = 7, column = 0, sticky = "w")
                                         tkgrid(tk2label(colorFrame, text = "                    "), row = 7, column = 0, sticky = "e")
@@ -861,8 +863,8 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
         # Update labels with renamed clusters
         RclusTool.env$data.sample <- updateClustersNames(RclusTool.env$data.sample, new.protos$prototypes)
         # Update clusters names in plots (if necessary)
-        tk2delete.notetab(win2.nb)
-        abdPlotTabs(clusterings=RclusTool.env$data.sample$clustering, nb=win2.nb, RclusTool.env = RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
+        #tk2delete.notetab(win2.nb)
+        #abdPlotTabsGUI(RclusTool.env)
         # Save prototypes (csv + image files in 'prototypes' directory)
         saveManualProtos(RclusTool.env$data.sample, new.protos$prototypes)
     }
@@ -877,20 +879,21 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
         message(paste("Export:", file.path(RclusTool.env$data.sample$files$results$preprocess, newProcessFile)))
         savePreprocess(filename.csv = newProcessFile, prepro.env$featureOperations, RclusTool.env$data.sample$files$results$preprocess)
 
-        tkinsert(console, "0.0", paste("----- Save Preprocessing file -----\n",
+        messageConsole(paste("----- Save Preprocessing file -----\n",
                                        "Folder: ", RclusTool.env$data.sample$files$results$preprocess, "\n",
                                        "Filename: ", newProcessFile,
-                                       "\n\n", sep = ""))
+                                       "\n\n", sep = ""), RclusTool.env=RclusTool.env)
     }
-    butExport <- tk2button(win1.nb$env$preprocess, text = "Export preprocessing", image = "csvFile", compound = "left", width = 30, command = onExport)
+    buttonsFrame <- tkwidget(win1.nb$env$preprocess, "labelframe", text = "", font = fontFrame, padx = padx, pady = pady, relief = "flat")
+    butExport <- tk2button(buttonsFrame, text = "Export preprocessing", image = "csvFile", compound = "left", width = 30, command = onExport)
 
     # Valid preprocessing
     onValid <- function() {
-    	if (tclvalue(prepro.env$tcl.spectral.check)=="1" && tclvalue(prepro.env$tcl.sampling.check)=="0" && RclusTool.env$data.sample$size>5000){
-    		msg <- "Are you sure you want to make spectral projection without sampling (It can take a long time...)?"
-			res <- tkmessageBox(message = msg, icon = "warning", type = "yesno", default = "no")
-        	if (tclvalue(res) == "no") return(invisible(NULL))  
-    	}
+        if (tclvalue(prepro.env$tcl.spectral.check)=="1" && tclvalue(prepro.env$tcl.sampling.check)=="0" && RclusTool.env$data.sample$size>5000){
+            msg <- "Are you sure you want to make spectral projection without sampling (It can take a long time...)?"
+            res <- tkmessageBox(message = msg, icon = "warning", type = "yesno", default = "no")
+            if (tclvalue(res) == "no") return(invisible(NULL))  
+        }
         removeOperations("default")
         for (feat in prepro.env$defaultFeaturesHV)
             addOperation(list("default", feat))
@@ -909,7 +912,7 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
             addOperation(list("projection","pca", tclvalue(prepro.env$tcl.pca.nb.dims)))
         if (tclvalue(prepro.env$tcl.spectral.check)=="1")
             addOperation(list("projection","spectral"))
-            
+
         #scaling
         removeOperations("scaling")
         if (tclvalue(prepro.env$tcl.scaling.check)=="1"){
@@ -929,98 +932,92 @@ buildPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env)
             prepro.env$featSpace <- getSelectedSpace()
         }
         addOperation(list("space", prepro.env$featSpace))
-        
+
         printFeatureOperations <- prepro.env$featureOperations
-		printFeatureOperations[is.na(printFeatureOperations)] <- " "
+        printFeatureOperations[is.na(printFeatureOperations)] <- " "
         printFeatureOperations <- as.data.frame(printFeatureOperations)
         printFeatureOperations <- toStringDataFrame(printFeatureOperations)
-		printFeatureOperations <- unlist(strsplit(printFeatureOperations, split='arg4\n ', fixed=TRUE))[2]
+        printFeatureOperations <- unlist(strsplit(printFeatureOperations, split='arg4\n ', fixed=TRUE))[2]
 
-		tkinsert(console, "0.0", paste("----- Preprocessing -----\n",printFeatureOperations,'\n\n'))
+        messageConsole(paste("----- Preprocessing -----\n",printFeatureOperations,'\n\n'), RclusTool.env=RclusTool.env)
 
-        new.data.sample <- applyPreprocessing(RclusTool.env$data.sample, prepro.env$featureOperations, RclusTool.env, reset=T)
+        new.data.sample <- applyPreprocessing(RclusTool.env$data.sample, prepro.env$featureOperations, RclusTool.env, reset=TRUE)
 
         if (is.null(new.data.sample)) {
+            onReset()
             return()
         } 
 
         RclusTool.env$gui$win1$env$authorization$prepro <- TRUE
         RclusTool.env$gui$win1$env$authorization$classif <- TRUE
-   		
+
         RclusTool.env$data.sample <- new.data.sample
 
-        initUnsupTab(mainWindow = mainWindow, console = console, 
-                     graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+        initUnsupTab(RclusTool.env = RclusTool.env, reset=TRUE)
 
-        initSemisupTab(mainWindow = mainWindow, console = console, 
-                       graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+        initSemisupTab( RclusTool.env = RclusTool.env, reset=TRUE)
 
-        initSupTab(mainWindow = mainWindow, console = console, 
-                   graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
-        
-		#Vizualisation of Correlation 
-		tkconfigure(win1.nb$env$import, cursor = "watch")
+        initSupTab(RclusTool.env = RclusTool.env, reset=TRUE)
+
+        #Vizualisation of Correlation 
+        tkconfigure(win1.nb$env$import, cursor = "watch")
         tk2delete.notetab(win2.nb)
         if (length(prepro.env$featName$select)>0){
-			analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = prepro.env$featName$select, 
+            analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = prepro.env$featName$select, 
                         type = "Corr",hscale = RclusTool.env$param$visu$hscale, fontsize=RclusTool.env$param$visu$size)
         }
         # Plot correlation circle and Variance in the tabs
         if ((tclvalue(prepro.env$tcl.pca.check)=="1")){
-            space.name <- grep("pca_full", names(RclusTool.env$data.sample$features), value=T, fixed=T)[1]
+            space.name <- grep("pca_full", names(RclusTool.env$data.sample$features), value=TRUE, fixed=TRUE)[1]
             analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = space.name, 
                         type = "pcaCorr", hscale = RclusTool.env$param$visu$hscale, fontsize=RclusTool.env$param$visu$size)
             analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = space.name, 
                         type = "pcaVar", hscale = RclusTool.env$param$visu$hscale, fontsize=RclusTool.env$param$visu$size)
         }
         if ((tclvalue(prepro.env$tcl.spectral.check)=="1")){
-            space.name <- grep("spectral", names(RclusTool.env$data.sample$features), value=T, fixed=T)[1]
+            space.name <- grep("spectral", names(RclusTool.env$data.sample$features), value=TRUE, fixed=TRUE)[1]
             analyzePlot(win2.nb, data.sample = RclusTool.env$data.sample, selectedVar = space.name, 
                         type = "gapSE", hscale = RclusTool.env$param$visu$hscale, fontsize=RclusTool.env$param$visu$size)
         }
         tkconfigure(win1.nb$env$import, cursor = "left_ptr")
-  
+
     }
 
-    butValid <- tk2button(win1.nb$env$preprocess, text = "Validate preprocessing", image = "check", compound = "left", width = 30, command = onValid)
+    butValid <- tk2button(buttonsFrame, text = "Validate preprocessing", image = "check", compound = "left", width = 30, command = onValid)
 
     # Reset preprocessing
     onReset <- function() {
-        RclusTool.env$data.sample <- applyPreprocessing(RclusTool.env$data.sample, operations=NULL, RclusTool.env, reset=T)
-        initPreprocessTab(mainWindow = mainWindow, console = console, 
-                          graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T, readConfig=F)
+        message("Preprocessing Reset")
+        RclusTool.env$data.sample <- applyPreprocessing(RclusTool.env$data.sample, operations=NULL, RclusTool.env, reset=TRUE)
+        initPreprocessTab(RclusTool.env = RclusTool.env, reset=TRUE, readConfig=FALSE)
         RclusTool.env$gui$win1$env$authorization$prepro <- TRUE
         RclusTool.env$gui$win1$env$authorization$classif <- FALSE
     }
-    butReset <- tk2button(win1.nb$env$preprocess, text = "Reset", image = "reset", compound = "left", width = -6, command = onReset)
-    
-    tkgrid(tklabel(win1.nb$env$preprocess, text="      "), row = 7, column = 1)
-    tkgrid(butExport, row = 8, column = 0)
-    tkgrid(butValid, row = 8, column = 1)
-    tkgrid(butReset, row = 8, column = 2)
-    tkgrid(tklabel(win1.nb$env$preprocess, text="      "), row = 9, column = 1)
- 	
+    butReset <- tk2button(buttonsFrame, text = "Reset", image = "reset", compound = "left", width = -6, command = onReset)
+
+    tkgrid(butExport, row = 0, column = 1)
+    tkgrid(butValid, row = 0, column = 3)
+    tkgrid(butReset, row = 0, column = 5)
+    tkgrid(buttonsFrame, row=6)
+
 }
 
 #' function to initialize/refresh the 'preprocessTab' for data preprocessing (variables selection, transformation, creation, ...)
 #' @title build Preprocess tab
 #' @description Generate the data preprocessing tab of the \code{\link{RclusToolGUI}}, in which the user can select, transform, filter or create variables.
-#' @param mainWindow window in which the 'preprocessTab' is created.
-#' @param console frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame frame of the RclusTool interface in which graphics should be dispayed.
 #' @param RclusTool.env environment in which data and intermediate results are stored.
 #' @param reset boolean to reset the whole interface
 #' @param readConfig boolean to reset the whole interface according the config parameters of the data.sample
 #' @return None
 #' @keywords internal
 #' 
-initPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env, reset=F, readConfig=F)
+initPreprocessTab <- function(RclusTool.env, reset=FALSE, readConfig=FALSE)
 {
     if (is.null(RclusTool.env$gui$tabs.env$prepro) || !length(RclusTool.env$gui$tabs.env$prepro))
     {
         RclusTool.env$gui$tabs.env$prepro <- new.env()
-        buildPreprocessTab(mainWindow, console, graphicFrame, RclusTool.env)
-        reset <- T
+        buildPreprocessTab(RclusTool.env)
+        reset <- TRUE
     }
 
     prepro.env <- RclusTool.env$gui$tabs.env$prepro
@@ -1028,7 +1025,7 @@ initPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env, 
     signal.names <- colnames(RclusTool.env$data.sample$profiles[[1]])
 
     # initialization of features names lists
-    initFeaturesList <- function(reset=F)
+    initFeaturesList <- function(reset=FALSE)
     {
         select <- c()
         unselect <- colnames(RclusTool.env$data.sample$features$preprocessed$x)
@@ -1042,15 +1039,15 @@ initPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env, 
 
     # reset signal colors
     resetSignalColors <- function() {
-    	prepro.env$signalColor <- RclusTool.env$param$visu$palette.colors[1:length(signal.names)]
+        prepro.env$signalColor <- RclusTool.env$param$visu$palette.colors[1:length(signal.names)]
         names(prepro.env$signalColor) <- signal.names
     }
 
     if (is.null(RclusTool.env$gui$tabs.env$prepro) || !length(RclusTool.env$gui$tabs.env$prepro))
     {
         RclusTool.env$gui$tabs.env$prepro <- new.env()
-        buildPreprocessTab(mainWindow, console, graphicFrame, RclusTool.env)
-        reset <- T
+        buildPreprocessTab(RclusTool.env)
+        reset <- TRUE
     }
 
     prepro.env <- RclusTool.env$gui$tabs.env$prepro
@@ -1086,15 +1083,15 @@ initPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env, 
             if (!is.null(defaultFeat))
                 prepro.env$defaultFeaturesHV <- defaultFeat
 
-            if (any(grepl("pca", names(RclusTool.env$data.sample$features), fixed=T)))
+            if (any(grepl("pca", names(RclusTool.env$data.sample$features), fixed=TRUE)))
                 tclvalue(prepro.env$tcl.pca.check) <- "1"
 
             tclvalue(prepro.env$tcl.pca.nb.dims) <- as.character(RclusTool.env$data.sample$config$pca.nb.dims)
 
-            if (any(grepl("spectral", names(RclusTool.env$data.sample$features), fixed=T)))
+            if (any(grepl("spectral", names(RclusTool.env$data.sample$features), fixed=TRUE)))
                 tclvalue(prepro.env$tcl.spectral.check) <- "1"
-            
-            if (any(grepl("scaled", names(RclusTool.env$data.sample$features), fixed=T)))
+
+            if (any(grepl("scaled", names(RclusTool.env$data.sample$features), fixed=TRUE)))
                 tclvalue(prepro.env$tcl.scaling.check) <- "1"
 
             tclvalue(prepro.env$tcl.sampling.size) <- as.character(min(RclusTool.env$param$preprocess$sampling.size.max, length(RclusTool.env$data.sample$id.clean)))
@@ -1107,9 +1104,9 @@ initPreprocessTab <- function(mainWindow, console, graphicFrame, RclusTool.env, 
             if (!is.null(RclusTool.env$data.sample$config$default.classif.feature.space))
                 prepro.env$featSpace <- RclusTool.env$data.sample$config$default.classif.feature.space
 
-            if (grepl("pca", prepro.env$featSpace, fixed=T))
+            if (grepl("pca", prepro.env$featSpace, fixed=TRUE))
                 tclvalue(prepro.env$tcl.pca.check) <- "1"
-            if (grepl("spectral", prepro.env$featSpace, fixed=T))
+            if (grepl("spectral", prepro.env$featSpace, fixed=TRUE))
                 tclvalue(prepro.env$tcl.spectral.check) <- "1"
 
             selectFeat <- RclusTool.env$data.sample$config$selectFeat 

@@ -29,11 +29,11 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf1 <- tempfile()
 write.table(dat, tf1, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf1)
 res.pca <- computePcaSample(x)
 
 tf2 <- tempfile()
-saveCalcul(basename(tf2), res.pca$pca, tempdir())
+saveCalcul(basename(tf2), res.pca$pca, dirname(tf2))
 
 
 }

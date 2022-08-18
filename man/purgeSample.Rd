@@ -36,7 +36,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 x <- computeUnSupervised(x, K=3, method.name="K-means")
 x <- purgeSample(x, purge.clustering=TRUE)
 

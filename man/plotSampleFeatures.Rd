@@ -18,7 +18,8 @@ plotSampleFeatures(
     "darkolivegreen1", "#66C2A5", "#9DAE8C", "#D49A73", "#F08F6D", "#C79693", "#9E9DBA",
     "#9F9BC9", "#C193C6", "#E28BC3", "#D2A29F", "#BABF77", "#AAD852", "#CBD844",
     "#ECD836", "#FAD53E", "#F1CD64", "#E7C689", "#D7BF9C", "#C5B9A7", "#B3B3B3",
-    "#D53E4F", "#E04F4A", "#EB6046", "#F47346",      "#F88B51", "#FBA35C", "#FDB869",
+    "#D53E4F", "#E04F4A", "#EB6046", "#F47346", 
+     "#F88B51", "#FBA35C", "#FDB869",
     "#FDCA79", "#FDDD88", "#F6E68F", "#EDEE93", "#E2F398", "#CDEA9D", "#B7E2A1",
     "#A0D8A4", "#86CEA4", "#6DC4A4", "#58B2AB", "#459DB4", "#3288BD"), pch = c(20, 0:18),
     stringsAsFactors = FALSE),
@@ -65,13 +66,13 @@ sig <- data.frame(ID=rep(1:150, each=30), SIGNAL=rep(dnorm(seq(-2,2,length=30)),
 tf2 <- tempfile()
 write.table(sig, tf2, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+x <- importSample(file.features=tf1, file.profiles=tf2)
 
 res <- KmeansQuick(x$features$initial$x, K=3)
 new.labels <- formatLabelSample(res$cluster, x)
 
 plotSampleFeatures(x$features$initial$x, label = new.labels, parH="x", parV="y")
- 
+
 
 }
 \seealso{

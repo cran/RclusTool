@@ -4,15 +4,9 @@
 \alias{initUnsupTab}
 \title{Unsupervised tab}
 \usage{
-initUnsupTab(mainWindow, console, graphicFrame, RclusTool.env, reset = F)
+initUnsupTab(RclusTool.env, reset = FALSE)
 }
 \arguments{
-\item{mainWindow}{: window in which the 'unsupTab' is created.}
-
-\item{console}{: frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{: frame of the RclusTool interface in which graphics should be displayed.}
-
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 
 \item{reset}{: if TRUE the whole tab is reset, with default options}

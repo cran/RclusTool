@@ -34,7 +34,8 @@ write.table(dat, tf1, sep=",", dec=".")
 rep <- system.file("extdata", package="RclusTool")
 imgdir <- file.path(rep, "img_example")
 
-x <- importSample(file.features=tf1, dir.images=imgdir, dir.save=tempdir())
+dir.results <- tempdir()
+x <- importSample(file.features=tf1, dir.images=imgdir, dir.save=dir.results)
 x <- computeUnSupervised(x, K=3, method.name="K-means")
 
 imgClassif(x, imgdir, method = "K-means_preprocessed")

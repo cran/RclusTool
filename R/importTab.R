@@ -19,9 +19,6 @@
 #' function to create the 'importTab' for data importation (features, metadata, signals and images)
 #' @title Build Import tab
 #' @description Generate the files importation tab of the \code{\link{RclusToolGUI}}, in which the user can select original files (features, metadata, signals or images).
-#' @param mainWindow window in which the 'importTab' is created.
-#' @param console frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env environment in which data and intermediate results are stored.
 #' @return None
 #' @importFrom graphics plot
@@ -29,19 +26,24 @@
 #' @import tcltk tcltk2
 #' @keywords internal
 
-buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
+buildImportTab <- function(RclusTool.env) {
     win1.nb <- RclusTool.env$gui$win1$env$nb
     win2.nb <- RclusTool.env$gui$win2$env$nb
-	
+ 
 	import.env <- RclusTool.env$gui$tabs.env$import
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
-	tkgrid(tklabel(win1.nb$env$import, text="      "), row = 3, column = 1)
+    fontFrame <- tkfont.create(family = RclusTool.env$param$visu$font, weight = "bold", size = RclusTool.env$param$visu$size)
+    fontTitleFrame <- tkfont.create(family = RclusTool.env$param$visu$titlefont, weight = "bold", size = RclusTool.env$param$visu$titlesize)
+    padx = "6m"
+    padx.m = "3m"
+    pady = "2m"
 	
     ## Build the 'Required files' frame
-    RequiredFrametext <- StringToTitle("REQUIRED INPUT DATA FILES", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    RequiredFrame <- tkwidget(win1.nb$env$import, "labelframe", text = RequiredFrametext , font = fontFrame, padx = 30, pady=20, pady = 8, relief = "flat")
-    tkgrid(RequiredFrame, columnspan = 3, row = 2, sticky = "w")
+    RequiredFrametext <- makeTitle("REQUIRED INPUT DATA FILES")
+    RequiredFrame <- tkwidget(win1.nb$env$import, "labelframe", text = RequiredFrametext , font = fontTitleFrame, padx = padx.m, pady=pady, relief = "flat")
+
+    tkEmptyLine(win1.nb$env$import, row=1)
+    tkgrid(RequiredFrame, columnspan = 3, row = 2, sticky = "we", pady = pady)
 
     # Select separator and decimal separator for csv (for features file)
     
@@ -74,7 +76,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         tkconfigure(featuresName, state="disabled") 
     }
 
-    featuresButton <- tk2button(RequiredFrame, text = "FEATURES / RDS FILE", image = "csvRDSFile", compound = "left", width = 20, 
+    featuresButton <- tk2button(RequiredFrame, text = "FEATURES / RDS FILE", image = "csvRDSFile", compound = "left", width = 17, 
                                 command = function() {
                                     import.env$featuresFile <- tclvalue(tkgetOpenFile(filetypes = "{ {csv Files} {.csv} } { {RClusTool RDS Files} {.RDS} }"))
                                     import.env$refreshFeaturesName()
@@ -94,24 +96,37 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                     }
                                 })
 
+ 
+    previewCSVfileFeat <- function() {
+       previewCSVfile (file=import.env$featuresFile, sep = sepValues[tclvalue(sepSelectFeat)], dec = tclvalue(decSelectFeat), 
+                       na.strings = tclvalue(misSelectFeat), RclusTool.env = RclusTool.env)
+    }
+
+    previewCSVfileSig <- function() {
+       previewCSVfile (file=import.env$signalFile, sep = sepValues[tclvalue(sepSelectSig)], dec = tclvalue(decSelectSig), 
+                       na.strings = tclvalue(misSelectSig), RclusTool.env = RclusTool.env)
+    }
+                                                  
+    featuresPreviewButton <- tk2button(RequiredFrame, text="Preview", compound = "left", width="7", command = previewCSVfileFeat) 
+
     tkconfigure(opt1,font = fontFrame)
     tkconfigure(opt2,font = fontFrame)
     tkconfigure(opt3,font = fontFrame)
-    tkgrid(featuresButton, row = 1, column = 1, padx = 7, sticky = "w")
+    tkgrid(featuresButton, row = 1, column = 1, padx = padx.m, sticky = "w")
     tkgrid(featuresName, row = 1, column= 2)
     tkgrid(opt1, row = 1, column = 3, sticky = "e")
     tkgrid(combo.Sep.Feat, row = 1, column = 4, sticky = "w")
     tkgrid(opt2, row = 1, column = 5, sticky = "e")
     tkgrid(combo.Dec.Feat, row = 1, column = 6, sticky = "w")
-    
     tkgrid(opt3, row = 1, column = 7, sticky = "e")
     tkgrid(combo.Mis.Feat, row = 1, column = 8, sticky = "w")
-   
-    tkgrid(tklabel(win1.nb$env$import, text="      "), row = 1, column = 1)
+    tkgrid(featuresPreviewButton, row = 1, column = 9, padx = padx.m, sticky = "w")
+
     ## Build the 'Optional files' frame
-    OptionalFrametext <- StringToTitle("OPTIONAL INPUT DATA FILES", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    OptionalFrame <- tkwidget(win1.nb$env$import, "labelframe", text = OptionalFrametext, font = fontFrame, padx = 30, pady = 20, relief = "flat")
-    tkgrid(OptionalFrame, columnspan = 3, row = 6, sticky = "w")
+    OptionalFrametext <- makeTitle("OPTIONAL INPUT DATA FILES")
+    OptionalFrame <- tkwidget(win1.nb$env$import, "labelframe", text = OptionalFrametext, font = fontTitleFrame, padx = padx.m, pady = pady, relief = "flat")
+    tkEmptyLine(win1.nb$env$import, row=3)
+    tkgrid(OptionalFrame, columnspan = 3, row = 6, sticky = "we", pady=pady)
     
     # Import signals parameters 
         
@@ -137,7 +152,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         tkconfigure(signalsName, state="disabled") 
     }
 
-    signalButton <- tk2button(OptionalFrame, text = "SIGNALS", image = "csvFile", compound = "left", width = 20, 
+    signalsButton <- tk2button(OptionalFrame, text = "SIGNALS", image = "csvFile", compound = "left", width = 20, 
                               command = function() {
                                   import.env$signalFile <- tclvalue(tkgetOpenFile(filetypes = "{{csv Files} {.csv}}"))
                                   import.env$refreshSignalsName()
@@ -145,11 +160,13 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                       tkmessageBox(message = "No file selected!")
                               	  }
                                })
+    signalsPreviewButton <- tk2button(OptionalFrame, text="Preview", compound = "left", width="7", command = previewCSVfileSig)
+
     
     tkconfigure(opt1,font = fontFrame)
     tkconfigure(opt2,font = fontFrame)
     tkconfigure(opt3,font = fontFrame)
-    tkgrid(signalButton, row = 1, column = 1, padx = 20, sticky = "w")
+    tkgrid(signalsButton, row = 1, column = 1, padx = padx.m, sticky = "w")
     tkgrid(signalsName, row = 1, column = 2)
     tkgrid(opt1, row = 1, column = 3, sticky = "e")
     tkgrid(combo.Sep.Sig, row = 1, column = 4, sticky = "w")
@@ -157,6 +174,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkgrid(combo.Dec.Sig, row = 1, column = 6, sticky = "w")
     tkgrid(opt3, row = 1, column = 7, sticky = "e")
     tkgrid(combo.Mis.Sig, row = 1, column = 8, sticky = "w")
+    tkgrid(signalsPreviewButton, row = 1, column = 9, padx = padx.m, sticky = "w")
   
     # Select the images directory
     imagesName <- tktext(OptionalFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
@@ -165,7 +183,9 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     {
  		tkconfigure(imagesName, state="normal") 
         tkdelete(imagesName, "1.0", "end")
-        tkinsert(imagesName,"end", import.env$imageDir)
+        if (dir.exists(import.env$imageDir)) {
+            tkinsert(imagesName,"end", import.env$imageDir)
+        }
         tkconfigure(imagesName, state="disabled") 
     }
     
@@ -179,7 +199,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                      import.env$imageDirDefault <- import.env$imageDir
                                  }
                             })
-    tkgrid(imageButton, row = 2, column = 1, padx = 20, sticky = "w")
+    tkgrid(imageButton, row = 2, column = 1, padx = padx.m, sticky = "w")
     tkgrid(imagesName, row = 2, column = 2)
 
     # Select the metadata file (.txt)
@@ -201,7 +221,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                         tkmessageBox(message = "No file selected!")
                                     } 
                                 })
-    tkgrid(metadataButton, row = 3, column = 1, padx = 20, sticky = "w")
+    tkgrid(metadataButton, row = 3, column = 1, padx = padx.m, sticky = "w")
 	tkgrid(metadataFileName, row = 3, column = 2)
 	
     ## Build the dataset with features, metadata, signals and images
@@ -213,7 +233,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
             tkconfigure(win1.nb$env$import, cursor = "watch")
             # Building step
             system.time(importSample(file.features = import.env$featuresFile, file.meta = import.env$metadataFile,
-                                     file.profiles = import.env$signalFile, dir.images = import.env$imageDir, dir.save = import.env$DirDefault, 
+                                     file.profiles = import.env$signalFile, dir.images = import.env$imageDir, dir.save = import.env$Dir, 
                                      file.RDS = import.env$rdsFile, sepFeat = sepValues[tclvalue(sepSelectFeat)], decFeat = tclvalue(decSelectFeat), 
                                      naFeat=tclvalue(misSelectFeat), sepSig = sepValues[tclvalue(sepSelectSig)], decSig= tclvalue(decSelectSig),
                                      naSig=tclvalue(misSelectSig), RclusTool.env=RclusTool.env) 
@@ -232,40 +252,44 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
             	filename=RclusTool.env$data.sample$files$features
             }
             if (!is.null(RclusTool.env$data.sample)) {
-            	tkinsert(console, "0.0", paste("----- Features importation -----\n",
+            	messageConsole(paste("----- Features importation -----\n",
                                            	   "Filename:  ", basename(filename), "\n",
                                            	   "Number of observations:  ", RclusTool.env$data.sample$size, "\n",
-                                           	   "Number of features:  ", length(RclusTool.env$data.sample$features$initial$x), "\n\n", sep = ""))
+                                           	   "Number of features:  ", length(RclusTool.env$data.sample$features$initial$x), "\n\n", sep = ""),
+                               RclusTool.env=RclusTool.env)
             	if (nchar(import.env$metadataFile)) {
-            		tkinsert(console, "0.0", paste(paste(RclusTool.env$data.sample$metadata$x, collapse = "\n", sep = ""), "\n\n", sep = ""))
-                	tkinsert(console, "0.0", paste("----- MetaData importation -----\n",
-                                              	 "Filename:  ", basename(RclusTool.env$data.sample$files$meta), "\n", sep = ""))
+            		messageConsole(paste(paste(RclusTool.env$data.sample$metadata$x, collapse = "\n", sep = ""), "\n\n", sep = ""), 
+                                   RclusTool.env=RclusTool.env)
+                	messageConsole(paste("----- MetaData importation -----\n",
+                                              	 "Filename:  ", basename(RclusTool.env$data.sample$files$meta), "\n", sep = ""), 
+                                   RclusTool.env=RclusTool.env)
             	}
             	if (nchar(import.env$signalFile))
-               	    tkinsert(console, "0.0", paste("----- Signals importation -----\n",
+               	    messageConsole(paste("----- Signals importation -----\n",
                         	                       "Filename:  ", basename(RclusTool.env$data.sample$files$profiles), "\n",
-                                   	               "Number of observations:  ", length(RclusTool.env$data.sample$profiles), "\n\n", sep = ""))
+                                   	               "Number of observations:  ", length(RclusTool.env$data.sample$profiles), "\n\n", sep = ""), 
+                                      RclusTool.env=RclusTool.env)
             	if (nchar(import.env$imageDir))
-                	tkinsert(console, "0.0", paste("----- Images importation -----\n",
+                	messageConsole(paste("----- Images importation -----\n",
                                                	   "Folder:  ", basename(RclusTool.env$data.sample$files$images), "\n",
-                                                   "Number of observations:  ", length(!is.na(RclusTool.env$data.sample$images)), "\n\n", sep = ""))
+                                                   "Number of observations:  ", length(!is.na(RclusTool.env$data.sample$images)), "\n\n", sep = ""), 
+                                   RclusTool.env=RclusTool.env)
                                                    
-                if (nchar(import.env$DirDefault))
-                	tkinsert(console, "0.0", paste("----- Working directory -----\n",
-                                               	   "Folder:  ", basename(RclusTool.env$data.sample$files$dir), "\n\n"))
+                if (nchar(import.env$Dir))
+                	messageConsole(paste("----- Working directory -----\n",
+                                               	   "Folder:  ", basename(RclusTool.env$data.sample$files$dir), "\n\n"), RclusTool.env=RclusTool.env)
                                                    
             	if (!nchar(import.env$rdsFile))
-                	tkinsert(console, "0.0", paste("----- RDS file -----\n",
-                                               		"Creation of a RDS object\n\n", sep = ""))
+                	messageConsole(paste("----- RDS file -----\n",
+                                               		"Creation of a RDS object\n\n", sep = ""), RclusTool.env=RclusTool.env)
                                                		
 
             # Active the 'Preprocessing' tab
-            initPreprocessTab(mainWindow = mainWindow, console = console, 
-                          graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+            initPreprocessTab(RclusTool.env = RclusTool.env, reset=TRUE)
                           
   			tk2delete.notetab(win2.nb)
 
-            abdPlotTabs(RclusTool.env$data.sample$clustering, win2.nb, RclusTool.env, hscale = RclusTool.env$param$visu$hscale)
+            abdPlotTabsGUI(RclusTool.env)
 
             RclusTool.env$gui$win1$env$authorization$prepro <- TRUE
             RclusTool.env$gui$win1$env$authorization$classif <- FALSE
@@ -275,28 +299,12 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
             tkconfigure(win1.nb$env$import, cursor = "left_ptr")
         }
     }
-    tk.compute.but <- tk2button(win1.nb$env$import, text="IMPORT", image = "data", compound = "left", width = 15, command=import.env$OnCompute)
-
-    # Reset import Tab
-    onReset <- function() {
-        initImportTab(mainWindow = mainWindow, console = console, 
-                      graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
-        RclusTool.env$gui$win1$env$authorization$prepro <- FALSE
-        RclusTool.env$gui$win1$env$authorization$classif <- FALSE
-        # Active the 'Preprocessing' tab
-        initPreprocessTab(mainWindow = mainWindow, console = console, 
-                          graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
-    }
-    butReset <- tk2button(win1.nb$env$import, text = "Reset", image = "reset", compound = "left", width = 15, command = onReset)
-
-    tkgrid(tk.compute.but, row = 20, column = 0)
-    tkgrid(butReset, row = 20, column = 2)
-    tkgrid(tklabel(win1.nb$env$import, text="      "), row = 9, column = 1)
-   
+  
  	## Build the 'Working Directory' frame
- 	WdFrametext <- StringToTitle("WORKING DIRECTORY", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    WdFrame <- tkwidget(win1.nb$env$import, "labelframe", text = WdFrametext, font = fontFrame, padx = 30, pady = 20, relief = "flat")
-    tkgrid(WdFrame, columnspan = 3, row = 7, sticky = "w")
+ 	WdFrametext <- makeTitle("WORKING DIRECTORY")
+    WdFrame <- tkwidget(win1.nb$env$import, "labelframe", text = WdFrametext, font = fontTitleFrame, padx = padx.m, pady = pady, relief = "flat")
+    tkEmptyLine(win1.nb$env$import, row=7)
+    tkgrid(WdFrame, columnspan = 3, row = 8, sticky = "we", pady=pady)
      
     # Select the directory
     Dir <- tktext(WdFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
@@ -305,10 +313,12 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     {
  		tkconfigure(Dir, state="normal") 
         tkdelete(Dir, "1.0", "end")
-        tkinsert(Dir,"end", import.env$Dir)
+        if (dir.exists(import.env$Dir)) {
+            tkinsert(Dir,"end", import.env$Dir)
+        }
         tkconfigure(Dir, state="disabled") 
     }
-    
+
     DirButton <- tk2button(WdFrame, text = "DIRECTORY", image = "folder", compound = "left", width = 20, command = function() {
                                  Dir <- tk_choose.dir(default = import.env$DirDefault, caption = "Select folder.")
                                  if (is.na(Dir)) {
@@ -319,20 +329,21 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                      import.env$DirDefault <- import.env$Dir
                                  }
                             })
-                            
-    tkgrid(DirButton, row = 2, column = 1, padx = 20, sticky = "w")
+
+    tkgrid(DirButton, row = 2, column = 1, padx = padx.m, sticky = "w")
     tkgrid(Dir, row = 2, column = 2)
  
      
  ## Build the 'Advices Frame' frame
-    AdviceFrametext <- StringToTitle("ADVICES", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    AdviceFrame <- tkwidget(win1.nb$env$import, "labelframe", text = AdviceFrametext, font = fontFrame, padx =  20, pady = 8, relief = "flat")
-    tkgrid(AdviceFrame, columnspan = 3, row = 13, sticky = "w")
+    AdviceFrametext <- makeTitle("ADVICES")
+    AdviceFrame <- tkwidget(win1.nb$env$import, "labelframe", text = AdviceFrametext, font = fontTitleFrame, padx = padx.m, pady = pady, relief = "flat")
+    tkEmptyLine(win1.nb$env$import, row=9)
+    tkgrid(AdviceFrame, columnspan = 3, row = 10, sticky = "we", pady = pady)
     
  # What kind of CSV file for features
     FeaturesAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "How to format features data",
-                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+                            padx = padx, pady = pady, relief = "groove")
     FeaturesAdviceText <- tk2label(FeaturesAdvice, text = "Data must be in a .csv file\nObservations in rows\nFeatures in columns\nMissing value must be 'empty'", width = 30)                   
     tkconfigure(FeaturesAdvice,font = fontFrame)
     tkconfigure(FeaturesAdviceText,font = fontFrame)
@@ -342,7 +353,7 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
   # What kind of CSV file for signal
     SignalsAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "How to format signal data", 
-                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
+                            padx = padx, pady = pady, relief = "groove")
     SignalsAdviceText <- tk2label(SignalsAdvice, text = "Data must be in a .csv file\nSignals in columns\nA same ID for all signal values\nMissing value must be 'empty'", width = 30)
     tkconfigure(SignalsAdvice,font = fontFrame)
     tkconfigure(SignalsAdviceText,font = fontFrame)    
@@ -351,9 +362,9 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 
     # What is an RDS
     RDSAdvice <- tkwidget(AdviceFrame, "labelframe", 
-                            text = "What is an RDS file ?",
-                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
-    RDSAdviceText <- tk2label(RDSAdvice, text = "After a first use of yours files\n an Rclustool RDS file is saved.\nThis file contains all the data\n you used and it's faster to load\n", width = 30)
+                            text = "What is a RDS file ?",
+                            padx = padx, pady = pady, relief = "groove")
+    RDSAdviceText <- tk2label(RDSAdvice, text = "After a first use of yours files\n an Rclustool RDS file is saved.\nThis file contains all the data\n you used and it's faster to load", width = 30)
     tkconfigure(RDSAdvice,font = fontFrame)
     tkconfigure(RDSAdviceText,font = fontFrame)     
     tkgrid(RDSAdvice, columnspan = 1, column = 3, row = 1)
@@ -362,8 +373,8 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     # What kind of file for images
     ImagesAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "Important : how to format images data", 
-                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
-    ImagesAdviceText <- tk2label(ImagesAdvice, text = "JPEG or PNG images\nObservation's ID for filename\n\n", width = 30)
+                            padx = padx, pady = pady, relief = "groove")
+    ImagesAdviceText <- tk2label(ImagesAdvice, text = "\nJPEG or PNG images\nObservation's ID for filename\n", width = 30)
     tkconfigure(ImagesAdvice,font = fontFrame)
     tkconfigure(ImagesAdviceText,font = fontFrame)
     tkgrid(ImagesAdvice, columnspan = 1, column = 1, row = 2)
@@ -372,35 +383,117 @@ buildImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     # What kind of TXT file for metadata
     MetaAdvice <- tkwidget(AdviceFrame, "labelframe", 
                             text = "How to format metadata", 
-                            padx = 3*RclusTool.env$param$visu$size, pady = 8, relief = "groove")
-    MetaAdviceText <- tk2label(MetaAdvice, text = "Data must be in a .txt file\n'Metadata name: value'\n\n", width = 30)
+                            padx = padx, pady = pady, relief = "groove")
+    MetaAdviceText <- tk2label(MetaAdvice, text = "\nData must be in a .txt file\n'Metadata name: value'\n", width = 30)
     tkconfigure(MetaAdvice,font = fontFrame)
     tkconfigure(MetaAdviceText,font = fontFrame)    
     tkgrid(MetaAdvice, columnspan = 1, column = 2, row = 2)
     tkgrid(MetaAdviceText)
     
-    
+    tk.compute.but <- tk2button(win1.nb$env$import, text="IMPORT", image = "data", compound = "left", width = 15, command=import.env$OnCompute)
+
+    # Reset import Tab
+    onReset <- function() {
+        initImportTab(RclusTool.env = RclusTool.env, reset=TRUE)
+        RclusTool.env$gui$win1$env$authorization$prepro <- FALSE
+        RclusTool.env$gui$win1$env$authorization$classif <- FALSE
+        # Active the 'Preprocessing' tab
+        initPreprocessTab(RclusTool.env = RclusTool.env, reset=TRUE)
+    }
+    butReset <- tk2button(win1.nb$env$import, text = "RESET", image = "reset", compound = "left", width = 15, command = onReset)
+
+    tkEmptyLine(win1.nb$env$import, row=11)
+    tkgrid(tk.compute.but, row = 12, column = 0, pady = pady)
+    tkgrid(butReset, row = 12, column = 2)
+
 }
-    
+
+#' function to preview csv file
+#' @title Preview CSV file
+#' @description This function generates a window printing first rows of the csv file and the first rows of the data.frame obtained.
+#' @param file : csv filename.
+#' @param nrows : number of rows to be read.
+#' @param RclusTool.env environment in which data and intermediate results are stored.
+#' @param ... : other parameters of read.csv function.
+#' @return None
+#' @import tcltk tcltk2 
+#' @importFrom utils read.csv
+#' @importFrom knitr kable
+#' @keywords internal
+#' 
+previewCSVfile <- function(file, sep, dec, na.strings, RclusTool.env, nrows=3, ...)
+{
+    if (!file.exists(file)) 
+        return()
+
+    df.csv <- tryCatch(
+        {utils::read.csv(file=file, sep=sep, dec=dec, na.strings=na.strings, nrows=nrows, ...)},
+        error=function(cond) {return(cond)},
+        warning=function(cond) {return(cond)})
+
+    raw <- readLines(con=file, n=nrows+1)
+    raw <- paste0(raw, collapse="\n")
+
+    tkmb <- tktoplevel()
+    tktitle(tkmb) <- paste("First", nrows, "rows of file", basename(file))
+    scrx <- tk2scrollbar(tkmb, orientation = "horizontal", command = function(...) tkxview(console, ...))
+    scry <- tk2scrollbar(tkmb, orientation = "vertical", command = function(...) tkyview(console, ...))
+    console <- tk2text(tkmb, width = RclusTool.env$param$visu$console , height = 12, font = "courier", wrap = "none", 
+                       xscrollcommand = function(...) tkset(scrx, ...), 
+                       yscrollcommand = function(...) tkset(scry, ...))
+    tkgrid(console, scry, sticky = "nsew", pady = c(0,0))
+    tkgrid.rowconfigure(tkmb, console, weight = 1)
+    tkgrid.columnconfigure(tkmb, console, weight = 1)
+    tkgrid(scrx, sticky = "ew")
+
+    if (!is.data.frame(df.csv)) {
+        import = paste("Extraction failed:", df.csv)
+    } else if (ncol(df.csv)==1) {
+        import = "Data extraction failed: only one feature was found (please rectify column separator)."
+    } else {
+        tc <- textConnection("str","w")
+        sink(tc)
+        #print(df.csv)
+        import = knitr::kable(df.csv)
+        sink()
+        close(tc)
+        #import <- substr(str, 3, nchar(str[1]))
+        #import <- paste0("| ", import, "|", collapse="\n")
+        import <- paste0(import, collapse="\n")
+    }
+    tkinsert(console, "0.0", import)
+    tkinsert(console, "0.0", "\n")
+    #tkinsert(console, "0.0", " ------------------------------------------------------------------------\n")
+    tkinsert(console, "0.0", " ------ WARNING : values considered as numerical are RIGHT-ALIGNED ------\n")
+    tkinsert(console, "0.0", paste(" ----------------------- EXTRACTED",nrows, "FIRST LINES ------------------------\n"))
+    #tkinsert(console, "0.0", " ------------------------------------------------------------------------\n")
+    tkinsert(console, "0.0", "\n")
+    tkinsert(console, "0.0", "\n")
+    tkinsert(console, "0.0", raw)
+    tkinsert(console, "0.0", "\n")
+    #tkinsert(console, "0.0", " ------------------------------------------------------------------------\n")
+    tkinsert(console, "0.0", paste(" ----------------------- ORIGINAL",nrows, "FIRST LINES ------------------------\n"))
+    #tkinsert(console, "0.0", " ------------------------------------------------------------------------\n")
+}
+
+
+
 #' function to initialize (and to create) the 'importTab'
 #' @title import tab 
 #' @description This function generates the import tab of the \code{\link{RclusToolGUI}}, in which the user can import files.
-#' @param mainWindow : window in which the 'importTab' is created.
-#' @param console : frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
 #' @param reset : if TRUE the whole tab is reset, with default options
 #' @return None
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
-initImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env, reset=F)
+initImportTab <- function(RclusTool.env, reset=FALSE)
 {
     if (is.null(RclusTool.env$gui$tabs.env$import) || !length(RclusTool.env$gui$tabs.env$import))
     {
         RclusTool.env$gui$tabs.env$import <- new.env()
-        buildImportTab(mainWindow, console, graphicFrame, RclusTool.env)
-        reset <- T
+        buildImportTab(RclusTool.env)
+        reset <- TRUE
     }
 
     import.env <- RclusTool.env$gui$tabs.env$import
@@ -420,7 +513,7 @@ initImportTab <- function(mainWindow, console, graphicFrame, RclusTool.env, rese
     }
 
     ########## test only ##########
-    if (RclusTool.env$gui$debug.mode == T) {
+    if (RclusTool.env$gui$debug.mode == TRUE) {
         rep <- system.file("extdata", package="RclusTool")
         import.env$featuresFile <- file.path(rep, "sample_example_features.csv")
         import.env$metadataFile <- file.path(rep, "sample_example_info.txt")

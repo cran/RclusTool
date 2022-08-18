@@ -9,7 +9,7 @@ computeEM(
   K = 0,
   K.max = 20,
   kmeans.variance.min = 0.95,
-  graph = F,
+  graph = FALSE,
   Mclust.options = list()
 )
 }
@@ -42,7 +42,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 res.em <- computeEM(x$features$initial$x, K=0, graph=TRUE)
 plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y", 
 col = res.em$classification, main = "EM clustering")

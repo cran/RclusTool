@@ -467,7 +467,7 @@ computeGap2 <- function(sim, Kmax) {
 #                                    function (x) {sample(x, min(length(x), nb.max.sample))})))
 #
 #    #SC on sampled data
-#    dataSC <- x[selection.ids,,drop=F]
+#    dataSC <- x[selection.ids,,drop=FALSE]
 #    print("Similarity computing")
 #    sim <- computeGaussianSimilarityZP(dataSC, vois)
 #    if (K==0) {
@@ -480,7 +480,7 @@ computeGap2 <- function(sim, Kmax) {
 #    res.sc <- spectralClusteringNg(sim, K)
 #
 #    #generalization by k-nn, works if selection.ids are sorted
-#    res.knn <- knn(x[selection.ids,,drop=F], x, cl=factor(selection.ids), k=1) #WARNING #neighbours=1
+#    res.knn <- knn(x[selection.ids,,drop=FALSE], x, cl=factor(selection.ids), k=1) #WARNING #neighbours=1
 #    #!!!!! (sinon, prototypes peuvent changer de classes)
 #    matching <- as.integer(as.character(res.knn))
 #    # replace neighbours ids by 

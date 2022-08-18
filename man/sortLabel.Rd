@@ -25,7 +25,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 res <- KmeansQuick(x$features$initial$x, K=3)
 
 sortLabel(res$cluster)

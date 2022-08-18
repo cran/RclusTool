@@ -44,7 +44,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 ML=list(c(sel="10",mem="20"))
 CNL=list(c(sel="1",mem="140"))

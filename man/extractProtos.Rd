@@ -40,7 +40,8 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf1 <- tempfile()
 write.table(dat, tf1, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+dir.results <- tempdir()
+x <- importSample(file.features=tf1, dir.save=dir.results)
 x <- computeUnSupervised(x, K=3, method.name="K-means")
 
 extractProtos(x, method = "K-means_preprocessed")

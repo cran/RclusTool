@@ -4,15 +4,9 @@
 \alias{initBatchTab}
 \title{batch tab}
 \usage{
-initBatchTab(mainWindow, console, graphicFrame, RclusTool.env, reset = F)
+initBatchTab(RclusTool.env, reset = FALSE)
 }
 \arguments{
-\item{mainWindow}{: window in which the 'batchTab' is created.}
-
-\item{console}{: frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{: frame of the RclusTool interface in which graphics should be displayed.}
-
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 
 \item{reset}{: if TRUE the whole tab is reset, with default options}

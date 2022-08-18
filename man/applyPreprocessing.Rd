@@ -39,7 +39,7 @@ dat <- rbind(matrix(rnorm(150, mean = 2, sd = 0.3), ncol = 3),
 colnames(dat) <- c("x","y","z")
 tf1 <- tempfile()
 write.table(dat, tf1, sep=";", dec=",")
-x <- importSample(file.features=tf1, sepFeat=";", decFeat=",", dir.save=tempdir())
+x <- importSample(file.features=tf1, sepFeat=";", decFeat=",")
 
 instr <- rbind(c("select","x","log",""), c("select","y","log",""))
 tf2 <- tempfile()

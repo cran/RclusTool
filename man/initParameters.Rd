@@ -19,7 +19,7 @@ Initialize the global parameters and variables and generate a new environment us
 function to initialize the global parameters and variables
 }
 \examples{
-initParameters()
+RclusTool.env <- initParameters()
 
 }
 \keyword{internal}

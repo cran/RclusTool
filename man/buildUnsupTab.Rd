@@ -4,15 +4,9 @@
 \alias{buildUnsupTab}
 \title{Unsupervised tab}
 \usage{
-buildUnsupTab(mainWindow, console, graphicFrame, RclusTool.env)
+buildUnsupTab(RclusTool.env)
 }
 \arguments{
-\item{mainWindow}{: window in which the 'unsupTab' is created.}
-
-\item{console}{: frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{: frame of the RclusTool interface in which graphics should be displayed.}
-
 \item{RclusTool.env}{: environment in which data and intermediate results are stored.}
 }
 \value{

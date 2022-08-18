@@ -4,15 +4,9 @@
 \alias{initSemisupTab}
 \title{Semi-Supervised tab}
 \usage{
-initSemisupTab(mainWindow, console, graphicFrame, RclusTool.env, reset = F)
+initSemisupTab(RclusTool.env, reset = FALSE)
 }
 \arguments{
-\item{mainWindow}{window in which the 'semisupTab' is created.}
-
-\item{console}{frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{frame of the RclusTool interface in which graphics should be dispayed.}
-
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 
 \item{reset}{: if TRUE the whole tab is reset, with default options}

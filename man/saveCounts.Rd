@@ -29,11 +29,11 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf1 <- tempfile()
 write.table(dat, tf1, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf1)
 res <- KmeansQuick(x$features$initial$x, K=3)
 
 tf2 <- tempfile()
-saveCounts(basename(tf2), table(res$cluster), tempdir())
+saveCounts(basename(tf2), table(res$cluster), dirname(tf2))
  
 
 }

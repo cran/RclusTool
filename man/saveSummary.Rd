@@ -32,13 +32,13 @@ colnames(dat) <- c("x","y")
 tf1 <- tempfile()
 write.table(dat, tf1, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf1)
 res <- KmeansQuick(x$features$initial$x, K=3)
 labels <- formatLabelSample(res$cluster, x)
 cluster.summary <- clusterSummary(x, labels)
 
 tf2 <- tempfile()
-saveSummary(basename(tf2), cluster.summary, tempdir())
+saveSummary(basename(tf2), cluster.summary, dirname(tf2))
 
 
 }

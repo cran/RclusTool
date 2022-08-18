@@ -23,14 +23,14 @@ Assign a class name to each cluster obtained by unsupervised or semi-supervised 
 nameClusters assigns a class name to each cluster obtained by unsupervised or semi-supervised classification, thanks to the use of a training set and the majority rule method
 }
 \examples{
-\donttest{
+\dontrun{
 dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf1 <- tempfile()
 write.table(dat, tf1, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf1)
 x <- computeUnSupervised(x, K=3, method.name="K-means")
 
 nameClusters(x, method = "K-means_preprocessed")

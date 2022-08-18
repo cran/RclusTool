@@ -41,18 +41,18 @@
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' x <- computeUnSupervised(x, K=0, pca=TRUE, echo=TRUE)
 #' label <- x$clustering[["K-means_pca"]]$label
 #' plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y", 
-#'	col = label, main = "K-means clustering")
+#'	    col = label, main = "K-means clustering")
 #' 
 #'
 #' @export 
 #' 
-computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=F, pca.nb.dims=0, spec=F,
-                                use.sampling=FALSE, sampling.size.max=0, scaling=F, RclusTool.env=initParameters(), echo=FALSE) {
+computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=FALSE, pca.nb.dims=0, spec=FALSE,
+                                use.sampling=FALSE, sampling.size.max=0, scaling=FALSE, RclusTool.env=initParameters(), echo=FALSE) {
 
     summary <- NULL
     label <- NULL
@@ -65,7 +65,7 @@ computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=F,
     operationsRes <- makeFeatureSpaceOperations(pca=pca, pca.nb.dims=pca.nb.dims, spectral=spec,
                                     sampling=use.sampling, sampling.size.max=sampling.size.max, scaling=scaling)
 
-    new.data.sample <- applyPreprocessing(data.sample, operationsRes$instr, RclusTool.env, reset=F)
+    new.data.sample <- applyPreprocessing(data.sample, operationsRes$instr, RclusTool.env, reset=FALSE)
     if (!is.null(new.data.sample)) {
         data.sample <- new.data.sample
     } else
@@ -83,34 +83,34 @@ computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=F,
         if (!length(selected.var))
             selected.var <- featNames
 
-        x <- x[, selected.var, drop=F]
+        x <- x[, selected.var, drop=FALSE]
     }
 
     if ((!spec)&&(!pca))
-        x <- x[data.sample$id.clean, , drop=F]
+        x <- x[data.sample$id.clean, , drop=FALSE]
     
     #Sampling
     if (use.sampling) {
         if (!spec)
-            x <- x[data.sample$sampling$selection.ids, , drop=F]
+            x <- x[data.sample$sampling$selection.ids, , drop=FALSE]
     }
 
     # to correctly call further formatLabelSample
     if (spec && !is.null(data.sample$sampling) && (nrow(x)==length(data.sample$sampling$selection.ids)))
-        use.sampling <- T 
+        use.sampling <- TRUE 
 
     #Clustering
     if (!is.null(x)) {
         if (method.name=="K-means") {
             res.kmeans <- computeKmeans(x, K=K, K.max=RclusTool.env$param$classif$unsup$K.max,
-                                        kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=F)
+                                        kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=FALSE)
             label <- res.kmeans$cluster
             Within <- res.kmeans[["Withins_tot"]]
         }
 
         if (method.name=="EM") {
             res.EM <- computeEM(x, K=K, K.max=RclusTool.env$param$classif$unsup$K.max,
-                                kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=F, Mclust.options=RclusTool.env$param$classif$sup[["Mclust"]])
+                                kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=FALSE, Mclust.options=RclusTool.env$param$classif$sup[["Mclust"]])
             label <- res.EM$classification
             Within <- res.EM[["Withins_tot"]]
         }
@@ -141,7 +141,7 @@ computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=F,
         if (method.name=="HC") {
             if (K==0) {
                 res.kmeans <- computeKmeans(x, K=0, K.max=RclusTool.env$param$classif$unsup$K.max,
-                                            kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=F)
+                                            kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=FALSE)
                 Within <- res.kmeans[["Withins_tot"]]
                 K <- max(res.kmeans$cluster)
             }
@@ -153,7 +153,7 @@ computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=F,
         if (method.name=="PAM") {
             if (K==0) {
                 res.kmeans <- computeKmeans(x, K=0, K.max=RclusTool.env$param$classif$unsup$K.max,
-                                            kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=F)
+                                            kmeans.variance.min=RclusTool.env$param$classif$unsup$kmeans.variance.min, graph=FALSE)
                 Within <- res.kmeans[["Withins_tot"]]
                 K <- max(res.kmeans$cluster)
             }
@@ -168,7 +168,7 @@ computeUnSupervised <- function(data.sample, K=0, method.name="K-means",  pca=F,
 
         #visualizing
         summary <- clusterSummary(data.sample, label, summary.functions=RclusTool.env$param$analysis$summary.functions)
-		density <- clusterDensity(data.sample, label)
+		density <- clusterDensity(data.sample, label, space)
 		
         nbItems <- rep(1, length(label))
         names(nbItems) <- names(label)

@@ -28,12 +28,11 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
 tf1 <- tempfile()
 write.table(dat, tf1, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, dir.save=tempdir())
+x <- importSample(file.features=tf1)
 
 new.protos <- visualizeSampleClustering(x, selection.mode = "prototypes", 
-			 profile.mode="whole sample", wait.close=FALSE)
-x <- updateClustersNames(x, new.protos)
-
+			 profile.mode="none", wait.close=FALSE)
+x <- updateClustersNames(x, new.protos$prototypes)
 
 }
 }

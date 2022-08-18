@@ -5,12 +5,12 @@
 \title{Make operation config object to build feature spaces}
 \usage{
 makeFeatureSpaceOperations(
-  pca = F,
+  pca = FALSE,
   pca.nb.dims = 0,
-  spectral = F,
-  sampling = F,
+  spectral = FALSE,
+  sampling = FALSE,
   sampling.size.max = 0,
-  scaling = F
+  scaling = FALSE
 )
 }
 \arguments{

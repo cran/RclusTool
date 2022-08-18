@@ -47,27 +47,28 @@
 #'              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 #' tf <- tempfile()
 #' write.table(dat, tf, sep=",", dec=".")
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf)
 #' 
 #' pairs.abs <- visualizeSampleClustering(x, selection.mode = "pairs", 
 #'			    profile.mode="whole sample", wait.close=TRUE)
 #' 
 #' res.ckm <- computeSemiSupervised(x, ML=pairs.abs$ML, CNL=pairs.abs$CNL, K=0)
 #' plot(dat[,1], dat[,2], type = "p", xlab = "x", ylab = "y",
-#'	col = res.ckm$label, main = "Constrained K-means clustering")
+#'	    col = res.ckm$label, main = "Constrained K-means clustering")
 #'
 #'
 #' }
 #' 
 #' @export 
 #' 
-computeSemiSupervised <- function(data.sample, ML, CNL, K=0, kmax=20, method.name = "Constrained_KM", maxIter=2, pca=F, pca.nb.dims=0, spec=F,
-								  use.sampling=FALSE, sampling.size.max=0, scaling=F, RclusTool.env=initParameters(), echo=T) {
+computeSemiSupervised <- function(data.sample, ML, CNL, K=0, kmax=20, method.name = "Constrained_KM", maxIter=2, pca=FALSE, pca.nb.dims=0, spec=FALSE,
+								  use.sampling=FALSE, sampling.size.max=0, scaling=FALSE, RclusTool.env=initParameters(), echo=TRUE) {
 	Within <- NULL							
     operationsRes <- makeFeatureSpaceOperations(pca=pca, pca.nb.dims=pca.nb.dims, spectral=spec,
                                     sampling=use.sampling, sampling.size.max=sampling.size.max, scaling=scaling)
 
-    new.data.sample <- applyPreprocessing(data.sample, operationsRes$instr, RclusTool.env, reset=F)
+    new.data.sample <- applyPreprocessing(data.sample, operationsRes$instr, RclusTool.env, reset=FALSE)
+
     if (!is.null(new.data.sample)) {
         data.sample <- new.data.sample
     } else
@@ -85,21 +86,25 @@ computeSemiSupervised <- function(data.sample, ML, CNL, K=0, kmax=20, method.nam
         if (!length(selected.var))
             selected.var <- featNames
 
-        x <- x[, selected.var, drop=F]
+        x <- x[, selected.var, drop=FALSE]
     }
 
     if ((!spec)&&(!pca))
-        x <- x[data.sample$id.clean, , drop=F]
+        x <- x[data.sample$id.clean, , drop=FALSE]
     
     #Sampling
     if (use.sampling) {
         if (!spec)
-            x <- x[data.sample$sampling$selection.ids, , drop=F]
+        {
+            toAdd=c(unlist(ML),unlist(CNL))
+            data.sample$sampling <- addIds2Sampling(data.sample$sampling, toAdd )
+            x <- x[data.sample$sampling$selection.ids, , drop=FALSE]
+        }
     }
 
     # to correctly call further formatLabelSample
     if (spec && !is.null(data.sample$sampling) && (nrow(x)==length(data.sample$sampling$selection.ids)))
-        use.sampling <- T 
+        use.sampling <- TRUE 
 
 	#Clustering
     label <- NULL

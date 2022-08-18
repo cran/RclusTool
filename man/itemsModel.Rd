@@ -24,19 +24,21 @@ itemsModel computes and saves specific predictive model from manual countings fo
 }
 \examples{
 \donttest{
-dat <- rbind(matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
-             matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2), 
-             matrix(rnorm(100, mean = 6, sd = 0.3), ncol = 2))
-colnames(dat) <- c("x","y")
+dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2), 
+             matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2), 
+             matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
-countItemsGUI()
-itemsModel(x$features$initial$x, countFile)
+x <- computeUnSupervised(x, K=0, pca=TRUE, echo=TRUE)
+
+countFile <- countItemsSampleGUI(x)
+if (file.exists(countFile))
+     itemsModel(x$features$initial$x, countFile)
 }
 }
 \seealso{
-\code{\link{computeItems}}, \code{\link{countItems}}
+\code{\link{computeItemsSample}}, \code{\link{countItems}}
 }
 \keyword{internal}

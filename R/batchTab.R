@@ -19,9 +19,6 @@
 #' function to create the 'batchTab' for data clustering in batch process
 #' @title Batch process tab
 #' @description Generate the batch process tab of the \code{\link{RclusToolGUI}}, in which the user can choose and configure the classification method to apply on several datasets.
-#' @param mainWindow window in which the 'batchTab' is created.
-#' @param console frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame frame of the RclusTool interface in which graphics should be dispayed.
 #' @param RclusTool.env environment in which data and intermediate results are stored.
 #' @return None
 #' @importFrom grDevices dev.new dev.off jpeg
@@ -30,11 +27,14 @@
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
-buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
+buildBatchTab <- function(RclusTool.env) {
 	#Reset working directory on exit 
     batch.env <- RclusTool.env$gui$tabs.env$batch
 
-    fontFrame <- tkfont.create(family = "Arial", weight = "bold", size = RclusTool.env$param$visu$size)
+    fontFrame <- tkfont.create(family = RclusTool.env$param$visu$font, weight = "bold", size = RclusTool.env$param$visu$size)
+    fontTitleFrame <- tkfont.create(family = RclusTool.env$param$visu$titlefont, weight = "bold", size = RclusTool.env$param$visu$titlesize)
+    padx = "6m" #3*RclusTool.env$param$visu$size
+    pady = "2m" #round(RclusTool.env$param$visu$size*1.0)
 	
     batch.env$tcl.supMethod.select <- tclVar("RF")
     batch.env$tcl.unsupMethod.select <- tclVar("K-means")
@@ -75,11 +75,11 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     win1.nb <- RclusTool.env$gui$win1$env$nb
 
     ## Supervised classification
-    SupFrametext <- StringToTitle("SUPERVISED", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    SupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = SupFrametext, font = fontFrame, pady=20, relief = "flat")
+    SupFrametext <- makeTitle("SUPERVISED")
+    SupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = SupFrametext, font = fontTitleFrame, pady=pady, relief = "flat")
     ## Unsupervised classification
-    UnsupFrametext <- StringToTitle("UNSUPERVISED", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    UnsupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = UnsupFrametext, font = fontFrame, pady=20, relief = "flat")
+    UnsupFrametext <- makeTitle("UNSUPERVISED")
+    UnsupFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = UnsupFrametext, font = fontTitleFrame, pady=pady, relief = "flat")
 
     SupFrameExpert <- tkwidget(SupFrame, "labelframe", font = fontFrame, relief = "flat")
     SupFrameStandard <- tkwidget(SupFrame, "labelframe", font = fontFrame, relief = "flat")
@@ -93,14 +93,14 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                                  tkr <- tkradiobutton(SupFrameExpert, variable=batch.env$tcl.supMethod.select, value=name, text=sup.method.title[name])
                                  tkbind(tkr, "<ButtonRelease-1>")
                                  tkr
-                            }, simplify=F)
+                            }, simplify=FALSE)
 
     # method selection buttons unsupervised
     rb_unsup.methods <- sapply(names(unsup.method.title), function(name) {
                                    tkr <- tkradiobutton(UnsupFrameExpert1, variable=batch.env$tcl.unsupMethod.select, value=name, text=unsup.method.title[name])
                                    tkbind(tkr, "<ButtonRelease-1>")
                                    tkr
-                            }, simplify=F)
+                            }, simplify=FALSE)
 
     # Import config file
     onImport <- function() {
@@ -110,8 +110,8 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
             tkmessageBox(message = "No file selected!")
         } else {
             # Display informations in console
-            tkinsert(console, "0.0", paste("----- Preprocessing -----\n",
-                                           "Filename:  ", basename(batch.env$ProcessFile), "\n\n", sep = ""))
+            messageConsole(paste("----- Preprocessing -----\n",
+                                           "Filename:  ", basename(batch.env$ProcessFile), "\n\n", sep = ""), RclusTool.env=RclusTool.env)
         }
     }
 
@@ -148,11 +148,11 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
 			
             # Default: Random Forest algorithm (for standard user)
             supMethod <- tclvalue(batch.env$tcl.supMethod.select)
-            tkinsert(console, "0.0", paste("----- Supervised Classification -----\n", 
+            messageConsole(paste("----- Supervised Classification -----\n", 
                                            "Batch process\n",
                                            "Datasets folder: ", basename(batch.env$WDir), "\n",
                                            "Training set: ", basename(batch.env$protos.directory), "\n",
-                                           supMethod, " computing\n\n", sep = ""))
+                                           supMethod, " computing\n\n", sep = ""), RclusTool.env=RclusTool.env)
 
             allAbd <- data.frame(matrix(ncol = length(unique(batch.env$prototypes$Class[batch.env$id.clean.proto])), nrow = 0))
             colnames(allAbd) <- unique(batch.env$prototypes$Class[batch.env$id.clean.proto])
@@ -165,7 +165,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                 rdsfile <- ""
                 if (any(grep(gsub(".csv", "", basename(f)), batch.env$rdsFiles)))
                     rdsfile <- file.path(batch.env$dirFiles, batch.env$rdsFiles[grep(gsub(".csv", "", basename(f)), batch.env$rdsFiles)])
-                system.time(importSample(dir.save = batch.env$WDirDefault, file.features = file.path(batch.env$dirFiles, f),
+                system.time(importSample(dir.save = batch.env$WDir, file.features = file.path(batch.env$dirFiles, f),
                                          file.RDS = rdsfile, sepFeat = sepValues[tclvalue(sepSelect)], decFeat = tclvalue(decSelect), naFeat=tclvalue(misSelect)) 
                 -> RclusTool.env$data.sample)
                 if (nchar(batch.env$ProcessFile)) {
@@ -185,9 +185,9 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                 }
                 
                 #Keep only levels who are in clustering 
-				if (!dir.exists(file.path(batch.env$WDirDefault,"batch_results")))
-                	dir.create(file.path(batch.env$WDirDefault,"batch_results"))
-                RclusTool.env$data.sample$files$results$batch <- file.path(batch.env$WDirDefault,"batch_results")
+				if (!dir.exists(file.path(batch.env$WDir,"batch_results")))
+                	dir.create(file.path(batch.env$WDir,"batch_results"))
+                RclusTool.env$data.sample$files$results$batch <- file.path(batch.env$WDir,"batch_results")
                 # Save clustering and summary (csv files)
                 fileClust.csv <- paste(RclusTool.env$data.sample$name, " clustering ", supMethod, ".csv", sep = "")
                 saveClustering(fileClust.csv, res$label, RclusTool.env$data.sample$files$results$batch)
@@ -240,10 +240,10 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                          type = "ok", icon = "info", title = "Error")
         } else {
             unsupMethod <- tclvalue(batch.env$tcl.unsupMethod.select)
-            tkinsert(console, "0.0", paste("----- Unsupervised Clustering -----\n", 
+            messageConsole(paste("----- Unsupervised Clustering -----\n", 
                                            "Batch process\n",
                                            "Datasets folder: ", basename(batch.env$WDir), "\n",
-                                           unsupMethod, " computing\n\n", sep = ""))
+                                           unsupMethod, " computing\n\n", sep = ""), RclusTool.env=RclusTool.env)
 
             cpt <- 1
             for (f in batch.env$files) {
@@ -252,7 +252,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                 rdsfile <- ""
                 if (any(grep(gsub(".csv", "", basename(f)), batch.env$rdsFiles)))
                     rdsfile <- file.path(batch.env$dirFiles, batch.env$rdsFiles[grep(gsub(".csv", "", basename(f)), batch.env$rdsFiles)])
-                system.time(importSample(dir.save = batch.env$WDirDefault, file.features = file.path(batch.env$dirFiles, f),
+                system.time(importSample(dir.save = batch.env$WDir, file.features = file.path(batch.env$dirFiles, f),
                                          file.RDS = rdsfile, sepFeat = sepValues[tclvalue(sepSelect)], decFeat = tclvalue(decSelect), naFeat=tclvalue(misSelect)) 
                 -> RclusTool.env$data.sample)
 
@@ -267,14 +267,14 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                 if (is.null(RclusTool.env$data.sample))
                     stop("Corrupted Configuration Files, please retry with another one.")
                 if (batch.env$featSpace == "Initial Features"){
-                    batch.env$pca=F
-                    batch.env$spec=F
+                    batch.env$pca=FALSE
+                    batch.env$spec=FALSE
                 } else if (batch.env$featSpace == "Principal Components Analysis") {
-                    batch.env$pca=T
-                    batch.env$spec=F 
+                    batch.env$pca=TRUE
+                    batch.env$spec=FALSE 
                 } else if (batch.env$featSpace == "Spectral Embedding") { 
-                    batch.env$pca=F
-                    batch.env$spec=T
+                    batch.env$pca=FALSE
+                    batch.env$spec=TRUE
                 }
                 RclusTool.env$data.sample <- computeUnSupervised(RclusTool.env$data.sample, K=0, method.name=unsupMethod, pca=batch.env$pca, 
                                                                  use.sampling=tclvalue(batch.env$tcl.sampling.check)=="1", 
@@ -290,9 +290,9 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
                 method.space.name.unsup <- paste(unsupMethod,space,sep="_")         
                 label <- RclusTool.env$data.sample$clustering[[method.space.name.unsup]]$label
                 cluster.summary <- RclusTool.env$data.sample$clustering[[method.space.name.unsup]]$summary
-				if (!dir.exists(file.path(batch.env$WDirDefault,"batch_results")))
-                	dir.create(file.path(batch.env$WDirDefault,"batch_results"))
-                RclusTool.env$data.sample$files$results$batch <- file.path(batch.env$WDirDefault,"batch_results")
+				if (!dir.exists(file.path(batch.env$WDir,"batch_results")))
+                	dir.create(file.path(batch.env$WDir,"batch_results"))
+                RclusTool.env$data.sample$files$results$batch <- file.path(batch.env$WDir,"batch_results")
                 # Save clustering and summary (csv files)
                 fileClust.csv <- paste(RclusTool.env$data.sample$name, " clustering ", method.space.name.unsup, ".csv", sep = "")
                 saveClustering(fileClust.csv, label, RclusTool.env$data.sample$files$results$batch)
@@ -342,10 +342,10 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     }
 
     ## Build the 'Required files' frame
-    tkgrid(tklabel(win1.nb$env$batch, text="      "), row = 1, column = 1)
-    RequiredDirFrametext <- StringToTitle("REQUIRED INPUT DATA FOLDER", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    RequiredDirFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = RequiredDirFrametext, pady= 10, font = fontFrame, relief = "flat")
-    tkgrid(RequiredDirFrame, columnspan = 3, row = 2, sticky = "w")
+    RequiredDirFrametext <- makeTitle("REQUIRED INPUT DATA FOLDER")
+    RequiredDirFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = RequiredDirFrametext, pady= pady, font = fontTitleFrame, relief = "flat")
+    tkEmptyLine(win1.nb$env$batch, row=1)
+    tkgrid(RequiredDirFrame, columnspan = 3, row = 2, sticky = "we", pady=pady)
 
     # Select separator and decimal separator for csv (for features file)
     opt1 <- tklabel(RequiredDirFrame, text="sep")
@@ -359,9 +359,11 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tk.unsupCompute.but <- tkbutton(UnsupFrame, text="COMPUTE", width = 10, command=OnUnsupCompute)
 
     # Positioning
-    tkgrid(UnsupFrame, row = 4, sticky = "w")
-    tkgrid(SupFrame, row = 5, sticky = "w")
-    tkgrid(tk.folder.but, row = 2, column = 0, padx = RclusTool.env$param$visu$sizecm)
+    tkEmptyLine(win1.nb$env$batch, row=3)
+    tkgrid(UnsupFrame, row = 4, sticky = "we", pady=pady, columnspan=3)
+    tkEmptyLine(win1.nb$env$batch, row=1)
+    tkgrid(SupFrame, row = 5, sticky = "we", pady=pady, columnspan=3)
+    tkgrid(tk.folder.but, row = 2, column = 0, padx = padx, pady=pady)
     tkgrid(TrainingSetName, row = 2, column = 1)
     tkgrid(tk2label(SupFrame, text=""), row = 3, column = 1)
     
@@ -371,7 +373,9 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     {
         tkconfigure(DirFrameName, state="normal") 
         tkdelete(DirFrameName, "1.0", "end")
-        tkinsert(DirFrameName,"end", batch.env$dirFiles)
+        if (dir.exists(batch.env$dirFiles)) {
+            tkinsert(DirFrameName,"end", batch.env$dirFiles)
+        }
         tkconfigure(DirFrameName, state="disabled") 
     }
 
@@ -416,9 +420,10 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     butImport <- tk2button(RequiredDirFrame, text = "Import preprocessing", image = "csvFile", compound = "left", width = 20, command = onImport)
 
  	## Build the 'Working Directory' frame
- 	WdFrametext <- StringToTitle("WORKING DIRECTORY", RclusTool.env$param$visu$sizecm, fontsize=RclusTool.env$param$visu$size)
-    WdFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = WdFrametext, font = fontFrame, pady = 10, relief = "flat")
-    tkgrid(WdFrame, columnspan = 3, row = 3, sticky = "w")
+ 	WdFrametext <- makeTitle("WORKING DIRECTORY")
+    WdFrame <- tkwidget(win1.nb$env$batch, "labelframe", text = WdFrametext, font = fontTitleFrame, pady = pady, relief = "flat")
+    tkEmptyLine(win1.nb$env$batch, row=6)
+    tkgrid(WdFrame, columnspan = 3, row = 7, sticky = "we")
      
     # Select the working directory
     WDir <- tktext(WdFrame, bg="white", font="courier", width=7*RclusTool.env$param$visu$size, height=2, font = fontFrame, state="disabled")
@@ -427,7 +432,9 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     {
  		tkconfigure(WDir, state="normal") 
         tkdelete(WDir, "1.0", "end")
-        tkinsert(WDir,"end", batch.env$WDir)
+        if (dir.exists(batch.env$WDir)) {
+            tkinsert(WDir,"end", batch.env$WDir)
+        }
         tkconfigure(WDir, state="disabled") 
     }
     
@@ -444,9 +451,9 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkconfigure(opt1,font = fontFrame)
     tkconfigure(opt2,font = fontFrame)
     tkconfigure(opt3,font = fontFrame)                                                  
-    tkgrid(dirButton, row = 1, column = 0, padx = RclusTool.env$param$visu$sizecm)
+    tkgrid(dirButton, row = 1, column = 0, padx = padx)
     tkgrid(DirFrameName, row = 1, column= 1)
-    tkgrid(WDirButton, row = 2, column = 1, padx = RclusTool.env$param$visu$sizecm, sticky = "w")
+    tkgrid(WDirButton, row = 2, column = 1, padx = padx, sticky = "w")
     tkgrid(WDir, row = 2, column = 2)
     tkgrid(opt1, row = 1, column = 3, sticky = "e")
     tkgrid(combo.Sep, row = 1, column = 4, sticky = "w")
@@ -454,7 +461,7 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
     tkgrid(combo.Dec, row = 1, column = 6, sticky = "w")
     tkgrid(opt3, row = 1, column = 7, sticky = "e")
     tkgrid(combo.Mis, row = 1, column = 8, sticky = "w")
-    tkgrid(butImport, row = 2, column = 0, padx = RclusTool.env$param$visu$sizecm)
+    tkgrid(butImport, row = 2, column = 0, padx = padx)
     tkgrid(PreprocessingName, row = 2, column = 1)
     
     ## Unsupervised classification
@@ -498,44 +505,42 @@ buildBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env) {
         tkgrid(spaceFrame, row = 11, column = 0)                                          
         tkgrid(spaceList, row = 11, column = 0)           
         # secondary frames
-        tkgrid(UnsupFrameExpert1, row = 1, column=0, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
-        tkgrid(UnsupFrameExpert2, row = 1, column=1, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
-        tkgrid(SupFrameExpert, row = 3, column=0, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
+        tkgrid(UnsupFrameExpert1, row = 1, column=0, padx=padx, sticky = "w")
+        tkgrid(UnsupFrameExpert2, row = 1, column=1, padx=padx, sticky = "w")
+        tkgrid(SupFrameExpert, row = 3, column=0, padx=padx, sticky = "w")
     } else {
-        tkgrid(UnsupFrameStandard, row = 1, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
-        tkgrid(SupFrameStandard, row = 3, padx=RclusTool.env$param$visu$sizecm, sticky = "w")
+        tkgrid(UnsupFrameStandard, row = 1, padx=padx, sticky = "w")
+        tkgrid(SupFrameStandard, row = 3, padx=padx, sticky = "w")
     }
-    tkgrid(tk.supCompute.but, column = 0)
-    tkgrid(tk.unsupCompute.but, column = 0)
+    tkgrid(tk.supCompute.but, column = 0, pady=pady)
+    tkgrid(tk.unsupCompute.but, column = 0, pady=pady)
 
     # Reset Batch Tab
     onReset <- function() {
-        initBatchTab(mainWindow = mainWindow, console = console, 
-                     graphicFrame = graphicFrame, RclusTool.env = RclusTool.env, reset=T)
+        initBatchTab(RclusTool.env = RclusTool.env, reset=TRUE)
     }
     butReset <- tk2button(win1.nb$env$batch, text = "Reset", image = "reset", compound = "left", width = -6, command = onReset)
-    tkgrid(butReset, row = 8, column = 0)
+
+    tkEmptyLine(win1.nb$env$batch, row=8)
+    tkgrid(butReset, row = 9, column = 0)
 }
 
 #' function to initialize (and to create) the 'batchTab'
 #' @title batch tab 
 #' @description This function generates the batch tab  of the \code{\link{RclusToolGUI}}, in which the user can batch files.
-#' @param mainWindow : window in which the 'batchTab' is created.
-#' @param console : frame of the RclusTool interface in which messages should be displayed. 
-#' @param graphicFrame : frame of the RclusTool interface in which graphics should be displayed.
 #' @param RclusTool.env : environment in which data and intermediate results are stored.
 #' @param reset : if TRUE the whole tab is reset, with default options
 #' @return None
 #' @import tcltk tcltk2
 #' @keywords internal
 #' 
-initBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env, reset=F)
+initBatchTab <- function(RclusTool.env, reset=FALSE)
 {
     if (is.null(RclusTool.env$gui$tabs.env$batch) || !length(RclusTool.env$gui$tabs.env$batch))
     {
         RclusTool.env$gui$tabs.env$batch <- new.env()
-        buildBatchTab(mainWindow, console, graphicFrame, RclusTool.env)
-        reset <- T
+        buildBatchTab(RclusTool.env)
+        reset <- TRUE
     }
 
     batch.env <- RclusTool.env$gui$tabs.env$batch
@@ -562,8 +567,8 @@ initBatchTab <- function(mainWindow, console, graphicFrame, RclusTool.env, reset
         batch.env$WDirDefault <- getwd()
         batch.env$WDir <- ""
         batch.env$featSpace <- "Principal Components Analysis"
-        batch.env$pca=F
-        batch.env$spec=F
+        batch.env$pca=FALSE
+        batch.env$spec=FALSE
         tclvalue(batch.env$tcl.supMethod.select) <- "RF"
         tclvalue(batch.env$tcl.unsupMethod.select) <- "K-means"
         tclvalue(batch.env$tcl.sampling.check) <- "0"

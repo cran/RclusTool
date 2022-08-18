@@ -46,7 +46,7 @@ colnames(dat) <- c("x","y")
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
 
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 mainWindow <- tktoplevel()
 tktitle(mainWindow) <- "Barplot clustering"  
@@ -54,7 +54,7 @@ mainWindow$env$nb <- tk2notebook(mainWindow, tabs = c())
 tkpack(mainWindow$env$nb, fill="both", expand= TRUE)
 
 analyzePlot(mainWindow$env$nb, x, selectedVar="x", type="boxplot")
- 
+
 
 }
 \keyword{internal}

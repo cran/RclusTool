@@ -4,15 +4,9 @@
 \alias{buildBatchTab}
 \title{Batch process tab}
 \usage{
-buildBatchTab(mainWindow, console, graphicFrame, RclusTool.env)
+buildBatchTab(RclusTool.env)
 }
 \arguments{
-\item{mainWindow}{window in which the 'batchTab' is created.}
-
-\item{console}{frame of the RclusTool interface in which messages should be displayed.}
-
-\item{graphicFrame}{frame of the RclusTool interface in which graphics should be dispayed.}
-
 \item{RclusTool.env}{environment in which data and intermediate results are stored.}
 }
 \value{

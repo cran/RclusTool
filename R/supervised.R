@@ -46,7 +46,7 @@
 #' tf <- tempfile()
 #' write.table(features, tf, sep=",", dec=".")
 #'
-#' x <- importSample(file.features=tf, dir.save=tempdir())
+#' x <- importSample(file.features=tf, dir.save=dirname(tf))
 #'
 #' train <- readTrainSet(traindir)
 #' 
@@ -72,17 +72,17 @@ computeSupervised <- function(data.sample, prototypes, method.name = "K-NN", mod
     if (length(selected.var)==0)
         stop("Training aborted: there isn't any common features between training set and sample set.")
 
-    train <- prototypes[, selected.var, drop=F]
+    train <- prototypes[, selected.var, drop=FALSE]
 
     # pas de calcul ici : a faire en amont, avec tous ceux necessaires ! (preprocessing)
     #logscale <- data.sample$config$logFeat[data.sample$config$logFeat %in% selected.var] #keep element names
     ##apply log10
     #message("computeSupervised: to be tested!")
     #if (length(logscale)) {
-    #    z <- train[, logscale, drop=F]
+    #    z <- train[, logscale, drop=FALSE]
     #    logscale <- logscale[apply(z, 2, function(x) { all(x>=-RclusTool.env$param$preprocess$zero.threshold)}) ]
     #    if (length(logscale)) {
-    #        train[,logscale] <- log10(removeZeros(train[,logscale], threshold=RclusTool.env$param$preprocess$zero.threshold, positive=T))
+    #        train[,logscale] <- log10(removeZeros(train[,logscale], threshold=RclusTool.env$param$preprocess$zero.threshold, positive=TRUE))
     #        idxLog <- match(colnames(train), logscale)
     #        colnames(train) <- mapply(function(id,col) {if (!is.na(id)) names(logscale)[id] else col}, idxLog, colnames(train))
     #    }

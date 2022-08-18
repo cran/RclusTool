@@ -53,10 +53,10 @@ sig <- data.frame(ID=rep(1:150, each=30), SIGNAL=rep(dnorm(seq(-2,2,length=30)),
 tf2 <- tempfile()
 write.table(sig, tf2, sep=",", dec=".")
 
-x <- importSample(file.features=tf1, file.profiles=tf2, dir.save=tempdir())
+x <- importSample(file.features=tf1, file.profiles=tf2)
 
 plotProfileExtract(x$profiles[[1]])
- 
+
 
 }
 \seealso{

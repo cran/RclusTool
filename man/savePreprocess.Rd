@@ -23,9 +23,9 @@ Export all preprocessing operations in a csv file.
 savePreprocess exports all preprocessing operations in a csv file
 }
 \examples{
-test.file <- "test.savePreprocess.csv"
+test.file <- tempfile()
 config <- matrix(c("select","x",NA,NA,"select","y",NA,NA), byrow=TRUE, ncol=4)
-savePreprocess(test.file, config, tempdir())
+savePreprocess(basename(test.file), config, dirname(test.file))
 
 
 }

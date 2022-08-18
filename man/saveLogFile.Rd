@@ -23,8 +23,9 @@ Save a log txt file at the end of the session, describing the different steps of
 saveLogFile saves a log txt file at the end of the session, describing the different steps of the analyses
 }
 \examples{
-logfile <- 'logfile.txt'
-saveLogFile(logfile, txt=rbind("Analysis date: ...", "Analysis duration: ..."), tempdir())
+logfile <- tempfile()
+saveLogFile(basename(logfile), txt=rbind("Analysis date: ...", "Analysis duration: ..."), 
+     dirname(logfile))
 
 
 }

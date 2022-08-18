@@ -10,7 +10,7 @@ computeSpectralEmbeddingSample(
   sampling.size.max = 0,
   scale = FALSE,
   selected.var = NULL,
-  echo = F,
+  echo = FALSE,
   RclusTool.env = initParameters()
 )
 }
@@ -44,7 +44,7 @@ dat <- rbind(matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
              matrix(rnorm(100, mean = 4, sd = 0.3), ncol = 2))
 tf <- tempfile()
 write.table(dat, tf, sep=",", dec=".")
-x <- importSample(file.features=tf, dir.save=tempdir())
+x <- importSample(file.features=tf)
 
 res <- computeSpectralEmbeddingSample(x)
 

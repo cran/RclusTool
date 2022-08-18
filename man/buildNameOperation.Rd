@@ -4,7 +4,7 @@
 \alias{buildNameOperation}
 \title{Build Name Operation}
 \usage{
-buildNameOperation(formatedRow, lowercase = F)
+buildNameOperation(formatedRow, lowercase = FALSE)
 }
 \arguments{
 \item{formatedRow}{vector describing preprocessing operations}

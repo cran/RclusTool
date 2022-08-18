@@ -4,7 +4,13 @@
 \alias{KmeansAutoElbow}
 \title{Kmeans clustering with automatic estimation of number of clusters}
 \usage{
-KmeansAutoElbow(features, Kmax, StopCriteria = 0.99, graph = F, Elbow = T)
+KmeansAutoElbow(
+  features,
+  Kmax,
+  StopCriteria = 0.99,
+  graph = FALSE,
+  Elbow = TRUE
+)
 }
 \arguments{
 \item{features}{matrix of raw data (point by line).}
