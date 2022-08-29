@@ -604,12 +604,12 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         logscale <- visu.env$features$logscale.2D
         title <- paste(visu.env$plot.mode, "clustered by", clustering.name)
         plotSampleFeatures(x, label, parH=visu.env$parH, parV=visu.env$parV, figure.title=title,
-        	               logscale=logscale, cex=visu.env$cex, point.param=RclusTool.env$param$visu$point.style, env.plot=visu.env)        
+                           logscale=logscale, cex=visu.env$cex, point.param=RclusTool.env$param$visu$point.style, env.plot=visu.env)        
 
         if (is.null(visu.env$parPlotSampleFeatures))
             return()
-    	opar <- graphics::par(no.readonly=TRUE)
-		on.exit(graphics::par(opar))
+        opar <- graphics::par(no.readonly=TRUE)
+        on.exit(graphics::par(opar))
         par(visu.env$parPlotSampleFeatures)
 
         #ids <- visu.env$features$id.abs.inv[c(visu.env$profile.id$sel, visu.env$profile.id$mem)]
@@ -648,14 +648,14 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         #colored cross + circle + point on selected point(s)
         if ((visu.env$profile.mode!="none") && (!(is.na(ids["sel"]))))
             graphics::points(x[rep(ids["sel"],3),,drop=FALSE], 
-                   pch=c("+", "O", RclusTool.env$param$visu$point.style$pch[unclass(label[ids["sel"]])]),
-                   cex=c(2, 2, RclusTool.env$param$visu$cex),
-                   col=c(color.select[1:2], RclusTool.env$param$visu$point.style$col[unclass(label[ids["sel"]])]))
+                             pch=c("+", "O", RclusTool.env$param$visu$point.style$pch[unclass(label[ids["sel"]])]),
+                             cex=c(2, 2, RclusTool.env$param$visu$cex),
+                             col=c(color.select[1:2], RclusTool.env$param$visu$point.style$col[unclass(label[ids["sel"]])]))
         if ((visu.env$mem.mode) && (!(is.na(ids["mem"]))))
             graphics::points(x[rep(ids["mem"],3),,drop=FALSE], 
-                   pch=c("+", "O",  RclusTool.env$param$visu$point.style$pch[unclass(label[ids["mem"]])]),
-                   cex=c(2, 2, RclusTool.env$param$visu$cex),
-                   col=c(color.select[1:2], RclusTool.env$param$visu$point.style$col[unclass(label[ids["mem"]])]))
+                             pch=c("+", "O",  RclusTool.env$param$visu$point.style$pch[unclass(label[ids["mem"]])]),
+                             cex=c(2, 2, RclusTool.env$param$visu$cex),
+                             col=c(color.select[1:2], RclusTool.env$param$visu$point.style$col[unclass(label[ids["mem"]])]))
 
         parPlotSize <- par("plt")
         width  <- as.numeric(tclvalue(tkwinfo("reqwidth", tk.plot.fig)))
@@ -673,10 +673,15 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
 
         # A VERIFIER
         visu.env$features$x.2D.pixel <- cbind((visu.env$features$x.2D[,1]-usrCoords[1])*(xMax-xMin)/rangeX + xMin,
-                                      (visu.env$features$x.2D[,2]-usrCoords[3])*(yMax-yMin)/rangeY + yMin )
+                                              (visu.env$features$x.2D[,2]-usrCoords[3])*(yMax-yMin)/rangeY + yMin )
         rownames(visu.env$features$x.2D.pixel) <- rownames(visu.env$features$x.2D)
         visu.env$box.pixel <- c(xMin, xMax, yMin, yMax)
         visu.env$usrCoords <- usrCoords
+
+        # if new plot, then search tree is rebuilt
+        if (is.null(visu.env$pts.search.tree)) 
+            buildPtsSearchTree()
+
     }
     
     plotDensity2Dcall <- function(compare=FALSE){
@@ -800,23 +805,15 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         #             usrCoords[3]+(yClick-yMin)*rangeY/(yMax-yMin))
 
 
-        rangeX <- visu.env$usrCoords[2] - visu.env$usrCoords[1]
-        rangeY <- visu.env$usrCoords[4] - visu.env$usrCoords[3]
 
-        # A VERIFIER
-#pour info:  visu.env$features$x.2D.pixel <- cbind((visu.env$features$x.2D[,1]-usrCoords[1])*(xMax-xMin)/rangeX + xMin,
-#                                      (visu.env$features$x.2D[,2]-usrCoords[3])*(yMax-yMin)/rangeY + yMin )
-#pour info:  visu.env$box.pixel <- c(xMin, xMax, yMin, yMax)
- 
-        xClick <- (xClick - visu.env$box.pixel[1]) * rangeX / (visu.env$box.pixel[2] - visu.env$box.pixel[1]) + visu.env$usrCoords[1]
-        yClick <- (yClick - visu.env$box.pixel[3]) * rangeY / (visu.env$box.pixel[4] - visu.env$box.pixel[3]) + visu.env$usrCoords[3]
 
-        
-        w <- as.character(visu.env$slider.values[SearchTrees::knnLookup(visu.env$pts.search.tree, xClick, yClick, k=1)[1]])
-        #w <- as.character(class::knn(visu.env$features$x.2D.pixel[visu.env$slider.values,,drop=FALSE],
-        #                      c(xClick, yClick), visu.env$slider.values)) #A VERIFIER !!
+        if (!is.null(visu.env$pts.search.tree))  {
+           	w <- as.character(visu.env$slider.values[SearchTrees::knnLookup(visu.env$pts.search.tree, xClick, yClick, k=1)[1]])
+           	#w <- as.character(class::knn(visu.env$features$x.2D.pixel[visu.env$slider.values,,drop=FALSE],
+            	#                      c(xClick, yClick), visu.env$slider.values)) #A VERIFIER !!
 
-        setProfileId("fig", w)
+        	setProfileId("fig", w)
+        }
     }
 
     OnMovePlotFun <- function(x,y)
@@ -943,7 +940,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         if (visu.env$plot.mode == "scatter-plot")
             visu.env$onScatterPlotMove <- OnMouseMove
 
-        OnModifProfileMode() #hides/shows Profiles frame according to "cluster summary" mode or not
+        visibilityProfile() #hides/shows Profiles frame according to "cluster summary" mode or not
         
         OnPlotSample()
     }
@@ -1112,7 +1109,8 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         }
         visu.env$features$logscale.2D <- logscale
 
-        buildPtsSearchTree()
+	# force rebuilding of the search tree
+        visu.env$pts.search.tree <- NULL
     }
 
     #without plotSample
@@ -1138,22 +1136,27 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
         modifAxisUpdate()
     }
 
-
-    OnModifProfileMode <- function() {
-        if (visu.env$plot.mode == "clusters summary"|| visu.env$plot.mode == "variables density by cluster")
+    visibilityProfile <- function()
+    {
+        # hide profiles
+        if (visu.env$plot.mode != "scatter-plot")
         {
-            # hide profiles
             tkpack.forget(tk.profile.frame)
             return()
-        } else
-        {
-            tkpack.forget(tk.profile.frame)
-            tkpack(tk.profile.frame, side="left")
-        }
+        } 
 
+        if (visu.env$profile.mode=="none") {
+            tkpack.forget(tk.profile.frame)
+            return()
+        }
+        tkpack(tk.profile.frame, side="left")
+ }
+
+    OnModifProfileMode <- function() {
+        new.mode <- tclvalue(tcl.profile.mode)
+        tkpack.forget(tk.profile.frame)
 
         # if new mode not possible
-        new.mode <- tclvalue(tcl.profile.mode)
         if (!length(visu.env$prototypes) && ((new.mode=="prototypes"))){
             tclvalue(tcl.profile.mode) <- visu.env$profile.mode
             return()
@@ -1163,9 +1166,7 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             return()
         }
 
-        # hide profiles
         visu.env$profile.mode <- new.mode
-        tkpack.forget(tk.profile.frame)
 
         # select particles able to be selected -> visu.env$slider.values
         switch(visu.env$profile.mode,
@@ -1241,10 +1242,10 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             return()
 
         #data required
-        if (is.null(visu.env$features$x.2D) || !length(visu.env$slider.values))
+        if (is.null(visu.env$features$x.2D.pixel) || !length(visu.env$slider.values))
             return()
 
-        visu.env$pts.search.tree <- SearchTrees::createTree(visu.env$features$x.2D[visu.env$slider.values,,drop=FALSE])
+        visu.env$pts.search.tree <- SearchTrees::createTree(visu.env$features$x.2D.pixel[visu.env$slider.values,,drop=FALSE])
     }
 
     configureSliders <- function(values, reset=TRUE){
@@ -1384,8 +1385,8 @@ visualizeSampleClustering<- function(data.sample, label=NULL, clustering.name="p
             } else {
                 configureSliders(visu.env$pairs.values, reset=FALSE) #settings BEFORE positioning !
                 OnSliderMove()
+                OnPlotSample()      
             }
-            OnPlotSample()      
         }
     }
 

@@ -659,7 +659,7 @@ computeSpectralEmbeddingSample <- function(data.sample, use.sampling = FALSE, sa
 #' 
 removeZeros <- function(x, threshold=.Machine$double.eps, positive=FALSE) {
     threshold <- abs(threshold)
-    clx <- class(x)   # different class for prototypes and data.sample$x 
+    is.dtf <- inherits(x, "data.frame")
     # (fixes the log pb for supervised)
     x <- as.matrix(x)
     w = which(abs(x) <= threshold)
@@ -670,7 +670,7 @@ removeZeros <- function(x, threshold=.Machine$double.eps, positive=FALSE) {
             s[s==-1] <- 1
         x[w] <- s*threshold
     }
-    if (clx == "data.frame")
+    if (is.dtf)
         x <- as.data.frame(x)
     x
 }

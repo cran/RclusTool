@@ -1,4 +1,4 @@
-3cbe9f85efb6e797890d7272aa034bd7 *DESCRIPTION
+91a4abeef1ba74748bb3e31c4e887c8d *DESCRIPTION
 169eb23db1667e6012271e9fd4f0f579 *NAMESPACE
 90e13665a3aa3c3c17b96e2974258db4 *R/KmeansAutoElbow.R
 c4fd04f7bbc877de974e0565a4ec288b *R/RclusTool.R
@@ -10,8 +10,8 @@ c6d9b0c385880c2ba790f5c7119afe70 *R/parameters.R
 fd460237fb2778bc0fd713789ce357a7 *R/preprocessTab.R
 c1f1d40c8a35ab6a867404028fe8e9cd *R/sampleBuilding.R
 fdeff1b01f423b8a812ea0b151ff95ed *R/sampleClustering.R
-fa723d272c84ca7c320833910db97739 *R/sampleCompute.R
-e4e0bcc3c348d6e1e435a734f7147bcd *R/sampleView.R
+843c0f3e2ad8230bca0f490a8f422982 *R/sampleCompute.R
+41428faa06da09f027cf3dd32c5b94d5 *R/sampleView.R
 b596ef7f02cae3cb7a17a2cd44dd9a47 *R/semisupTab.R
 2c4cd966d7d0290ef7808de0d68ee549 *R/semisupervised.R
 c0a31d10d052ceddca80f7251530820a *R/supTab.R
