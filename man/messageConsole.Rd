@@ -7,9 +7,9 @@
 messageConsole(message, RclusTool.env = initParameters())
 }
 \arguments{
-\item{RclusTool.env}{environment in which all global parameters, raw data and results are stored.}
+\item{message}{string to print in the console.}
 
-\item{message:}{string to print in the console.}
+\item{RclusTool.env}{environment in which all global parameters, raw data and results are stored.}
 }
 \value{
 None

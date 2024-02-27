@@ -7,9 +7,9 @@
 tkEmptyLine(tk.object, row = NULL)
 }
 \arguments{
-\item{tk.object:}{tk object in which to insert the new line}
+\item{tk.object}{tk object in which to insert the new line}
 
-\item{row:}{row number of the insertion}
+\item{row}{row number of the insertion}
 }
 \value{
 None

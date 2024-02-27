@@ -9,9 +9,9 @@ tk2draw.notetab(nb, tab.name, fun, hscale = 1.2)
 \arguments{
 \item{nb}{a notebook.}
 
-\item{tab.name}{string : name of the tk2notetab variable.}
+\item{tab.name}{name of the tk2notetab variable.}
 
-\item{fun}{: a function.}
+\item{fun}{a function.}
 
 \item{hscale}{numeric value corresponding to the horizontal scale of graphic}
 }

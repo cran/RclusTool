@@ -7,9 +7,9 @@
 tk2delete.notetab(nb, tab.names = NULL)
 }
 \arguments{
-\item{nb}{: a notebook.}
+\item{nb}{a notebook.}
 
-\item{tab.names}{: either NULL to delete all the notetabs, or a vector of notetab names.}
+\item{tab.names}{either NULL to delete all the notetabs, or a vector of notetab names.}
 }
 \value{
 None

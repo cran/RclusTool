@@ -11,7 +11,7 @@ ElbowPlot(nb, method.space.name, RclusTool.env, hscale = 1.2, charsize = 11)
 
 \item{method.space.name}{complete name of space.}
 
-\item{RclusTool.env}{: environment in which data and intermediate results are stored.}
+\item{RclusTool.env}{environment in which data and intermediate results are stored.}
 
 \item{hscale}{numeric value corresponding to the horizontal scale of graphic}
 

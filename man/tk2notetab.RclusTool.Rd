@@ -9,9 +9,9 @@ tk2notetab.RclusTool(nb, tab.label, tab.name = NULL)
 \arguments{
 \item{nb}{a tk2notebook or ttk2notebook widget.}
 
-\item{tab.label}{string the label of a tab on the interface.}
+\item{tab.label}{the label of a tab on the interface.}
 
-\item{tab.name}{string the name of the tab in a notebook.}
+\item{tab.name}{the name of the tab in a notebook.}
 }
 \value{
 None

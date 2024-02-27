@@ -7,13 +7,13 @@
 makeTitle(string, length = 120, prefix.length = 5, char = "_")
 }
 \arguments{
-\item{string:}{string to be completed}
+\item{string}{string to be completed}
 
-\item{length:}{final title length in characters}
+\item{length}{final title length in characters}
 
-\item{prefix.length:}{space length in front of the title}
+\item{prefix.length}{space length in front of the title}
 
-\item{char:}{character used to complete the title}
+\item{char}{character used to complete the title}
 }
 \value{
 title

@@ -7,13 +7,13 @@
 tkrplot.RclusTool(graphicFrame, fun, hscale = 1, vscale = 1)
 }
 \arguments{
-\item{graphicFrame}{: frame of the RclusTool interface in which graphics should be displayed.}
+\item{graphicFrame}{frame of the RclusTool interface in which graphics should be displayed.}
 
-\item{fun}{: a function}
+\item{fun}{a function}
 
 \item{hscale}{numeric value corresponding to the horizontal scale of graphic}
 
-\item{vscale}{: vertical scale}
+\item{vscale}{vertical scale}
 }
 \value{
 None

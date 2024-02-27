@@ -99,7 +99,7 @@ computeKmeans <- function(x, K=0, K.max=20, kmeans.variance.min=0.95, graph=FALS
 #' @param kmeans.variance.min elbow method cumulative explained variance > criteria to stop K-search.
 #' @param graph boolean: if TRUE, figures for total of within-class inertia and explained variance are plotted.
 #' @param Mclust.options list of default parameters values for the function Mclust.
-#' @import mclust
+#' @importFrom mclust Mclust mclustBIC
 #' @return res.EM results obtained from Mclust algorithm.
 #' @seealso \code{\link{computeUnSupervised}}, \code{\link{computeKmeans}}
 #'
