@@ -1,4 +1,4 @@
-b97574cf1b69f6c70782196c951bbf3c *DESCRIPTION
+9948734308138102c3117d148c81280a *DESCRIPTION
 bef4af760666fa0e7d8df42fe0f7d845 *NAMESPACE
 90e13665a3aa3c3c17b96e2974258db4 *R/KmeansAutoElbow.R
 c4fd04f7bbc877de974e0565a4ec288b *R/RclusTool.R
@@ -11,7 +11,7 @@ fd460237fb2778bc0fd713789ce357a7 *R/preprocessTab.R
 c1f1d40c8a35ab6a867404028fe8e9cd *R/sampleBuilding.R
 fdeff1b01f423b8a812ea0b151ff95ed *R/sampleClustering.R
 fa787b7dc75fb59cc48a37007bdd0df7 *R/sampleCompute.R
-63ea57c7fc29c58daf7d2a38c4ef2ee0 *R/sampleView.R
+6b2505009e12ea9f914a4281f6a6672b *R/sampleView.R
 b596ef7f02cae3cb7a17a2cd44dd9a47 *R/semisupTab.R
 2c4cd966d7d0290ef7808de0d68ee549 *R/semisupervised.R
 c0a31d10d052ceddca80f7251530820a *R/supTab.R
@@ -279,7 +279,7 @@ bd17e4c649e8dd8cb6ada6f948f9cbf6 *man/computeSupervised.Rd
 c5c6c7d732ff4193b8ba062f81a84559 *man/computeUnSupervised.Rd
 4affe9e77e5b98279526e7743d1b609e *man/convNamesPairsToIndexPairs.Rd
 c625a54d3d568f5cf5024ead129cec0d *man/convNamesToIndex.Rd
-4edc1fb44c94c148e51e9ad2e146cffe *man/cor.mtest.Rd
+442ed4f2f55ff13a0ca40117493c24f6 *man/cor.mtest.Rd
 ecc9784bf2d914a1670a667c20b28178 *man/countItems.Rd
 71a73aa9952724fe99420fcaf17b0e73 *man/countItemsSampleGUI.Rd
 391cbb5ec4d35e8424fde9152c272b19 *man/createResFolder.Rd

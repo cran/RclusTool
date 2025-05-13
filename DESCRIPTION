@@ -2,8 +2,8 @@ Package: RclusTool
 Type: Package
 Title: Graphical Toolbox for Clustering and Classification of Data
         Frames
-Version: 0.91.6
-Date: 2024-07-27
+Version: 0.91.61
+Date: 2025-05-13
 Authors@R: c(   person("Guillaume", "Wacquet", role = c("aut"),
                      email = "wacquet@univ-littoral.fr"),
 		        person("Pierre-Alexandre", "Hebert", role = c("aut", "cre"),
@@ -29,7 +29,7 @@ Description: Graphical toolbox for clustering and classification of data frames.
     Wacquet et al. (2013) <doi:10.1016/j.patrec.2013.02.003> and the methodology provided by 
     Wacquet et al. (2013) <doi:10.1007/978-3-642-35638-4_21>.
 License: GPL (>= 2)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Depends: R (>= 3.0.0), tcltk, tcltk2, tkrplot
 Imports: class, cluster, conclust, corrplot, e1071, factoextra,
         FactoMineR, ggplot2, grid, jpeg, knitr, MASS, mclust, mda,
@@ -37,7 +37,6 @@ Imports: class, cluster, conclust, corrplot, e1071, factoextra,
         sp, stats, stringi, stringr, tools
 SystemRequirements: XQuartz (on OSX)
 NeedsCompilation: no
-Packaged: 2024-02-27 17:49:13 UTC; hebert
+Packaged: 2025-05-13 07:24:19 UTC; hebert
 Repository: CRAN
-Date/Publication: 2024-02-27 19:10:02 UTC
-URL: mawenzi.univ-littoral.fr/RclusTool
+Date/Publication: 2025-05-13 07:50:02 UTC

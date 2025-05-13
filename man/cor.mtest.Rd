@@ -19,6 +19,6 @@ Display the abundances barplot of a clustering.
 cor.mtest Correlation test on correlation matrix.
 }
 \references{
-\url{http://www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
+\url{https://www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
 }
 \keyword{internal}

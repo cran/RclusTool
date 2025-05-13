@@ -2035,7 +2035,7 @@ analyzePlot <- function(nb, data.sample, selectedVar, type = "boxplot", hscale =
 #' @param mat correlation matrix
 #' @return matrix with p-values.
 #' @importFrom stats cor.test
-#' @references \url{http://www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
+#' @references \url{https://www.sthda.com/french/wiki/visualiser-une-matrice-de-correlation-par-un-correlogramme}
 #' @keywords internal
 
 cor.mtest <- function(mat) {
